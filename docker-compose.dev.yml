@@ -1,0 +1,17 @@
+services:
+  app:
+    env_file:
+      - .env
+    environment:
+      ART_INPA_DEVELOPMENT: "1"
+      ART_INPA_HOST_UID: "${ART_INPA_HOST_UID:-1000}"
+      ART_INPA_HOST_GID: "${ART_INPA_HOST_GID:-1000}"
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+      - art-inpa-dev-vendor:/var/www/html/vendor
+      - art-inpa-dev-build:/var/www/html/public/build
+
+volumes:
+  art-inpa-dev-vendor:
+  art-inpa-dev-build:

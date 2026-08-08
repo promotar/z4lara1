@@ -1,0 +1,24 @@
+name: art-inpa
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    ports:
+      - "127.0.0.1:${ART_INPA_HTTP_PORT:-8088}:80"
+    volumes:
+      - art-inpa-storage:/var/www/html/storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1/up >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  art-inpa-storage:

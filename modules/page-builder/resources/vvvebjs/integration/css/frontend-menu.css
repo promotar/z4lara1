@@ -1,0 +1,248 @@
+[data-platform-menu-key] {
+    --platform-menu-font-family: inherit;
+    --platform-menu-font-size: 15px;
+    --platform-menu-font-weight: 500;
+    --platform-menu-color: #1f2937;
+    --platform-menu-background: transparent;
+    --platform-menu-hover-color: #991b1b;
+    --platform-menu-hover-background: #fef2f2;
+    --platform-menu-submenu-background: #ffffff;
+    --platform-menu-item-margin: 0;
+    --platform-menu-item-padding: 10px 14px;
+    --platform-menu-offcanvas-width: 320px;
+    background: var(--platform-menu-background);
+    color: var(--platform-menu-color);
+    font-family: var(--platform-menu-font-family);
+    font-size: var(--platform-menu-font-size);
+    font-weight: var(--platform-menu-font-weight);
+    position: relative;
+}
+
+[data-platform-menu-key] .platform-menu-items {
+    align-items: stretch;
+    display: flex;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+}
+
+[data-platform-menu-key] a,
+[data-platform-menu-key] .platform-menu-link {
+    align-items: center;
+    background: transparent;
+    border-radius: 6px;
+    color: inherit;
+    display: inline-flex;
+    font: inherit;
+    margin: var(--platform-menu-item-margin);
+    padding: var(--platform-menu-item-padding);
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+[data-platform-menu-key] a:hover,
+[data-platform-menu-key] a:focus-visible,
+[data-platform-menu-key] .platform-menu-link:hover {
+    background: var(--platform-menu-hover-background);
+    color: var(--platform-menu-hover-color);
+    outline: none;
+}
+
+[data-platform-menu-key] .platform-menu-item {
+    display: inline-flex;
+    position: relative;
+}
+
+[data-platform-menu-key] .platform-submenu {
+    background: var(--platform-menu-submenu-background);
+    border: 1px solid rgba(15, 23, 42, .10);
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .12);
+    display: none;
+    flex-direction: column;
+    left: 0;
+    min-width: 210px;
+    padding: 6px;
+    position: absolute;
+    top: 100%;
+    z-index: 60;
+}
+
+[data-platform-menu-key] .platform-menu-item:hover > .platform-submenu,
+[data-platform-menu-key] .platform-menu-item:focus-within > .platform-submenu {
+    display: flex;
+}
+
+[data-platform-menu-layout="horizontal"] .platform-menu-surface > .platform-menu-items {
+    flex-flow: row wrap;
+}
+
+[data-platform-menu-layout="vertical"] .platform-menu-surface > .platform-menu-items {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+[data-platform-menu-layout="vertical"] .platform-menu-item {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+[data-platform-menu-layout="vertical"] .platform-submenu {
+    box-shadow: none;
+    margin-inline-start: 14px;
+    position: static;
+}
+
+.platform-menu-toggle-control,
+.platform-menu-toggle,
+.platform-menu-close,
+.platform-menu-overlay {
+    display: none;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-toggle {
+    align-items: center;
+    background: var(--platform-menu-background);
+    border: 1px solid currentColor;
+    border-radius: 7px;
+    color: var(--platform-menu-color);
+    cursor: pointer;
+    display: inline-flex;
+    height: 42px;
+    justify-content: center;
+    padding: 0;
+    width: 42px;
+}
+
+.platform-menu-icon {
+    display: grid;
+    gap: 4px;
+    width: 20px;
+}
+
+.platform-menu-icon i {
+    background: currentColor;
+    border-radius: 2px;
+    display: block;
+    height: 2px;
+    width: 100%;
+}
+
+.platform-menu-icon i:nth-child(4) {
+    display: none;
+}
+
+.platform-menu-icon-compact i:nth-child(2) { width: 70%; }
+.platform-menu-icon-compact i:nth-child(3) { width: 85%; }
+
+.platform-menu-icon-dots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.platform-menu-icon-dots i {
+    border-radius: 50%;
+    height: 4px;
+    width: 4px;
+}
+
+.platform-menu-icon-grid {
+    grid-template-columns: repeat(2, 5px);
+    justify-content: center;
+}
+
+.platform-menu-icon-grid i,
+.platform-menu-icon-grid i:nth-child(4) {
+    border-radius: 1px;
+    display: block;
+    height: 5px;
+    width: 5px;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface {
+    background: var(--platform-menu-submenu-background);
+    bottom: 0;
+    box-shadow: 0 0 40px rgba(15, 23, 42, .20);
+    max-width: calc(100vw - 32px);
+    overflow-y: auto;
+    padding: 56px 16px 20px;
+    position: fixed;
+    top: 0;
+    transition: transform 220ms ease;
+    width: var(--platform-menu-offcanvas-width);
+    z-index: 1001;
+}
+
+[data-platform-menu-layout="offcanvas"][data-platform-menu-side="start"] .platform-menu-surface {
+    left: 0;
+    transform: translateX(-105%);
+}
+
+[data-platform-menu-layout="offcanvas"][data-platform-menu-side="end"] .platform-menu-surface {
+    right: 0;
+    transform: translateX(105%);
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface > .platform-menu-items {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-item {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-submenu {
+    box-shadow: none;
+    margin-inline-start: 12px;
+    position: static;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-close {
+    align-items: center;
+    border-radius: 6px;
+    color: var(--platform-menu-color);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 28px;
+    height: 36px;
+    justify-content: center;
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    width: 36px;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-overlay {
+    background: rgba(15, 23, 42, .45);
+    inset: 0;
+    opacity: 0;
+    position: fixed;
+    transition: opacity 180ms ease;
+    visibility: hidden;
+    z-index: 1000;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-toggle-control:checked ~ .platform-menu-surface {
+    transform: translateX(0);
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-toggle-control:checked ~ .platform-menu-overlay {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+[data-platform-menu-layout="offcanvas"].is-preview-open .platform-menu-surface {
+    position: absolute;
+    transform: translateX(0);
+}
+
+@media (max-width: 640px) {
+    [data-platform-menu-layout="horizontal"] .platform-menu-surface > .platform-menu-items {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

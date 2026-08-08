@@ -1,0 +1,20 @@
+@import './auth.css';
+@import './installation.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Auto direction keeps alignment unchanged while fixing mixed Arabic/English text. */
+[data-auto-direction="true"],
+[dir="auto"][data-auto-direction="true"] {
+    unicode-bidi: plaintext;
+    text-align: inherit;
+}
+
+input[dir="auto"],
+textarea[dir="auto"] {
+    unicode-bidi: plaintext;
+    text-align: inherit;
+}

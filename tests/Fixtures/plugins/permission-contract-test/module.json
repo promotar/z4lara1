@@ -1,0 +1,81 @@
+{
+  "name": "Permission Contract Test",
+  "slug": "permission-contract-test",
+  "version": "1.0.0",
+  "type": "feature",
+  "platform_version": ">=2.0.0 <3.0.0",
+  "description": "Disposable fixture for the plugin install and uninstall asset contract.",
+  "author": "Art INPA",
+  "provider": "Tests\\Fixtures\\Plugins\\PermissionContractTestServiceProvider",
+  "provider_file": "src/PermissionContractTestServiceProvider.php",
+  "permissions": [
+    {
+      "name": "permission-contract-test.manage",
+      "description": "Disposable permission owned by the lifecycle fixture."
+    }
+  ],
+  "menus": [
+    {
+      "key": "permission-contract-test.admin",
+      "name": "Permission Contract Test",
+      "location": "admin",
+      "source": "plugin",
+      "items": []
+    }
+  ],
+  "settings": [
+    "permission-contract-test.enabled"
+  ],
+  "registry": {
+    "routes": {
+      "admin.plugins.permission-contract-test.index": {
+        "method": "GET",
+        "uri": "/admin/plugins/permission-contract-test"
+      }
+    }
+  },
+  "migrations": "database/migrations",
+  "uninstall": {
+    "tables": [
+      "permission_contract_test_records"
+    ],
+    "settings": [
+      "permission-contract-test"
+    ],
+    "storage_paths": [
+      {
+        "disk": "local",
+        "path": "permission-contract-test"
+      }
+    ],
+    "records": [
+      {
+        "table": "activity_logs",
+        "column": "action",
+        "values": [
+          "permission-contract-test.record"
+        ]
+      }
+    ],
+    "columns": [
+      {
+        "table": "users",
+        "columns": [
+          "permission_contract_test_note"
+        ]
+      }
+    ],
+    "operation_target_prefixes": [
+      "permission-contract-test."
+    ]
+  },
+  "assets": {
+    "source": "resources/assets",
+    "frontend": {
+      "styles": [
+        "css/permission-contract-test.css"
+      ],
+      "scripts": []
+    }
+  }
+}

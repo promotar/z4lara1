@@ -1,0 +1,27 @@
+<x-app-layout>
+    <style>
+        .tag-screen{max-width:1120px;margin:0 auto;padding:28px 24px 42px;color:#1f2937}.tag-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}.tag-head h1{margin:0;font-size:24px;font-weight:800}.tag-head p{margin:5px 0 0;color:#64748b;font-size:13px}.tag-layout{display:grid;grid-template-columns:minmax(230px,3fr) minmax(0,5fr);gap:22px;align-items:start}.tag-card{border:1px solid #e5caca;border-radius:12px;background:#fff7f7;box-shadow:0 7px 22px rgba(127,29,29,.05)}.tag-create{position:sticky;top:20px;padding:20px}.tag-list{padding:16px}.tag-field{display:grid;gap:6px;margin-bottom:12px}.tag-field label{font-size:12px;font-weight:800}.tag-input{width:100%;min-height:38px;border:1px solid #d8b4b4;border-radius:7px;background:#fff;padding:8px 10px}.tag-button{min-height:38px;border:0;border-radius:7px;background:#a90000;padding:0 16px;color:#fff;font-size:13px;font-weight:800;cursor:pointer}.tag-button.danger{border:1px solid #ef4444;background:#fff;color:#b91c1c}.tag-item{overflow:hidden;border:1px solid #efd4d4;border-radius:9px;background:#fff;margin-bottom:10px}.tag-item summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;cursor:pointer;list-style:none}.tag-item summary::-webkit-details-marker{display:none}.tag-title{font-weight:800}.tag-meta{color:#64748b;font-size:12px}.tag-editor{border-top:1px solid #efd4d4;padding:14px;background:#fffafa}.tag-edit-grid{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;align-items:end}.tag-notice{margin-bottom:16px;border-left:4px solid #15803d;background:#ecfdf5;padding:11px 13px;color:#166534}.tag-errors{margin-bottom:16px;border-left:4px solid #dc2626;background:#fff1f2;padding:11px 13px;color:#991b1b}.tag-count{border-radius:999px;background:#fbe4e4;padding:4px 9px;color:#8b0000;font-size:11px;font-weight:800}.tag-help{color:#64748b;font-size:11px;margin:-4px 0 12px}@media(max-width:800px){.tag-layout{grid-template-columns:1fr}.tag-create{position:static}.tag-edit-grid{grid-template-columns:1fr}}
+    </style>
+    <div class="tag-screen">
+        <div class="tag-head"><div><h1>Blog Tags</h1><p>Create and edit lightweight post tags.</p></div><span class="tag-count">{{ $tags->count() }} tags</span></div>
+        @if(session('status'))<div class="tag-notice">{{ session('status') }}</div>@endif
+        @if(isset($errors) && $errors->any())<div class="tag-errors">{{ $errors->first() }}</div>@endif
+        <div class="tag-layout">
+            <form class="tag-card tag-create" method="POST" action="{{ route('admin.plugins.blog.tags.store') }}" data-slug-pair>@csrf
+                <h2>Create Tag</h2>
+                <div class="tag-field"><label>Name</label><input class="tag-input" name="name" value="{{ old('name') }}" data-name-input required></div>
+                <div class="tag-field"><label>English slug</label><input class="tag-input" name="slug" value="{{ old('slug') }}" data-slug-input placeholder="generated-automatically"></div>
+                <p class="tag-help">The slug is generated automatically in English.</p>
+                <button class="tag-button" type="submit">Create Tag</button>
+            </form>
+            <section class="tag-card tag-list">
+                @forelse($tags as $tag)
+                    <details class="tag-item" id="tag-{{ $tag->id }}"><summary><span><span class="tag-title">{{ $tag->name }}</span> <span class="tag-meta">/{{ $tag->slug }}</span></span><span class="tag-meta">{{ $tag->posts_count }} posts · ⌄</span></summary>
+                        <div class="tag-editor"><form method="POST" action="{{ route('admin.plugins.blog.tags.update',$tag) }}" data-slug-pair>@csrf @method('PATCH')<div class="tag-edit-grid"><div class="tag-field"><label>Name</label><input class="tag-input" name="name" value="{{ $tag->name }}" data-name-input required></div><div class="tag-field"><label>Slug</label><input class="tag-input" name="slug" value="{{ $tag->slug }}" data-slug-input></div><button class="tag-button" type="submit">Save</button><button class="tag-button danger" type="submit" form="delete-tag-{{ $tag->id }}" onclick="return confirm('Delete this tag?')">Delete</button></div></form><form id="delete-tag-{{ $tag->id }}" method="POST" action="{{ route('admin.plugins.blog.tags.destroy',$tag) }}">@csrf @method('DELETE')</form></div>
+                    </details>
+                @empty<div style="padding:32px;text-align:center;color:#64748b">No tags yet.</div>@endforelse
+            </section>
+        </div>
+    </div>
+    <script>(()=>{const map={'ا':'a','أ':'a','إ':'i','آ':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh','د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z','ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','ة':'a','و':'w','ؤ':'w','ي':'y','ى':'a','ئ':'y'};const slugify=value=>Array.from(value).map(c=>map[c]??c).join('').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');document.querySelectorAll('[data-slug-pair]').forEach(form=>{const name=form.querySelector('[data-name-input]'),slug=form.querySelector('[data-slug-input]');let manual=slug.value.trim()!=='';slug.addEventListener('input',()=>manual=slug.value.trim()!=='');name.addEventListener('input',()=>{if(!manual)slug.value=slugify(name.value)});});if(location.hash){const item=document.querySelector(location.hash);if(item?.tagName==='DETAILS')item.open=true;}})();</script>
+</x-app-layout>

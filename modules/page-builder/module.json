@@ -1,0 +1,65 @@
+{
+  "name": "Page Builder",
+  "slug": "page-builder",
+  "version": "3.4.0",
+  "type": "feature",
+  "core": true,
+  "platform_version": ">=2.5.0 <3.0.0",
+  "description": "The single VvvebJs visual builder for pages and reusable designs with ordered theme headers and footers.",
+  "author": "Art INPA",
+  "provider": "Modules\\PageBuilder\\VvvebJsServiceProvider",
+  "provider_file": "src/VvvebJsServiceProvider.php",
+  "dependencies": [],
+  "routes": {
+    "admin": {
+      "file": "routes/admin.php",
+      "prefix": "",
+      "name": "",
+      "middleware": ["web", "auth", "staff"],
+      "methods": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+    },
+    "web": {
+      "file": "routes/web.php",
+      "prefix": "",
+      "name": "",
+      "middleware": ["web"]
+    }
+  },
+  "permissions": [
+    {
+      "name": "pages.manage",
+      "description": "Manage VvvebJs pages, layouts and revisions."
+    }
+  ],
+  "hooks": {
+    "editor.extensions": {
+      "type": "filter",
+      "description": "Let active plugins register isolated VvvebJs editor elements, assets, and configuration."
+    },
+    "frontend.html": {
+      "type": "filter",
+      "description": "Render plugin-owned Page Builder placeholders into final frontend HTML."
+    }
+  },
+  "menus": [],
+  "migrations": "database/migrations",
+  "lifecycle": {
+    "file": "src/VvvebJsLifecycle.php",
+    "install": "Modules\\PageBuilder\\VvvebJsLifecycle@activate",
+    "activate": "Modules\\PageBuilder\\VvvebJsLifecycle@activate",
+    "reactivate": "Modules\\PageBuilder\\VvvebJsLifecycle@activate"
+  },
+  "uninstall": {
+    "tables": ["page_builder_theme_settings", "vvvebjs_page_revisions", "vvvebjs_layout_sections"],
+    "settings": [],
+    "storage_paths": [],
+    "records": [],
+    "columns": [
+      {
+        "table": "platform_pages",
+        "columns": ["vvvebjs_html"]
+      }
+    ],
+    "operation_target_prefixes": ["vvvebjs-page"]
+  }
+}

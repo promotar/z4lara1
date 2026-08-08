@@ -1,0 +1,10 @@
+services:
+  app:
+    networks:
+      - default
+      - database-net
+
+networks:
+  database-net:
+    external: true
+    name: database-net

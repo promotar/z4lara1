@@ -1,0 +1,48 @@
+{
+  "name": "Admin Theme",
+  "slug": "admin-theme",
+  "version": "1.1.0",
+  "type": "theme",
+  "theme": {
+    "scope": "admin",
+    "default": true
+  },
+  "platform_version": ">=2.5.0 <3.0.0",
+  "description": "Professional light admin dashboard theme using the Art INPA red and orange visual identity.",
+  "author": "Art INPA",
+  "provider": "Modules\\ArtInpaAdminProTheme\\ArtInpaAdminProThemeServiceProvider",
+  "provider_file": "src/ArtInpaAdminProThemeServiceProvider.php",
+  "dependencies": [],
+  "routes": {
+    "admin": {
+      "file": "routes/admin.php",
+      "prefix": "",
+      "name": "",
+      "middleware": ["web", "auth", "staff"]
+    }
+  },
+  "settings": {
+    "label": "Theme settings",
+    "route": "admin.plugins.admin-theme.settings"
+  },
+  "functions": {
+    "admin-theme.assets.inject": {
+      "description": "Inject the default admin theme stylesheet into the active admin dashboard layout."
+    }
+  },
+  "hooks": {
+    "admin-theme.loaded": {
+      "type": "action",
+      "description": "Fires when the default admin theme plugin is available."
+    }
+  },
+  "docs": "docs/plugin.md",
+  "uninstall": {
+    "tables": [],
+    "settings": [],
+    "storage_paths": [],
+    "records": [],
+    "columns": [],
+    "operation_target_prefixes": []
+  }
+}

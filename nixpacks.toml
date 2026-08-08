@@ -1,0 +1,7 @@
+[phases.build]
+cmds = [
+    "npm ci --include=dev --no-audit --no-fund",
+    "rm -f public/hot",
+    "npm run build",
+    "test -s public/build/manifest.json"
+]

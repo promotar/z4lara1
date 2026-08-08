@@ -1,0 +1,612 @@
+{
+    "name": "Blog",
+    "slug": "blog",
+    "version": "2.9.0",
+    "description": "End-to-end SEO-ready WordPress Classic Editor style publishing plugin with TinyMCE, media library, revisions, autosave, categories, tags, scheduling, previews, and frontend article rendering.",
+    "author": "Art INPA",
+    "platform_version": ">=2.5.0 <3.0.0",
+    "type": "feature",
+    "assets": {
+        "source": "resources/assets",
+        "admin": {
+            "styles": [],
+            "scripts": [
+                "js/vvveb-blog-template.js"
+            ]
+        },
+        "frontend": {
+            "styles": [],
+            "scripts": [
+                "js/blog-template-pagination.js",
+                "js/blog-template-layout.js"
+            ]
+        },
+        "guest": {
+            "styles": [],
+            "scripts": []
+        }
+    },
+    "provider": "Modules\\Blog\\BlogServiceProvider",
+    "provider_file": "src/BlogServiceProvider.php",
+    "settings": {
+        "label": "Blog Settings",
+        "route": "admin.plugins.blog.settings.edit"
+    },
+    "routes": {
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/blog",
+            "name": "admin.plugins.blog.",
+            "middleware": [
+                "web",
+                "auth",
+                "staff"
+            ]
+        },
+        "web": {
+            "file": "routes/web.php",
+            "prefix": "blog",
+            "name": "blog.",
+            "middleware": [
+                "web",
+                "Modules\\Blog\\Http\\Middleware\\MoveBlogSeoToHeadStart"
+            ]
+        }
+    },
+    "registry": {
+        "routes": {
+            "admin.plugins.blog.settings.edit": {
+                "uri": "admin/plugins/blog",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\SettingsController@edit",
+                "description": "Configure the active site-wide Blog templates."
+            },
+            "admin.plugins.blog.settings.update": {
+                "uri": "admin/plugins/blog",
+                "methods": ["PATCH"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\SettingsController@update",
+                "description": "Update the active site-wide Blog templates."
+            },
+            "admin.plugins.blog.posts.index": {
+                "uri": "admin/plugins/blog/posts",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@index",
+                "description": "List Blog posts."
+            },
+            "admin.plugins.blog.posts.create": {
+                "uri": "admin/plugins/blog/posts/create",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@create",
+                "description": "Create a new Blog post."
+            },
+            "admin.plugins.blog.posts.store": {
+                "uri": "admin/plugins/blog/posts",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@store",
+                "description": "Store a Blog post."
+            },
+            "admin.plugins.blog.posts.edit": {
+                "uri": "admin/plugins/blog/posts/*/edit",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@edit",
+                "description": "Edit a Blog post."
+            },
+            "admin.plugins.blog.posts.update": {
+                "uri": "admin/plugins/blog/posts/*",
+                "methods": [
+                    "PUT",
+                    "PATCH"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@update",
+                "description": "Update a Blog post."
+            },
+            "admin.plugins.blog.posts.quick-update": {
+                "uri": "admin/plugins/blog/posts/*/quick",
+                "methods": [
+                    "PATCH"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@quickUpdate",
+                "description": "Quickly update Blog post publishing details."
+            },
+            "admin.plugins.blog.posts.destroy": {
+                "uri": "admin/plugins/blog/posts/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@destroy",
+                "description": "Soft-delete a Blog post."
+            },
+            "admin.plugins.blog.posts.bulk": {
+                "uri": "admin/plugins/blog/posts/bulk",
+                "methods": ["POST"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@bulk",
+                "description": "Run a bulk trash, restore, or permanent-delete action on Blog posts."
+            },
+            "admin.plugins.blog.posts.trash.empty": {
+                "uri": "admin/plugins/blog/posts/trash/empty",
+                "methods": ["DELETE"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@emptyTrash",
+                "description": "Permanently empty the Blog post trash."
+            },
+            "admin.plugins.blog.posts.preview": {
+                "uri": "admin/plugins/blog/posts/*/preview",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@preview",
+                "description": "Preview a draft, private, scheduled, or published Blog post."
+            },
+            "admin.plugins.blog.posts.autosave": {
+                "uri": "admin/plugins/blog/posts/autosave",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@autosave",
+                "description": "Autosave a Blog post revision."
+            },
+            "admin.plugins.blog.posts.slug": {
+                "uri": "admin/plugins/blog/posts/slug",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@slug",
+                "description": "Generate a unique Blog post slug."
+            },
+            "admin.plugins.blog.posts.revisions.restore": {
+                "uri": "admin/plugins/blog/posts/*/revisions/*/restore",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@restoreRevision",
+                "description": "Restore a Blog post revision."
+            },
+            "admin.plugins.blog.posts.revisions.destroy": {
+                "uri": "admin/plugins/blog/posts/*/revisions/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@destroyRevision",
+                "description": "Delete a Blog post revision."
+            },
+            "admin.plugins.blog.media.index": {
+                "uri": "admin/plugins/blog/media",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@mediaLibrary",
+                "description": "List Blog media items for the editor modal."
+            },
+            "admin.plugins.blog.media.store": {
+                "uri": "admin/plugins/blog/media",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@uploadMedia",
+                "description": "Upload Blog media."
+            },
+            "admin.plugins.blog.media.update": {
+                "uri": "admin/plugins/blog/media/*",
+                "methods": [
+                    "PATCH"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@updateMedia",
+                "description": "Update Blog media metadata."
+            },
+            "admin.plugins.blog.media.destroy": {
+                "uri": "admin/plugins/blog/media/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@destroyMedia",
+                "description": "Delete Blog media."
+            },
+            "admin.plugins.blog.categories.index": {
+                "uri": "admin/plugins/blog/categories",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@index",
+                "description": "List Blog categories."
+            },
+            "admin.plugins.blog.categories.store": {
+                "uri": "admin/plugins/blog/categories",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@store",
+                "description": "Store a Blog category."
+            },
+            "admin.plugins.blog.categories.quick-store": {
+                "uri": "admin/plugins/blog/categories/quick",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@quickStore",
+                "description": "Create a Blog category from the post editor."
+            },
+            "admin.plugins.blog.categories.update": {
+                "uri": "admin/plugins/blog/categories/*",
+                "methods": [
+                    "PUT",
+                    "PATCH"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@update",
+                "description": "Update a Blog category."
+            },
+            "admin.plugins.blog.categories.destroy": {
+                "uri": "admin/plugins/blog/categories/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@destroy",
+                "description": "Delete a Blog category."
+            },
+            "admin.plugins.blog.categories.bulk": {
+                "uri": "admin/plugins/blog/categories/bulk",
+                "methods": ["POST"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@bulk",
+                "description": "Run a bulk trash, restore, or permanent-delete action on Blog categories."
+            },
+            "admin.plugins.blog.categories.trash.empty": {
+                "uri": "admin/plugins/blog/categories/trash/empty",
+                "methods": ["DELETE"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController@emptyTrash",
+                "description": "Permanently empty the Blog category trash."
+            },
+            "admin.plugins.blog.tags.index": {
+                "uri": "admin/plugins/blog/tags",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TagController@index",
+                "description": "List and create Blog tags."
+            },
+            "admin.plugins.blog.tags.store": {
+                "uri": "admin/plugins/blog/tags",
+                "methods": ["POST"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TagController@store",
+                "description": "Store a Blog tag."
+            },
+            "admin.plugins.blog.tags.update": {
+                "uri": "admin/plugins/blog/tags/*",
+                "methods": ["PUT", "PATCH"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TagController@update",
+                "description": "Update a Blog tag."
+            },
+            "admin.plugins.blog.tags.destroy": {
+                "uri": "admin/plugins/blog/tags/*",
+                "methods": ["DELETE"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TagController@destroy",
+                "description": "Delete a Blog tag."
+            },
+            "admin.plugins.blog.templates.catalog": {
+                "uri": "admin/plugins/blog/templates/catalog",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@catalog",
+                "description": "Expose active Blog templates to authorized builders."
+            },
+            "admin.plugins.blog.templates.index": {
+                "uri": "admin/plugins/blog/templates",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@index",
+                "description": "Open the Blog template studio."
+            },
+            "admin.plugins.blog.templates.store": {
+                "uri": "admin/plugins/blog/templates",
+                "methods": ["POST"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@store",
+                "description": "Store a reusable Blog template."
+            },
+            "admin.plugins.blog.templates.edit": {
+                "uri": "admin/plugins/blog/templates/*/edit",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@edit",
+                "description": "Edit a reusable Blog template."
+            },
+            "admin.plugins.blog.templates.update": {
+                "uri": "admin/plugins/blog/templates/*",
+                "methods": ["PUT", "PATCH"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@update",
+                "description": "Update a reusable Blog template."
+            },
+            "admin.plugins.blog.templates.destroy": {
+                "uri": "admin/plugins/blog/templates/*",
+                "methods": ["DELETE"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@destroy",
+                "description": "Delete a reusable Blog template."
+            },
+            "admin.plugins.blog.templates.duplicate": {
+                "uri": "admin/plugins/blog/templates/*/duplicate",
+                "methods": ["POST"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController@duplicate",
+                "description": "Create an editable copy of a Blog template."
+            },
+            "blog.index": {
+                "uri": "blog",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@index",
+                "description": "Public Blog index."
+            },
+            "blog.categories": {
+                "uri": "blog/category",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@categories",
+                "description": "Public Blog category listing."
+            },
+            "blog.styles": {
+                "uri": "blog/assets/blog.css",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@styles",
+                "description": "Serve the Blog frontend stylesheet directly from the plugin."
+            },
+            "blog.template-script": {
+                "uri": "blog/assets/templates/*.js",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@templateScript",
+                "description": "Serve active template JavaScript as an independent file."
+            },
+            "blog.category": {
+                "uri": "blog/category/*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@category",
+                "description": "Public Blog category archive."
+            },
+            "blog.tag": {
+                "uri": "blog/tag/*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@tag",
+                "description": "Public Blog tag archive."
+            },
+            "blog.search": {
+                "uri": "blog/search",
+                "methods": ["GET", "HEAD"],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@search",
+                "description": "Public Blog search results."
+            },
+            "blog.show": {
+                "uri": "blog/*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Blog\\Http\\Controllers\\BlogController@show",
+                "description": "Public Blog article."
+            }
+        },
+        "controllers": {
+            "Modules\\Blog\\Http\\Controllers\\Admin\\PostController": {
+                "description": "Blog post CRUD, editor, media, preview, autosave, revisions, and SEO controller."
+            },
+            "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController": {
+                "description": "Blog category CRUD and quick-create controller."
+            },
+            "Modules\\Blog\\Http\\Controllers\\Admin\\TagController": {
+                "description": "Blog tag CRUD controller."
+            },
+            "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController": {
+                "description": "Reusable Blog template studio and builder catalog controller."
+            },
+            "Modules\\Blog\\Http\\Controllers\\Admin\\SettingsController": {
+                "description": "Site-wide Blog template selection controller."
+            },
+            "Modules\\Blog\\Http\\Controllers\\BlogController": {
+                "description": "Public Blog frontend controller."
+            }
+        }
+    },
+    "permissions": [
+        "blog.view",
+        "blog.create",
+        "blog.update",
+        "blog.delete",
+        "blog.publish",
+        "blog.categories.manage",
+        "blog.tags.manage",
+        "blog.templates.manage",
+        "blog.media.manage",
+        "blog.revisions.restore"
+    ],
+    "menus": [
+        {
+            "key": "blog.admin",
+            "name": "Blog",
+            "location": "admin",
+            "description": "SEO-ready article publishing workflow.",
+            "source": "plugin",
+            "sort_order": 65,
+            "items": [
+                {
+                    "title": "Blog",
+                    "label": "Blog",
+                    "type": "route",
+                    "route": "admin.plugins.blog.posts.index",
+                    "icon": "B",
+                    "permission": "blog.view",
+                    "sort_order": 65,
+                    "children": [
+                        {
+                            "title": "Add New Post",
+                            "label": "Add New Post",
+                            "type": "route",
+                            "route": "admin.plugins.blog.posts.create",
+                            "permission": "blog.create",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Categories",
+                            "label": "Categories",
+                            "type": "route",
+                            "route": "admin.plugins.blog.categories.index",
+                            "permission": "blog.categories.manage",
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Tags",
+                            "label": "Tags",
+                            "type": "route",
+                            "route": "admin.plugins.blog.tags.index",
+                            "permission": "blog.tags.manage",
+                            "sort_order": 4
+                        },
+                        {
+                            "title": "Post Templates",
+                            "label": "Post Templates",
+                            "type": "route",
+                            "route": "admin.plugins.blog.templates.index",
+                            "permission": "blog.templates.manage",
+                            "sort_order": 5
+                        },
+                        {
+                            "title": "Blog Settings",
+                            "label": "Blog Settings",
+                            "type": "route",
+                            "route": "admin.plugins.blog.settings.edit",
+                            "permission": "blog.templates.manage",
+                            "sort_order": 6
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "blog.frontend",
+            "name": "Blog Menu",
+            "location": "frontend",
+            "description": "Public Blog navigation for the VvvebJs Frontend Menu element.",
+            "source": "plugin",
+            "sort_order": 30,
+            "items": [
+                {
+                    "title": "Blog",
+                    "label": "Blog",
+                    "type": "route",
+                    "route": "blog.index",
+                    "icon": "newspaper",
+                    "sort_order": 10,
+                    "children": [
+                        {
+                            "title": "Categories",
+                            "label": "Categories",
+                            "type": "route",
+                            "route": "blog.categories",
+                            "sort_order": 10
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "migrations": "database/migrations",
+    "functions": {
+        "blog.posts.create": {
+            "description": "Create SEO-ready posts from the admin publishing screen.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@store"
+        },
+        "blog.posts.update": {
+            "description": "Update editorial content, metadata, publishing state, featured image, tags, and SEO fields.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@update"
+        },
+        "blog.posts.publish": {
+            "description": "Publish public SEO-ready posts.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@update"
+        },
+        "blog.posts.schedule": {
+            "description": "Schedule public posts for future publication.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@update"
+        },
+        "blog.posts.preview": {
+            "description": "Preview posts before public publication.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@preview"
+        },
+        "blog.posts.autosave": {
+            "description": "Create autosave revisions for in-progress posts.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@autosave"
+        },
+        "blog.posts.revisions.restore": {
+            "description": "Restore a stored post revision.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController@restoreRevision"
+        },
+        "blog.media.manage": {
+            "description": "Upload, edit, delete, and insert media in posts.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\PostController"
+        },
+        "blog.categories.manage": {
+            "description": "Manage post categories used by the publishing workflow.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\CategoryController"
+        },
+        "blog.tags.manage": {
+            "description": "Manage post tags used by the publishing workflow.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TagController"
+        },
+        "blog.templates.manage": {
+            "description": "Create and manage reusable HTML and CSS Blog templates.",
+            "controller": "Modules\\Blog\\Http\\Controllers\\Admin\\TemplateController"
+        }
+    },
+    "hooks": {
+        "blog.post.saved": {
+            "type": "action",
+            "description": "Fires after a blog post is saved."
+        },
+        "blog.post.published": {
+            "type": "action",
+            "description": "Fires after a blog post becomes public."
+        },
+        "blog.template.saved": {
+            "type": "action",
+            "description": "Fires after a reusable Blog template is saved."
+        }
+    },
+    "uninstall": {
+        "tables": [
+            "blog_template_settings",
+            "blog_templates",
+            "blog_post_meta",
+            "blog_post_revisions",
+            "blog_media",
+            "blog_category_post",
+            "blog_post_tag",
+            "blog_posts",
+            "blog_tags",
+            "blog_categories"
+        ],
+        "settings": [],
+        "storage_paths": [
+            {
+                "disk": "public",
+                "path": "blog"
+            }
+        ],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": []
+    },
+    "docs": "docs/plugin.md"
+}
