@@ -142,6 +142,13 @@ if [ "${ART_INPA_DEVELOPMENT:-0}" = "1" ]; then
     DEVELOPMENT_GID="${ART_INPA_HOST_GID:-1000}"
     chown -R "$DEVELOPMENT_UID:$DEVELOPMENT_GID" $RUNTIME_WRITABLE_PATHS
     chgrp -R www-data $RUNTIME_WRITABLE_PATHS
+
+    # The source tree is owned by the host user while Composer runs as root
+    # inside the container. Trust only the exact application mount so Composer
+    # can inspect package metadata without weakening Git's global protection.
+    if [ -d .git ]; then
+        git config --global --add safe.directory /var/www/html
+    fi
 fi
 
 if [ ! -f vendor/autoload.php ] || [ "${ART_INPA_DEVELOPMENT:-0}" = "1" ]; then
