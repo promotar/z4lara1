@@ -20,6 +20,7 @@ use App\Platform\Core\Services\PluginServiceProviderLoader;
 use App\Platform\Core\Views\ViewNamespaceRegistrar;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -56,5 +57,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->make(ViewNamespaceRegistrar::class)->register();
 
         $this->app->make(HookLoader::class)->load();
-    }
+
+       URL::forceScheme('https');
+   }
 }
