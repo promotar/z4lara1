@@ -55,6 +55,12 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertStringContainsString('base64_encode(random_bytes(32))', $entrypoint);
         self::assertStringContainsString('export APP_KEY', $entrypoint);
         self::assertStringContainsString('file_put_contents($path, ltrim($content), LOCK_EX)', $entrypoint);
+        self::assertStringContainsString('chgrp www-data storage/app/platform/installation.env', $entrypoint);
+        self::assertStringContainsString('chmod 0660 storage/app/platform/installation.env', $entrypoint);
+        self::assertGreaterThan(
+            strpos($entrypoint, 'base64_encode(random_bytes(32))'),
+            strpos($entrypoint, 'chgrp www-data storage/app/platform/installation.env'),
+        );
         self::assertStringContainsString('INSTAAL_IS_ACTIVE', $entrypoint);
         self::assertStringContainsString('INSTAAL_IS_ATIVE', $entrypoint);
         self::assertStringContainsString('INSTALLATION_COMPLETE', $entrypoint);

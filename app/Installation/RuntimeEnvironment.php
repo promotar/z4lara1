@@ -120,7 +120,10 @@ final class RuntimeEnvironment
             ? (string) preg_replace($pattern, $line, $content)
             : rtrim($content).PHP_EOL.$line.PHP_EOL;
 
-        file_put_contents($path, ltrim($content), LOCK_EX);
+        $written = file_put_contents($path, ltrim($content), LOCK_EX);
+        if ($written === false) {
+            throw new \RuntimeException('Unable to persist runtime environment at ['.$path.'].');
+        }
         if ($protect) {
             @chmod($path, 0660);
         }

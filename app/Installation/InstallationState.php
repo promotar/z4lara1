@@ -3,6 +3,7 @@
 namespace App\Installation;
 
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 
 final class InstallationState
 {
@@ -38,7 +39,10 @@ final class InstallationState
 
         if ($installed) {
             File::ensureDirectoryExists(dirname($this->completionPath()));
-            File::put($this->completionPath(), "installed\n", true);
+            $written = File::put($this->completionPath(), "installed\n", true);
+            if ($written === false) {
+                throw new RuntimeException('Unable to persist the installation completion marker.');
+            }
             @chmod($this->completionPath(), 0660);
 
             return;
@@ -107,7 +111,10 @@ final class InstallationState
                 : rtrim($content).PHP_EOL.$line.PHP_EOL;
         }
 
-        File::put($path, ltrim($content), true);
+        $written = File::put($path, ltrim($content), true);
+        if ($written === false) {
+            throw new RuntimeException('Unable to persist installation state at ['.$path.'].');
+        }
         if ($protect) {
             @chmod($path, 0660);
         }

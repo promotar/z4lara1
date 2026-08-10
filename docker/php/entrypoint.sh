@@ -270,6 +270,14 @@ if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" != "1" ]; then
     '
 fi
 
+# The first-run key file is created by this root entrypoint after the general
+# permission pass above. Hand it to Apache explicitly so the web installer can
+# persist database credentials and the completion marker in the named volume.
+if [ -f storage/app/platform/installation.env ]; then
+    chgrp www-data storage/app/platform/installation.env
+    chmod 0660 storage/app/platform/installation.env
+fi
+
 if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" = "1" ]; then
     echo "ERROR: The platform is marked as installed but APP_KEY is missing." >&2
     echo "Restore the original persistent APP_KEY; generating a replacement would invalidate encrypted data." >&2
