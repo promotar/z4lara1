@@ -5,6 +5,7 @@ namespace App\Installation;
 use App\Http\Controllers\Admin\MenuSettingsController;
 use App\Models\User;
 use App\Platform\Core\Services\PermissionManager;
+use App\Platform\Core\Services\RequiredCorePluginBootstrapper;
 use App\Platform\Core\Services\SettingsRepository;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -16,7 +17,10 @@ use Throwable;
 
 final class PlatformInstaller
 {
-    public function __construct(private readonly InstallationState $state) {}
+    public function __construct(
+        private readonly InstallationState $state,
+        private readonly RequiredCorePluginBootstrapper $requiredCorePlugins,
+    ) {}
 
     /** @param array<string, string> $database */
     public function testDatabase(array $database): void
@@ -69,6 +73,7 @@ final class PlatformInstaller
         Config::set('database.connections.mysql', $this->connection($database));
         DB::purge('mysql');
         Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        $this->requiredCorePlugins->bootstrap();
 
         User::query()->delete();
         $user = User::query()->forceCreate([

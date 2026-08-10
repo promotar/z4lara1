@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Installation\InstallationState;
 use App\Installation\PlatformInstaller;
+use App\Platform\Core\Services\RequiredCorePluginBootstrapper;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -58,8 +59,10 @@ final class PlatformInstallerUpdateTest extends TestCase
         Artisan::shouldReceive('call')->with('migrate:fresh', \Mockery::any())->never();
         Artisan::shouldReceive('call')->with('db:wipe', \Mockery::any())->never();
         Artisan::shouldReceive('call')->with('optimize:clear')->once()->andReturn(0);
+        $requiredCorePlugins = \Mockery::mock(RequiredCorePluginBootstrapper::class);
+        $requiredCorePlugins->shouldNotReceive('bootstrap');
 
-        (new PlatformInstaller($state))->update(
+        (new PlatformInstaller($state, $requiredCorePlugins))->update(
             [
                 'host' => 'database.internal',
                 'port' => '3306',
