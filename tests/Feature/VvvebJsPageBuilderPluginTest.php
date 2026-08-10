@@ -34,12 +34,14 @@ class VvvebJsPageBuilderPluginTest extends TestCase
         $this->assertFileDoesNotExist(base_path('modules/page-builder/src/PageBuilderServiceProvider.php'));
         $this->assertFileExists(base_path('modules/page-builder/src/VvvebJsServiceProvider.php'));
         $this->assertFileExists(base_path('modules/page-builder/resources/vvvebjs/LICENSE'));
-        $this->assertFileExists(base_path('modules/blog/resources/assets/js/vvveb-blog-template.js'));
-        $this->assertFileExists(base_path('modules/blog/resources/assets/js/blog-template-pagination.js'));
+        $controller = (string) file_get_contents(
+            base_path('modules/page-builder/src/Http/Controllers/Admin/PageController.php'),
+        );
         $this->assertStringContainsString(
             'plugin.page-builder.editor.extensions',
-            (string) file_get_contents(base_path('modules/blog/hooks.php')),
+            $controller,
         );
+        $this->assertStringContainsString('PAGE BUILDER EXTENSION POINT', $controller);
     }
 
     public function test_vvvebjs_document_normalizes_untrusted_builder_markup(): void

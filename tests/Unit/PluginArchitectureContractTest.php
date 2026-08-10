@@ -6,7 +6,6 @@ use App\Platform\Core\DTOs\PluginManifest;
 use App\Platform\Core\Services\PluginOwnershipValidator;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ZipArchive;
 
 class PluginArchitectureContractTest extends TestCase
 {
@@ -69,52 +68,30 @@ class PluginArchitectureContractTest extends TestCase
         );
     }
 
-    public function test_every_distributable_plugin_zip_declares_complete_purge_ownership(): void
+    public function test_core_repository_contains_only_required_plugin_sources_and_no_archives(): void
     {
         $root = dirname(__DIR__, 2);
-        $archives = glob($root.'/modules/*.zip') ?: [];
+        $moduleDirectories = array_values(array_filter(
+            glob($root.'/modules/*', GLOB_ONLYDIR) ?: [],
+            fn (string $path): bool => is_file($path.'/module.json'),
+        ));
+        $moduleSlugs = array_map('basename', $moduleDirectories);
+        sort($moduleSlugs);
 
-        self::assertNotEmpty($archives);
+        self::assertSame(['admin-theme', 'page-builder'], $moduleSlugs);
 
-        foreach ($archives as $archive) {
-            $temporary = sys_get_temp_dir().'/ainpa-plugin-contract-'.bin2hex(random_bytes(8));
-            mkdir($temporary, 0777, true);
+        $archives = [];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root.'/modules', \FilesystemIterator::SKIP_DOTS),
+        );
 
-            try {
-                $zip = new ZipArchive;
-                self::assertTrue($zip->open($archive) === true, $archive);
-                self::assertTrue($zip->extractTo($temporary), $archive);
-                $zip->close();
-
-                $manifests = [];
-                $iterator = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($temporary, \FilesystemIterator::SKIP_DOTS),
-                );
-
-                foreach ($iterator as $file) {
-                    if ($file->isFile() && $file->getFilename() === 'module.json') {
-                        $manifests[] = $file->getPathname();
-                    }
-                }
-
-                self::assertCount(1, $manifests, $archive);
-
-                $manifest = json_decode((string) file_get_contents($manifests[0]), true);
-                self::assertIsArray($manifest, $archive);
-
-                foreach (['tables', 'settings', 'storage_paths', 'records', 'columns', 'operation_target_prefixes'] as $key) {
-                    self::assertIsArray(data_get($manifest, 'uninstall.'.$key), $archive.': '.$key);
-                }
-                self::assertArrayNotHasKey('script', $manifest['uninstall'], $archive);
-
-                (new PluginOwnershipValidator)->validate(
-                    dirname($manifests[0]),
-                    PluginManifest::fromArray($manifest, $manifests[0]),
-                );
-            } finally {
-                $this->removeDirectory($temporary);
+        foreach ($iterator as $file) {
+            if ($file->isFile() && strtolower($file->getExtension()) === 'zip') {
+                $archives[] = $file->getPathname();
             }
         }
+
+        self::assertSame([], $archives, 'Plugin ZIP archives must be distributed separately from core.');
     }
 
     public function test_plugin_providers_do_not_register_routes_outside_the_core_loader(): void
@@ -159,7 +136,7 @@ class PluginArchitectureContractTest extends TestCase
         }
     }
 
-    public function test_uninstall_contract_purges_runtime_state_but_retains_distributable_archives(): void
+    public function test_uninstall_contract_purges_runtime_state_without_managing_external_archives(): void
     {
         $root = dirname(__DIR__, 2);
         $flow = (string) file_get_contents($root.'/app/Platform/Core/Plugins/Uninstall/PluginUninstallFlow.php');
@@ -236,21 +213,4 @@ class PluginArchitectureContractTest extends TestCase
         return $files;
     }
 
-    private function removeDirectory(string $path): void
-    {
-        if (! is_dir($path)) {
-            return;
-        }
-
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST,
-        );
-
-        foreach ($iterator as $item) {
-            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
-        }
-
-        rmdir($path);
-    }
 }

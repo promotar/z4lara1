@@ -199,7 +199,8 @@ class PageController extends Controller
          *
          * The descriptor is normalized below, its config is exposed at
          * window.ArtInpaVvvebConfig.extensions[id], and its assets are loaded only while that
-         * plugin's hooks are active. See modules/blog/hooks.php for a complete implementation.
+         * plugin's hooks are active. Optional plugin packages implement this contract from their
+         * own hooks file and are never bundled into the platform core repository or image.
          */
         $extensions = $this->editorExtensions(
             $hooks->applyFilters('plugin.page-builder.editor.extensions', [], $record),

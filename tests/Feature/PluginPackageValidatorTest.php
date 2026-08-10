@@ -149,46 +149,40 @@ class PluginPackageValidatorTest extends TestCase
         }
     }
 
-    public function test_every_plugin_archive_is_accepted_or_rejected_with_an_actionable_reason(): void
+    public function test_uploaded_plugin_archive_is_validated_without_bundling_it_in_core(): void
     {
-        $archives = glob(base_path('modules/*.zip')) ?: [];
-        $canonicalArchives = collect(File::directories(base_path('modules')))
-            ->filter(fn (string $path): bool => File::isFile($path.'/module.json'))
-            ->map(fn (string $path): string => base_path('modules/'.basename($path).'.zip'))
-            ->filter(fn (string $path): bool => File::isFile($path))
-            ->count();
-        $accepted = 0;
-        $rejected = 0;
+        $archivePath = storage_path('framework/testing/permission-contract-test.zip');
+        $extractPath = storage_path('framework/testing/plugin-zip-'.bin2hex(random_bytes(6)));
+        File::delete($archivePath);
+        File::deleteDirectory($extractPath);
+        File::ensureDirectoryExists($extractPath);
 
-        $this->assertNotEmpty($archives);
+        $archive = new ZipArchive;
+        $this->assertTrue($archive->open($archivePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true);
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($this->packagePath, \FilesystemIterator::SKIP_DOTS),
+        );
 
-        foreach ($archives as $archivePath) {
-            $extractPath = storage_path('framework/testing/plugin-zip-'.bin2hex(random_bytes(6)));
-            File::ensureDirectoryExists($extractPath);
-
-            try {
-                try {
-                    $method = new ReflectionMethod(PluginController::class, 'extractAndValidateZip');
-                    $pluginRoot = $method->invoke(
-                        app(PluginController::class),
-                        $archivePath,
-                        $extractPath,
-                    );
-                    $manifest = app(PluginPackageValidator::class)->validate($pluginRoot);
-                    $accepted++;
-                    $this->assertNotSame('', $manifest->slug);
-                } catch (\Throwable $exception) {
-                    $rejected++;
-                    $this->assertGreaterThan(10, strlen(trim($exception->getMessage())), $archivePath);
-                }
-            } finally {
-                File::deleteDirectory($extractPath);
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $relativePath = substr($file->getPathname(), strlen($this->packagePath) + 1);
+                $archive->addFile($file->getPathname(), 'permission-contract-test/'.$relativePath);
             }
         }
 
-        $this->assertGreaterThanOrEqual($canonicalArchives, $accepted);
-        $this->assertSame(count($archives), $accepted + $rejected);
-        $this->assertSame(0, Plugin::query()->count());
+        $archive->close();
+
+        try {
+            $method = new ReflectionMethod(PluginController::class, 'extractAndValidateZip');
+            $pluginRoot = $method->invoke(app(PluginController::class), $archivePath, $extractPath);
+            $manifest = app(PluginPackageValidator::class)->validate($pluginRoot);
+
+            $this->assertSame('permission-contract-test', $manifest->slug);
+            $this->assertSame(0, Plugin::query()->count());
+        } finally {
+            File::delete($archivePath);
+            File::deleteDirectory($extractPath);
+        }
     }
 
     public function test_archive_with_multiple_manifests_is_rejected_before_install(): void

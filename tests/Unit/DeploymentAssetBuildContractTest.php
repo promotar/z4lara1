@@ -94,6 +94,11 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertMatchesRegularExpression('/^public\/build$/m', $dockerignore);
         self::assertMatchesRegularExpression('/^public\/hot$/m', $dockerignore);
         self::assertMatchesRegularExpression('/^storage\/app$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^modules\/\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^!modules\/admin-theme\/\*\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^!modules\/page-builder\/\*\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^modules\/\*\*\/\*\.zip$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^public\/platform\/plugins\/\*$/m', $dockerignore);
     }
 
     public function test_runtime_never_redirects_the_public_root_to_public_html(): void
