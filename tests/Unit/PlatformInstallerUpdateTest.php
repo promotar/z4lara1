@@ -69,7 +69,7 @@ final class PlatformInstallerUpdateTest extends TestCase
             ],
             [
                 'app_url' => 'https://art.example.com',
-                'trusted_proxies' => '172.18.0.0/24',
+                'trusted_proxies' => '198.51.100.0/24',
             ],
         );
 
@@ -78,6 +78,6 @@ final class PlatformInstallerUpdateTest extends TestCase
         $this->assertStringContainsString('APP_NAME="Existing platform"', File::get($this->directory.'/.env'));
         $this->assertStringContainsString('DB_DATABASE="existing_platform"', File::get($this->directory.'/.env'));
         $this->assertStringContainsString('APP_URL="https://art.example.com"', File::get($this->directory.'/.env'));
-        $this->assertStringContainsString('TRUSTED_PROXIES="172.18.0.0/24"', File::get($this->directory.'/.env'));
+        $this->assertStringContainsString('TRUSTED_PROXIES="198.51.100.0/24"', File::get($this->directory.'/.env'));
     }
 }

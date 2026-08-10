@@ -4,6 +4,26 @@ set -eu
 cd /var/www/html
 umask 0002
 
+# Runtime-installed modules and their published assets live on persistent
+# volumes in production. Populate a new volume from the immutable image while
+# preserving every existing entry during restarts and image upgrades.
+seed_missing_entries() {
+    source_directory="$1"
+    target_directory="$2"
+
+    [ -d "$source_directory" ] || return 0
+    mkdir -p "$target_directory"
+
+    find "$source_directory" -mindepth 1 -maxdepth 1 -print | while IFS= read -r source_entry; do
+        entry_name="$(basename "$source_entry")"
+        target_entry="$target_directory/$entry_name"
+
+        if [ ! -e "$target_entry" ] && [ ! -L "$target_entry" ]; then
+            cp -a "$source_entry" "$target_entry"
+        fi
+    done
+}
+
 mkdir -p \
     modules \
     public/platform/plugins \
@@ -32,6 +52,9 @@ mkdir -p \
     storage/framework/views \
     storage/logs \
     bootstrap/cache
+
+seed_missing_entries /opt/art-inpa/modules modules
+seed_missing_entries /opt/art-inpa/public/platform public/platform
 
 # Public media URLs use /storage/...; source mounts and fresh images do not
 # contain Laravel's ignored public/storage symlink, so restore it at runtime.

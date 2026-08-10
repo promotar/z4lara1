@@ -1,24 +1,27 @@
 # Setup Guide
 
-## Fresh Docker Installation
+## Fresh Coolify Docker Compose Installation
 
 A fresh checkout must not contain `.env`, an application key, database
 credentials, or an installed-state flag. Build and start it directly:
 
 ```bash
 git clone https://github.com/promotar/z4lara1.git
-cd art-inpa
+cd z4lara1
 docker compose up -d --build
 ```
 
-Open `http://127.0.0.1:8088`. The application redirects to the installation
-wizard. The wizard creates the permanent `APP_KEY`, tests the supplied MySQL
-connection, runs a destructive `migrate:fresh` only after explicit confirmation,
-and creates the super administrator.
+In Coolify, attach the public domain to service `app` on port `80`, then open
+that domain. The application redirects to the installation wizard. The wizard
+creates the permanent `APP_KEY`, tests the supplied MySQL connection, runs a
+destructive `migrate:fresh` only after explicit confirmation, and creates the
+super administrator.
 
 Do not copy `.env.example` for a production installation. Installer-owned
 secrets and state are written to the persistent `art-inpa-storage` Docker
-volume, under `storage/app/platform/installation.env`.
+volume, under `storage/app/platform/installation.env`. Installed plugins and
+their published assets are preserved by the `art-inpa-modules` and
+`art-inpa-platform-assets` volumes.
 
 The database must already exist and be reachable from the app container. Use a
 remote hostname/IP or `host.docker.internal` for a database exposed by the
@@ -26,7 +29,7 @@ Docker host.
 
 ## Updating An Installed Container
 
-Keep the existing Compose project and its `art-inpa-storage` volume:
+Keep the existing Compose application and all three named volumes:
 
 ```bash
 git pull --ff-only
@@ -38,7 +41,7 @@ non-destructive `php artisan migrate --force`. It preserves the original
 `APP_KEY`, database, users, and settings, and does not reopen the installer.
 
 Never use `docker compose down -v` during an update: `-v` deletes the persistent
-installer state and uploaded storage.
+installer state, uploads, installed plugins, and their published assets.
 
 ## Development Environment
 
