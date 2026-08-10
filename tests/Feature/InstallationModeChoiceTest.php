@@ -76,6 +76,24 @@ final class InstallationModeChoiceTest extends TestCase
             ->assertDontSee('I understand and authorize deleting all existing database tables');
     }
 
+    public function test_forwarded_https_origin_is_prefilled_before_app_url_exists(): void
+    {
+        $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->withHeaders([
+                'Host' => 'internal.test',
+                'X-Forwarded-Host' => 'art.example.com',
+                'X-Forwarded-Proto' => 'https',
+                'X-Forwarded-Port' => '443',
+            ])
+            ->post('http://internal.test/install/mode', ['mode' => 'fresh'])
+            ->assertRedirect('/install/platform')
+            ->assertSessionHas('installation.runtime.app_url', 'https://art.example.com');
+
+        $this->get(route('install.platform'))
+            ->assertOk()
+            ->assertSee('value="https://art.example.com"', false);
+    }
+
     public function test_fresh_wizard_cannot_be_opened_before_selecting_fresh_installation(): void
     {
         $this->get(route('install.platform'))

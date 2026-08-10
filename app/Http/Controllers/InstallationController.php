@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Installation\InstallationState;
 use App\Installation\PlatformInstaller;
+use App\Installation\ProxyConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -12,7 +13,10 @@ use Throwable;
 
 final class InstallationController extends Controller
 {
-    public function __construct(private readonly InstallationState $state) {}
+    public function __construct(
+        private readonly InstallationState $state,
+        private readonly ProxyConfiguration $proxy,
+    ) {}
 
     public function index(Request $request): View|RedirectResponse
     {
@@ -22,7 +26,11 @@ final class InstallationController extends Controller
 
         $request->session()->forget('installation');
 
-        return view('installation.wizard', ['step' => 0, 'mode' => null]);
+        return view('installation.wizard', [
+            'step' => 0,
+            'mode' => null,
+            'domainDefault' => $this->proxy->publicUrl($request),
+        ]);
     }
 
     public function chooseMode(Request $request): RedirectResponse
@@ -37,6 +45,10 @@ final class InstallationController extends Controller
 
         $request->session()->forget('installation');
         $request->session()->put('installation.mode', $validated['mode']);
+        $request->session()->put('installation.runtime', [
+            'app_url' => $this->proxy->publicUrl($request),
+            'trusted_proxies' => $this->proxy->trustedProxies($request),
+        ]);
 
         return redirect()->route($validated['mode'] === 'fresh' ? 'install.platform' : 'install.database');
     }
@@ -51,7 +63,14 @@ final class InstallationController extends Controller
             return redirect()->route('install.index');
         }
 
-        return view('installation.wizard', ['step' => 1, 'mode' => 'fresh']);
+        return view('installation.wizard', [
+            'step' => 1,
+            'mode' => 'fresh',
+            'domainDefault' => (string) $request->session()->get(
+                'installation.runtime.app_url',
+                $this->proxy->publicUrl($request),
+            ),
+        ]);
     }
 
     public function storePlatform(Request $request): RedirectResponse
@@ -65,7 +84,14 @@ final class InstallationController extends Controller
             'domain' => ['required', 'url', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:4096'],
         ]);
-        $request->session()->put('installation.platform', ['name' => $validated['name'], 'domain' => $validated['domain']]);
+        $request->session()->put('installation.platform', [
+            'name' => $validated['name'],
+            'domain' => rtrim($validated['domain'], '/'),
+            'trusted_proxies' => (string) $request->session()->get(
+                'installation.runtime.trusted_proxies',
+                $this->proxy->trustedProxies($request),
+            ),
+        ]);
         if ($request->hasFile('logo')) {
             $request->session()->put('installation.logo', $request->file('logo')->store('installation', 'local'));
         }
@@ -125,7 +151,10 @@ final class InstallationController extends Controller
 
         try {
             if ($mode === 'update') {
-                $installer->update($database);
+                $installer->update(
+                    $database,
+                    (array) $request->session()->get('installation.runtime', []),
+                );
             } else {
                 $installer->testDatabase($database);
             }

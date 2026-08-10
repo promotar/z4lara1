@@ -50,6 +50,7 @@ final class PlatformInstaller
             'APP_KEY' => $appKey,
             'APP_DEBUG' => 'false',
             'APP_URL' => rtrim($platform['domain'], '/'),
+            'TRUSTED_PROXIES' => $platform['trusted_proxies'] ?? '127.0.0.1,::1',
             'DB_CONNECTION' => 'mysql',
             'DB_HOST' => $database['host'],
             'DB_PORT' => $database['port'],
@@ -95,19 +96,29 @@ final class PlatformInstaller
         Artisan::call('optimize:clear');
     }
 
-    /** @param array<string, string> $database */
-    public function update(array $database): void
+    /**
+     * @param  array<string, string>  $database
+     * @param  array<string, string>  $runtime
+     */
+    public function update(array $database, array $runtime = []): void
     {
         $this->testDatabase($database);
 
-        $this->state->write([
+        $environment = [
             'DB_CONNECTION' => 'mysql',
             'DB_HOST' => $database['host'],
             'DB_PORT' => $database['port'],
             'DB_DATABASE' => $database['database'],
             'DB_USERNAME' => $database['username'],
             'DB_PASSWORD' => $database['password'],
-        ]);
+        ];
+        if (filter_var($runtime['app_url'] ?? null, FILTER_VALIDATE_URL)) {
+            $environment['APP_URL'] = rtrim($runtime['app_url'], '/');
+        }
+        if (trim($runtime['trusted_proxies'] ?? '') !== '') {
+            $environment['TRUSTED_PROXIES'] = trim($runtime['trusted_proxies']);
+        }
+        $this->state->write($environment);
 
         Config::set('database.default', 'mysql');
         Config::set('database.connections.mysql', $this->connection($database));

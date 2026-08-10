@@ -63,7 +63,7 @@
                 <label class="installer-label" for="name">Platform name</label>
                 <input class="installer-input" id="name" name="name" value="{{ old('name') }}" required>
                 <label class="installer-label" for="domain">Domain</label>
-                <input class="installer-input" id="domain" name="domain" type="url" placeholder="https://example.com" value="{{ old('domain') }}" required>
+                <input class="installer-input" id="domain" name="domain" type="url" placeholder="https://example.com" value="{{ old('domain', $domainDefault ?? '') }}" required>
                 <label class="installer-label" for="logo">Logo</label>
                 <input class="installer-input" id="logo" name="logo" type="file" accept=".png,.jpg,.jpeg,.webp">
                 <button class="installer-button" type="submit">Continue</button>

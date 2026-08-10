@@ -59,17 +59,25 @@ final class PlatformInstallerUpdateTest extends TestCase
         Artisan::shouldReceive('call')->with('db:wipe', \Mockery::any())->never();
         Artisan::shouldReceive('call')->with('optimize:clear')->once()->andReturn(0);
 
-        (new PlatformInstaller($state))->update([
-            'host' => 'database.internal',
-            'port' => '3306',
-            'database' => 'existing_platform',
-            'username' => 'platform_user',
-            'password' => 'secret-not-logged',
-        ]);
+        (new PlatformInstaller($state))->update(
+            [
+                'host' => 'database.internal',
+                'port' => '3306',
+                'database' => 'existing_platform',
+                'username' => 'platform_user',
+                'password' => 'secret-not-logged',
+            ],
+            [
+                'app_url' => 'https://art.example.com',
+                'trusted_proxies' => '172.18.0.0/24',
+            ],
+        );
 
         $this->assertTrue($state->installed());
         $this->assertFileExists($this->directory.'/installation.complete');
         $this->assertStringContainsString('APP_NAME="Existing platform"', File::get($this->directory.'/.env'));
         $this->assertStringContainsString('DB_DATABASE="existing_platform"', File::get($this->directory.'/.env'));
+        $this->assertStringContainsString('APP_URL="https://art.example.com"', File::get($this->directory.'/.env'));
+        $this->assertStringContainsString('TRUSTED_PROXIES="172.18.0.0/24"', File::get($this->directory.'/.env'));
     }
 }

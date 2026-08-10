@@ -14,6 +14,11 @@ final class RuntimeEnvironment
         return dirname(self::path()).'/installation.complete';
     }
 
+    public static function installed(): bool
+    {
+        return self::installedFlag() === '1';
+    }
+
     public static function load(): void
     {
         self::ensureRuntimeDirectories();

@@ -65,6 +65,18 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertStringNotContainsString('apt-get install', $entrypoint);
     }
 
+    public function test_first_run_environment_does_not_hard_code_an_http_origin_or_proxy(): void
+    {
+        $environment = $this->projectFile('.env.example');
+        $bootstrap = $this->projectFile('bootstrap/app.php');
+
+        self::assertMatchesRegularExpression('/^APP_URL=$/m', $environment);
+        self::assertMatchesRegularExpression('/^TRUSTED_PROXIES=$/m', $environment);
+        self::assertStringContainsString("\$trustedProxies = '*'", $bootstrap);
+        self::assertStringContainsString("\$trustedProxies = '127.0.0.1,::1'", $bootstrap);
+        self::assertStringNotContainsString("URL::forceScheme('https')", $bootstrap);
+    }
+
     public function test_local_generated_assets_cannot_leak_into_the_image_build_context(): void
     {
         $dockerignore = $this->projectFile('.dockerignore');
