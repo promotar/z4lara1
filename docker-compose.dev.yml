@@ -1,3 +1,5 @@
+name: art-inpa
+
 services:
   app:
     env_file:
@@ -6,9 +8,13 @@ services:
       ART_INPA_DEVELOPMENT: "1"
       ART_INPA_HOST_UID: "${ART_INPA_HOST_UID:-1000}"
       ART_INPA_HOST_GID: "${ART_INPA_HOST_GID:-1000}"
+    ports:
+      - "127.0.0.1:${ART_INPA_HTTP_PORT:-8088}:80"
     volumes:
       - ./:/var/www/html
       - ./storage:/var/www/html/storage
+      - ./modules:/var/www/html/modules
+      - ./public/platform:/var/www/html/public/platform
       - art-inpa-dev-vendor:/var/www/html/vendor
       - art-inpa-dev-build:/var/www/html/public/build
 

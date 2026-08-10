@@ -54,7 +54,10 @@ COPY docker/php/entrypoint.sh /usr/local/bin/art-inpa-entrypoint
 COPY . /var/www/html
 COPY --from=vite-assets /build/public/build /opt/art-inpa/public/build
 
-RUN rm -f bootstrap/cache/*.php \
+RUN mkdir -p /opt/art-inpa/modules /opt/art-inpa/public/platform \
+    && cp -a modules/. /opt/art-inpa/modules/ \
+    && cp -a public/platform/. /opt/art-inpa/public/platform/ \
+    && rm -f bootstrap/cache/*.php \
     && composer install \
         --no-dev \
         --no-interaction \

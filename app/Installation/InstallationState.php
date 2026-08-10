@@ -3,28 +3,52 @@
 namespace App\Installation;
 
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 
 final class InstallationState
 {
     public function __construct(
         private readonly ?string $runtimePath = null,
         private readonly ?string $environmentPath = null,
+        private readonly ?string $completionPath = null,
     ) {}
 
     public function installed(): bool
     {
-        $active = $this->value('INSTAAL_IS_ACTIVE', '');
+        if (File::exists($this->completionPath())) {
+            return true;
+        }
 
-        return ($active !== '' ? $active : $this->value('INSTAAL_IS_ATIVE', '0')) === '1';
+        foreach (['INSTALLATION_COMPLETE', 'INSTAAL_IS_ACTIVE', 'INSTAAL_IS_ATIVE'] as $key) {
+            if ($this->value($key, '0') === '1') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function setInstalled(bool $installed): void
     {
         $value = $installed ? '1' : '0';
         $this->write([
+            'INSTALLATION_COMPLETE' => $value,
             'INSTAAL_IS_ACTIVE' => $value,
             'INSTAAL_IS_ATIVE' => $value,
         ]);
+
+        if ($installed) {
+            File::ensureDirectoryExists(dirname($this->completionPath()));
+            $written = File::put($this->completionPath(), "installed\n", true);
+            if ($written === false) {
+                throw new RuntimeException('Unable to persist the installation completion marker.');
+            }
+            @chmod($this->completionPath(), 0660);
+
+            return;
+        }
+
+        File::delete($this->completionPath());
     }
 
     /** @param array<string, string> $values */
@@ -63,6 +87,11 @@ final class InstallationState
         return $this->environmentPath ?? base_path('.env');
     }
 
+    private function completionPath(): string
+    {
+        return $this->completionPath ?? dirname($this->runtimePath()).'/installation.complete';
+    }
+
     private function quote(string $value): string
     {
         return '"'.str_replace(['\\', '"', "\n", "\r"], ['\\\\', '\\"', '', ''], $value).'"';
@@ -82,7 +111,10 @@ final class InstallationState
                 : rtrim($content).PHP_EOL.$line.PHP_EOL;
         }
 
-        File::put($path, ltrim($content), true);
+        $written = File::put($path, ltrim($content), true);
+        if ($written === false) {
+            throw new RuntimeException('Unable to persist installation state at ['.$path.'].');
+        }
         if ($protect) {
             @chmod($path, 0660);
         }

@@ -37,6 +37,8 @@ class DeploymentAssetBuildContractTest extends TestCase
             'COPY --from=vite-assets /build/public/build /opt/art-inpa/public/build',
             $dockerfile,
         );
+        self::assertStringContainsString('cp -a modules/. /opt/art-inpa/modules/', $dockerfile);
+        self::assertStringContainsString('cp -a public/platform/. /opt/art-inpa/public/platform/', $dockerfile);
         self::assertStringNotContainsString('php-fpm', $dockerfile);
     }
 
@@ -46,13 +48,23 @@ class DeploymentAssetBuildContractTest extends TestCase
 
         self::assertStringContainsString('/opt/art-inpa/public/build/manifest.json', $entrypoint);
         self::assertStringContainsString('cp -R /opt/art-inpa/public/build/. public/build/', $entrypoint);
+        self::assertStringContainsString('seed_missing_entries /opt/art-inpa/modules modules', $entrypoint);
+        self::assertStringContainsString('seed_missing_entries /opt/art-inpa/public/platform public/platform', $entrypoint);
         self::assertStringContainsString('The deployment image is incomplete.', $entrypoint);
         self::assertStringContainsString('if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" != "1" ]; then', $entrypoint);
         self::assertStringContainsString('base64_encode(random_bytes(32))', $entrypoint);
         self::assertStringContainsString('export APP_KEY', $entrypoint);
         self::assertStringContainsString('file_put_contents($path, ltrim($content), LOCK_EX)', $entrypoint);
+        self::assertStringContainsString('chgrp www-data storage/app/platform/installation.env', $entrypoint);
+        self::assertStringContainsString('chmod 0660 storage/app/platform/installation.env', $entrypoint);
+        self::assertGreaterThan(
+            strpos($entrypoint, 'base64_encode(random_bytes(32))'),
+            strpos($entrypoint, 'chgrp www-data storage/app/platform/installation.env'),
+        );
         self::assertStringContainsString('INSTAAL_IS_ACTIVE', $entrypoint);
         self::assertStringContainsString('INSTAAL_IS_ATIVE', $entrypoint);
+        self::assertStringContainsString('INSTALLATION_COMPLETE', $entrypoint);
+        self::assertStringContainsString('storage/app/platform/installation.complete', $entrypoint);
         self::assertStringContainsString('storage/app/platform/installation.env', $entrypoint);
         self::assertStringContainsString('@chmod($path, 0660)', $entrypoint);
         self::assertStringContainsString('The platform is marked as installed but APP_KEY is missing.', $entrypoint);
@@ -63,6 +75,18 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertStringNotContainsString('apt-get install', $entrypoint);
     }
 
+    public function test_first_run_environment_does_not_hard_code_an_http_origin_or_proxy(): void
+    {
+        $environment = $this->projectFile('.env.example');
+        $bootstrap = $this->projectFile('bootstrap/app.php');
+
+        self::assertMatchesRegularExpression('/^APP_URL=$/m', $environment);
+        self::assertMatchesRegularExpression('/^TRUSTED_PROXIES=$/m', $environment);
+        self::assertStringContainsString("\$trustedProxies = '*'", $bootstrap);
+        self::assertStringContainsString("\$trustedProxies = '127.0.0.1,::1'", $bootstrap);
+        self::assertStringNotContainsString("URL::forceScheme('https')", $bootstrap);
+    }
+
     public function test_local_generated_assets_cannot_leak_into_the_image_build_context(): void
     {
         $dockerignore = $this->projectFile('.dockerignore');
@@ -70,6 +94,11 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertMatchesRegularExpression('/^public\/build$/m', $dockerignore);
         self::assertMatchesRegularExpression('/^public\/hot$/m', $dockerignore);
         self::assertMatchesRegularExpression('/^storage\/app$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^modules\/\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^!modules\/admin-theme\/\*\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^!modules\/page-builder\/\*\*$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^modules\/\*\*\/\*\.zip$/m', $dockerignore);
+        self::assertMatchesRegularExpression('/^public\/platform\/plugins\/\*$/m', $dockerignore);
     }
 
     public function test_runtime_never_redirects_the_public_root_to_public_html(): void
@@ -105,7 +134,8 @@ class DeploymentAssetBuildContractTest extends TestCase
 
             self::assertMatchesRegularExpression('/^services:\R  app:\R/m', $compose, $path);
             self::assertStringContainsString('docker/php/Dockerfile', $compose, $path);
-            self::assertStringContainsString(':80"', $compose, $path);
+            self::assertStringContainsString("expose:\n      - \"80\"", $compose, $path);
+            self::assertStringNotContainsString("\n    ports:", $compose, $path);
             self::assertStringNotContainsString("\n  web:", $compose, $path);
             self::assertStringNotContainsString("\n  queue:", $compose, $path);
             self::assertStringNotContainsString("\n  scheduler:", $compose, $path);
@@ -115,7 +145,14 @@ class DeploymentAssetBuildContractTest extends TestCase
             self::assertStringNotContainsString('env_file:', $compose, $path);
             self::assertStringNotContainsString('./:/var/www/html', $compose, $path);
             self::assertStringContainsString('art-inpa-storage:/var/www/html/storage', $compose, $path);
+            self::assertStringContainsString('art-inpa-modules:/var/www/html/modules', $compose, $path);
+            self::assertStringContainsString('art-inpa-platform-assets:/var/www/html/public/platform', $compose, $path);
         }
+
+        $developmentCompose = $this->projectFile('docker-compose.dev.yml');
+        self::assertStringContainsString('127.0.0.1:${ART_INPA_HTTP_PORT:-8088}:80', $developmentCompose);
+        self::assertStringContainsString('./modules:/var/www/html/modules', $developmentCompose);
+        self::assertStringContainsString('./public/platform:/var/www/html/public/platform', $developmentCompose);
 
         self::assertSame('sync', $this->environmentValue('QUEUE_CONNECTION'));
     }

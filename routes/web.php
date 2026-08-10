@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Schema;
 
 Route::middleware('throttle:20,1')->prefix('install')->name('install.')->group(function (): void {
     Route::get('/', [InstallationController::class, 'index'])->name('index');
+    Route::post('/mode', [InstallationController::class, 'chooseMode'])->name('mode');
     Route::get('/platform', [InstallationController::class, 'platform'])->name('platform');
     Route::post('/platform', [InstallationController::class, 'storePlatform'])->name('platform.store');
     Route::get('/database', [InstallationController::class, 'database'])->name('database');

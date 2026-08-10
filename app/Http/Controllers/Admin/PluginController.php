@@ -69,7 +69,21 @@ class PluginController extends Controller
                 $existing = $plugins->findBySlug($slug);
 
                 if (! $existing) {
-                    throw new RuntimeException('A module directory with this slug already exists, but no plugin registry record was found. Register it or remove the directory before uploading an update.');
+                    $plugin = $this->installOverUnregisteredDirectory(
+                        $request,
+                        $plugins,
+                        $manifest,
+                        $pluginRoot,
+                        $installedPath,
+                    );
+                    $this->checkpointStep($request, 'plugin.upload.install', $slug, 'bundled_module_replaced', [
+                        'installed_path' => $installedPath,
+                        'status' => $plugin->status,
+                    ]);
+
+                    return redirect()
+                        ->route('admin.plugins.index')
+                        ->with('status', 'Plugin installed successfully through PluginManager.');
                 }
 
                 $this->assertSamePluginIdentity($existing, $manifest);
@@ -327,9 +341,79 @@ class PluginController extends Controller
         }
     }
 
+    private function assertSameManifestIdentity(PluginManifest $existing, PluginManifest $uploaded): void
+    {
+        if ($this->normalizeIdentity($existing->name) !== $this->normalizeIdentity($uploaded->name)) {
+            throw new RuntimeException('The uploaded plugin has the same slug but a different plugin name. The existing module directory was preserved.');
+        }
+
+        if ($this->normalizeIdentity($existing->author) !== $this->normalizeIdentity($uploaded->author)) {
+            throw new RuntimeException('The uploaded plugin has the same slug but a different owner/author. The existing module directory was preserved.');
+        }
+    }
+
     private function normalizeIdentity(?string $value): string
     {
         return mb_strtolower(trim((string) $value));
+    }
+
+    private function installOverUnregisteredDirectory(
+        Request $request,
+        PluginManager $plugins,
+        PluginManifest $uploadedManifest,
+        string $uploadedRoot,
+        string $installedPath,
+    ): Plugin {
+        try {
+            $bundledManifest = $plugins->validatePackage($installedPath);
+        } catch (\Throwable $exception) {
+            throw new RuntimeException(
+                'The unregistered module directory is not a valid matching package and was preserved: '.$exception->getMessage(),
+                previous: $exception,
+            );
+        }
+
+        $this->assertSameManifestIdentity($bundledManifest, $uploadedManifest);
+
+        $backupPath = storage_path(
+            'app/plugin_updates/backups/'.$uploadedManifest->slug.'-unregistered-'.bin2hex(random_bytes(8)),
+        );
+        $uploadedFilesMoved = false;
+
+        File::ensureDirectoryExists(dirname($backupPath));
+
+        try {
+            $this->relocateDirectory($installedPath, $backupPath);
+            $this->checkpointStep($request, 'plugin.upload.install', $uploadedManifest->slug, 'unregistered_module_backed_up', [
+                'backup_path' => $backupPath,
+            ]);
+
+            $this->relocateDirectory($uploadedRoot, $installedPath);
+            $uploadedFilesMoved = true;
+
+            $plugin = $plugins->install($installedPath);
+            File::deleteDirectory($backupPath);
+
+            return $plugin;
+        } catch (\Throwable $exception) {
+            if ($uploadedFilesMoved && File::isDirectory($installedPath)) {
+                File::deleteDirectory($installedPath);
+            }
+
+            if (File::isDirectory($backupPath) && ! File::exists($installedPath)) {
+                try {
+                    $this->relocateDirectory($backupPath, $installedPath);
+                } catch (\Throwable $restoreException) {
+                    throw new RuntimeException(
+                        'Plugin installation failed and the unregistered module backup could not be restored: '
+                        .$restoreException->getMessage().'. Original install error: '.$exception->getMessage(),
+                        previous: $exception,
+                    );
+                }
+            }
+
+            throw $exception;
+        }
     }
 
     private function storePendingUpdate(

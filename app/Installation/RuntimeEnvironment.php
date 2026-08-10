@@ -2,13 +2,21 @@
 
 namespace App\Installation;
 
-use Illuminate\Support\Facades\File;
-
 final class RuntimeEnvironment
 {
     public static function path(): string
     {
         return dirname(__DIR__, 2).'/storage/app/platform/installation.env';
+    }
+
+    public static function completionPath(): string
+    {
+        return dirname(self::path()).'/installation.complete';
+    }
+
+    public static function installed(): bool
+    {
+        return self::installedFlag() === '1';
     }
 
     public static function load(): void
@@ -69,9 +77,17 @@ final class RuntimeEnvironment
 
     private static function installedFlag(): string
     {
-        $active = self::value('INSTAAL_IS_ACTIVE');
+        if (is_file(self::completionPath())) {
+            return '1';
+        }
 
-        return $active !== '' ? $active : self::value('INSTAAL_IS_ATIVE', '0');
+        foreach (['INSTALLATION_COMPLETE', 'INSTAAL_IS_ACTIVE', 'INSTAAL_IS_ATIVE'] as $key) {
+            if (self::value($key, '0') === '1') {
+                return '1';
+            }
+        }
+
+        return '0';
     }
 
     private static function value(string $key, string $default = ''): string
@@ -104,7 +120,10 @@ final class RuntimeEnvironment
             ? (string) preg_replace($pattern, $line, $content)
             : rtrim($content).PHP_EOL.$line.PHP_EOL;
 
-        file_put_contents($path, ltrim($content), LOCK_EX);
+        $written = file_put_contents($path, ltrim($content), LOCK_EX);
+        if ($written === false) {
+            throw new \RuntimeException('Unable to persist runtime environment at ['.$path.'].');
+        }
         if ($protect) {
             @chmod($path, 0660);
         }

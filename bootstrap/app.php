@@ -14,10 +14,15 @@ use Illuminate\Http\Request;
 
 RuntimeEnvironment::load();
 
-$trustedProxies = array_values(array_filter(array_map(
-    'trim',
-    explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1')),
-)));
+$trustedProxies = trim((string) env('TRUSTED_PROXIES', ''));
+if (! RuntimeEnvironment::installed() && in_array($trustedProxies, ['', '127.0.0.1,::1'], true)) {
+    // Before the domain and proxy are known, Laravel trusts only the direct
+    // caller as the proxy. The installer persists a restricted proxy network
+    // after detecting the deployment topology from the forwarded request.
+    $trustedProxies = '*';
+} elseif ($trustedProxies === '') {
+    $trustedProxies = '127.0.0.1,::1';
+}
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

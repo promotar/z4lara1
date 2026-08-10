@@ -2,15 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Admin\PluginController;
 use App\Platform\Core\Models\Plugin;
 use App\Platform\Core\Services\PluginManager;
 use App\Platform\Core\Services\PluginManifestReader;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use ReflectionMethod;
+use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -213,6 +217,74 @@ class PluginInstallUninstallContractTest extends TestCase
         $this->assertTrue($slugRetry['already_absent']);
         $this->assertSame(1, DB::table('operation_logs')->where('target_slug', self::SLUG)->count());
         $this->assertFileExists($this->packagePath);
+    }
+
+    public function test_first_upload_replaces_a_matching_unregistered_bundled_module_safely(): void
+    {
+        $uploadedRoot = storage_path('framework/testing/permission-contract-upload');
+        File::deleteDirectory($uploadedRoot);
+        File::copyDirectory(base_path('tests/Fixtures/plugins/'.self::SLUG), $uploadedRoot);
+        File::put($this->modulePath.'/bundled-only.txt', 'old bundled copy');
+        File::put($uploadedRoot.'/uploaded-only.txt', 'uploaded package');
+
+        try {
+            $manager = app(PluginManager::class);
+            $uploadedManifest = $manager->validatePackage($uploadedRoot);
+            $method = new ReflectionMethod(PluginController::class, 'installOverUnregisteredDirectory');
+            $plugin = $method->invoke(
+                app(PluginController::class),
+                Request::create('/admin/plugins/install', 'POST'),
+                $manager,
+                $uploadedManifest,
+                $uploadedRoot,
+                $this->modulePath,
+            );
+
+            $this->assertSame(Plugin::STATUS_INSTALLED, $plugin->status);
+            $this->assertDatabaseHas('plugins', ['slug' => self::SLUG]);
+            $this->assertFileExists($this->modulePath.'/uploaded-only.txt');
+            $this->assertFileDoesNotExist($this->modulePath.'/bundled-only.txt');
+        } finally {
+            File::deleteDirectory($uploadedRoot);
+        }
+    }
+
+    public function test_first_upload_preserves_an_unregistered_directory_with_a_different_identity(): void
+    {
+        $uploadedRoot = storage_path('framework/testing/permission-contract-mismatch');
+        File::deleteDirectory($uploadedRoot);
+        File::copyDirectory(base_path('tests/Fixtures/plugins/'.self::SLUG), $uploadedRoot);
+        File::put($this->modulePath.'/preserve-me.txt', 'must remain');
+
+        $manifestPath = $this->modulePath.'/module.json';
+        $manifest = json_decode((string) File::get($manifestPath), true, 512, JSON_THROW_ON_ERROR);
+        $manifest['author'] = 'Different Owner';
+        File::put($manifestPath, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        try {
+            $manager = app(PluginManager::class);
+            $uploadedManifest = $manager->validatePackage($uploadedRoot);
+            $method = new ReflectionMethod(PluginController::class, 'installOverUnregisteredDirectory');
+
+            try {
+                $method->invoke(
+                    app(PluginController::class),
+                    Request::create('/admin/plugins/install', 'POST'),
+                    $manager,
+                    $uploadedManifest,
+                    $uploadedRoot,
+                    $this->modulePath,
+                );
+                $this->fail('A mismatched unregistered module directory must not be replaced.');
+            } catch (RuntimeException $exception) {
+                $this->assertStringContainsString('different owner/author', $exception->getMessage());
+            }
+
+            $this->assertDatabaseMissing('plugins', ['slug' => self::SLUG]);
+            $this->assertFileExists($this->modulePath.'/preserve-me.txt');
+        } finally {
+            File::deleteDirectory($uploadedRoot);
+        }
     }
 
     public function test_manifest_accepts_explicit_empty_ownership_but_rejects_a_missing_category(): void

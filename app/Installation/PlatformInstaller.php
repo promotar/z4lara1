@@ -5,6 +5,7 @@ namespace App\Installation;
 use App\Http\Controllers\Admin\MenuSettingsController;
 use App\Models\User;
 use App\Platform\Core\Services\PermissionManager;
+use App\Platform\Core\Services\RequiredCorePluginBootstrapper;
 use App\Platform\Core\Services\SettingsRepository;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -16,7 +17,10 @@ use Throwable;
 
 final class PlatformInstaller
 {
-    public function __construct(private readonly InstallationState $state) {}
+    public function __construct(
+        private readonly InstallationState $state,
+        private readonly RequiredCorePluginBootstrapper $requiredCorePlugins,
+    ) {}
 
     /** @param array<string, string> $database */
     public function testDatabase(array $database): void
@@ -32,9 +36,9 @@ final class PlatformInstaller
     }
 
     /**
-     * @param array<string, string> $platform
-     * @param array<string, string> $database
-     * @param array<string, string> $owner
+     * @param  array<string, string>  $platform
+     * @param  array<string, string>  $database
+     * @param  array<string, string>  $owner
      */
     public function install(array $platform, array $database, array $owner, ?UploadedFile $logo): void
     {
@@ -50,6 +54,7 @@ final class PlatformInstaller
             'APP_KEY' => $appKey,
             'APP_DEBUG' => 'false',
             'APP_URL' => rtrim($platform['domain'], '/'),
+            'TRUSTED_PROXIES' => $platform['trusted_proxies'] ?? '127.0.0.1,::1',
             'DB_CONNECTION' => 'mysql',
             'DB_HOST' => $database['host'],
             'DB_PORT' => $database['port'],
@@ -59,6 +64,7 @@ final class PlatformInstaller
             'SESSION_DRIVER' => 'file',
             'CACHE_STORE' => 'file',
             'QUEUE_CONNECTION' => 'sync',
+            'INSTALLATION_COMPLETE' => '0',
             'INSTAAL_IS_ACTIVE' => '0',
             'INSTAAL_IS_ATIVE' => '0',
         ]);
@@ -67,6 +73,7 @@ final class PlatformInstaller
         Config::set('database.connections.mysql', $this->connection($database));
         DB::purge('mysql');
         Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        $this->requiredCorePlugins->bootstrap();
 
         User::query()->delete();
         $user = User::query()->forceCreate([
@@ -89,6 +96,42 @@ final class PlatformInstaller
                 'admin_email' => $owner['email'],
             ],
         ], $files, [], [], $user->id, 'platform.installer');
+
+        $this->state->setInstalled(true);
+        Artisan::call('optimize:clear');
+    }
+
+    /**
+     * @param  array<string, string>  $database
+     * @param  array<string, string>  $runtime
+     */
+    public function update(array $database, array $runtime = []): void
+    {
+        $this->testDatabase($database);
+
+        $environment = [
+            'DB_CONNECTION' => 'mysql',
+            'DB_HOST' => $database['host'],
+            'DB_PORT' => $database['port'],
+            'DB_DATABASE' => $database['database'],
+            'DB_USERNAME' => $database['username'],
+            'DB_PASSWORD' => $database['password'],
+        ];
+        if (filter_var($runtime['app_url'] ?? null, FILTER_VALIDATE_URL)) {
+            $environment['APP_URL'] = rtrim($runtime['app_url'], '/');
+        }
+        if (trim($runtime['trusted_proxies'] ?? '') !== '') {
+            $environment['TRUSTED_PROXIES'] = trim($runtime['trusted_proxies']);
+        }
+        $this->state->write($environment);
+
+        Config::set('database.default', 'mysql');
+        Config::set('database.connections.mysql', $this->connection($database));
+        DB::purge('mysql');
+
+        // Updates are intentionally non-destructive: only pending migrations
+        // run, and existing platform records are never truncated or reseeded.
+        Artisan::call('migrate', ['--force' => true, '--no-interaction' => true]);
 
         $this->state->setInstalled(true);
         Artisan::call('optimize:clear');

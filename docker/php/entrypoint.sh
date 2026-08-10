@@ -4,6 +4,26 @@ set -eu
 cd /var/www/html
 umask 0002
 
+# Runtime-installed modules and their published assets live on persistent
+# volumes in production. Populate a new volume from the immutable image while
+# preserving every existing entry during restarts and image upgrades.
+seed_missing_entries() {
+    source_directory="$1"
+    target_directory="$2"
+
+    [ -d "$source_directory" ] || return 0
+    mkdir -p "$target_directory"
+
+    find "$source_directory" -mindepth 1 -maxdepth 1 -print | while IFS= read -r source_entry; do
+        entry_name="$(basename "$source_entry")"
+        target_entry="$target_directory/$entry_name"
+
+        if [ ! -e "$target_entry" ] && [ ! -L "$target_entry" ]; then
+            cp -a "$source_entry" "$target_entry"
+        fi
+    done
+}
+
 mkdir -p \
     modules \
     public/platform/plugins \
@@ -32,6 +52,9 @@ mkdir -p \
     storage/framework/views \
     storage/logs \
     bootstrap/cache
+
+seed_missing_entries /opt/art-inpa/modules modules
+seed_missing_entries /opt/art-inpa/public/platform public/platform
 
 # Public media URLs use /storage/...; source mounts and fresh images do not
 # contain Laravel's ignored public/storage symlink, so restore it at runtime.
@@ -183,16 +206,31 @@ runtime_value() {
 
 RUNTIME_INSTALLATION_FLAG=""
 if [ -r storage/app/platform/installation.env ]; then
-    RUNTIME_INSTALLATION_FLAG="$(runtime_value INSTAAL_IS_ACTIVE)"
-    if [ -z "$RUNTIME_INSTALLATION_FLAG" ]; then
-        RUNTIME_INSTALLATION_FLAG="$(runtime_value INSTAAL_IS_ATIVE)"
-    fi
+    for INSTALLATION_KEY in INSTALLATION_COMPLETE INSTAAL_IS_ACTIVE INSTAAL_IS_ATIVE; do
+        INSTALLATION_VALUE="$(runtime_value "$INSTALLATION_KEY")"
+        if [ "$INSTALLATION_VALUE" = "1" ]; then
+            RUNTIME_INSTALLATION_FLAG="1"
+            break
+        fi
+        if [ -n "$INSTALLATION_VALUE" ] && [ -z "$RUNTIME_INSTALLATION_FLAG" ]; then
+            RUNTIME_INSTALLATION_FLAG="0"
+        fi
+    done
+fi
+
+if [ -f storage/app/platform/installation.complete ]; then
+    RUNTIME_INSTALLATION_FLAG="1"
 fi
 
 # Persistent installer state is authoritative during image upgrades. Process
 # variables remain supported for installations managed by an external secrets
-# provider when no persistent flag exists.
-INSTALLATION_FLAG="${RUNTIME_INSTALLATION_FLAG:-${INSTAAL_IS_ACTIVE:-${INSTAAL_IS_ATIVE:-0}}}"
+# provider when no persistent flag exists. Any supported legacy flag set to 1
+# keeps an existing installation active during the canonical flag migration.
+ENVIRONMENT_INSTALLATION_FLAG="0"
+if [ "${INSTALLATION_COMPLETE:-0}" = "1" ] || [ "${INSTAAL_IS_ACTIVE:-0}" = "1" ] || [ "${INSTAAL_IS_ATIVE:-0}" = "1" ]; then
+    ENVIRONMENT_INSTALLATION_FLAG="1"
+fi
+INSTALLATION_FLAG="${RUNTIME_INSTALLATION_FLAG:-$ENVIRONMENT_INSTALLATION_FLAG}"
 
 if [ -z "${APP_KEY:-}" ] && [ -r storage/app/platform/installation.env ]; then
     APP_KEY="$(runtime_value APP_KEY)"
@@ -230,6 +268,14 @@ if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" != "1" ]; then
             $write($environment);
         }
     '
+fi
+
+# The first-run key file is created by this root entrypoint after the general
+# permission pass above. Hand it to Apache explicitly so the web installer can
+# persist database credentials and the completion marker in the named volume.
+if [ -f storage/app/platform/installation.env ]; then
+    chgrp www-data storage/app/platform/installation.env
+    chmod 0660 storage/app/platform/installation.env
 fi
 
 if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" = "1" ]; then
