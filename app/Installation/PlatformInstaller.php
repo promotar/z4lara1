@@ -32,9 +32,9 @@ final class PlatformInstaller
     }
 
     /**
-     * @param array<string, string> $platform
-     * @param array<string, string> $database
-     * @param array<string, string> $owner
+     * @param  array<string, string>  $platform
+     * @param  array<string, string>  $database
+     * @param  array<string, string>  $owner
      */
     public function install(array $platform, array $database, array $owner, ?UploadedFile $logo): void
     {
@@ -59,6 +59,7 @@ final class PlatformInstaller
             'SESSION_DRIVER' => 'file',
             'CACHE_STORE' => 'file',
             'QUEUE_CONNECTION' => 'sync',
+            'INSTALLATION_COMPLETE' => '0',
             'INSTAAL_IS_ACTIVE' => '0',
             'INSTAAL_IS_ATIVE' => '0',
         ]);
@@ -89,6 +90,32 @@ final class PlatformInstaller
                 'admin_email' => $owner['email'],
             ],
         ], $files, [], [], $user->id, 'platform.installer');
+
+        $this->state->setInstalled(true);
+        Artisan::call('optimize:clear');
+    }
+
+    /** @param array<string, string> $database */
+    public function update(array $database): void
+    {
+        $this->testDatabase($database);
+
+        $this->state->write([
+            'DB_CONNECTION' => 'mysql',
+            'DB_HOST' => $database['host'],
+            'DB_PORT' => $database['port'],
+            'DB_DATABASE' => $database['database'],
+            'DB_USERNAME' => $database['username'],
+            'DB_PASSWORD' => $database['password'],
+        ]);
+
+        Config::set('database.default', 'mysql');
+        Config::set('database.connections.mysql', $this->connection($database));
+        DB::purge('mysql');
+
+        // Updates are intentionally non-destructive: only pending migrations
+        // run, and existing platform records are never truncated or reseeded.
+        Artisan::call('migrate', ['--force' => true, '--no-interaction' => true]);
 
         $this->state->setInstalled(true);
         Artisan::call('optimize:clear');

@@ -183,16 +183,31 @@ runtime_value() {
 
 RUNTIME_INSTALLATION_FLAG=""
 if [ -r storage/app/platform/installation.env ]; then
-    RUNTIME_INSTALLATION_FLAG="$(runtime_value INSTAAL_IS_ACTIVE)"
-    if [ -z "$RUNTIME_INSTALLATION_FLAG" ]; then
-        RUNTIME_INSTALLATION_FLAG="$(runtime_value INSTAAL_IS_ATIVE)"
-    fi
+    for INSTALLATION_KEY in INSTALLATION_COMPLETE INSTAAL_IS_ACTIVE INSTAAL_IS_ATIVE; do
+        INSTALLATION_VALUE="$(runtime_value "$INSTALLATION_KEY")"
+        if [ "$INSTALLATION_VALUE" = "1" ]; then
+            RUNTIME_INSTALLATION_FLAG="1"
+            break
+        fi
+        if [ -n "$INSTALLATION_VALUE" ] && [ -z "$RUNTIME_INSTALLATION_FLAG" ]; then
+            RUNTIME_INSTALLATION_FLAG="0"
+        fi
+    done
+fi
+
+if [ -f storage/app/platform/installation.complete ]; then
+    RUNTIME_INSTALLATION_FLAG="1"
 fi
 
 # Persistent installer state is authoritative during image upgrades. Process
 # variables remain supported for installations managed by an external secrets
-# provider when no persistent flag exists.
-INSTALLATION_FLAG="${RUNTIME_INSTALLATION_FLAG:-${INSTAAL_IS_ACTIVE:-${INSTAAL_IS_ATIVE:-0}}}"
+# provider when no persistent flag exists. Any supported legacy flag set to 1
+# keeps an existing installation active during the canonical flag migration.
+ENVIRONMENT_INSTALLATION_FLAG="0"
+if [ "${INSTALLATION_COMPLETE:-0}" = "1" ] || [ "${INSTAAL_IS_ACTIVE:-0}" = "1" ] || [ "${INSTAAL_IS_ATIVE:-0}" = "1" ]; then
+    ENVIRONMENT_INSTALLATION_FLAG="1"
+fi
+INSTALLATION_FLAG="${RUNTIME_INSTALLATION_FLAG:-$ENVIRONMENT_INSTALLATION_FLAG}"
 
 if [ -z "${APP_KEY:-}" ] && [ -r storage/app/platform/installation.env ]; then
     APP_KEY="$(runtime_value APP_KEY)"

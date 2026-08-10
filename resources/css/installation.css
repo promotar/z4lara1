@@ -129,6 +129,11 @@
     font-size: 14px;
 }
 
+.installer-choice form {
+    display: flex;
+    flex: 1;
+}
+
 .installer-label {
     display: block;
     margin: 14px 0 6px;
@@ -157,8 +162,14 @@
 }
 
 .installer-warning,
-.installer-errors {
+.installer-errors,
+.installer-update-note {
     padding: 14px;
+    border-radius: 8px;
+}
+
+.installer-warning,
+.installer-errors {
     border: 1px solid #e7b4b4;
     background: #fff2f2;
     color: var(--installer-danger);
@@ -170,7 +181,13 @@
 
 .installer-errors {
     margin-bottom: 16px;
-    border-radius: 8px;
+}
+
+.installer-update-note {
+    margin: 20px 0 0;
+    border: 1px solid #b9d0fb;
+    background: #f1f6ff;
+    color: #194a9b;
 }
 
 .installer-check {

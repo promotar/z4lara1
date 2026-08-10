@@ -53,6 +53,8 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertStringContainsString('file_put_contents($path, ltrim($content), LOCK_EX)', $entrypoint);
         self::assertStringContainsString('INSTAAL_IS_ACTIVE', $entrypoint);
         self::assertStringContainsString('INSTAAL_IS_ATIVE', $entrypoint);
+        self::assertStringContainsString('INSTALLATION_COMPLETE', $entrypoint);
+        self::assertStringContainsString('storage/app/platform/installation.complete', $entrypoint);
         self::assertStringContainsString('storage/app/platform/installation.env', $entrypoint);
         self::assertStringContainsString('@chmod($path, 0660)', $entrypoint);
         self::assertStringContainsString('The platform is marked as installed but APP_KEY is missing.', $entrypoint);
