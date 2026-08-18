@@ -24,6 +24,18 @@ seed_missing_entries() {
     done
 }
 
+# Required plugins ship as part of the platform release. Their source must
+# follow the deployed image even when /modules is a persistent volume. Overlay
+# only these known core entries; runtime-installed plugins remain untouched.
+sync_required_entry() {
+    source_directory="$1"
+    target_directory="$2"
+
+    [ -d "$source_directory" ] || return 0
+    mkdir -p "$target_directory"
+    cp -a "$source_directory/." "$target_directory/"
+}
+
 mkdir -p \
     modules \
     public/platform/plugins \
@@ -55,6 +67,8 @@ mkdir -p \
 
 seed_missing_entries /opt/art-inpa/modules modules
 seed_missing_entries /opt/art-inpa/public/platform public/platform
+sync_required_entry /opt/art-inpa/modules/admin-theme modules/admin-theme
+sync_required_entry /opt/art-inpa/modules/page-builder modules/page-builder
 
 # Public media URLs use /storage/...; source mounts and fresh images do not
 # contain Laravel's ignored public/storage symlink, so restore it at runtime.

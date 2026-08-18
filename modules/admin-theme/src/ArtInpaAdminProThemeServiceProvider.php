@@ -25,7 +25,9 @@ class ArtInpaAdminProThemeServiceProvider extends ServiceProvider
         View::addNamespace('admin-theme', dirname(__DIR__).'/resources/views');
 
         View::composer(['layouts.app', 'components.page-builder-focus-layout'], function (): void {
-            $css = $this->stylesheet();
+            $css = $this->stylesheet('admin-theme.css');
+            $navigationCss = $this->stylesheet('admin-navigation.css');
+            $pageCss = $this->stylesheet('admin-pages.css');
 
             if ($css === null) {
                 return;
@@ -33,6 +35,16 @@ class ArtInpaAdminProThemeServiceProvider extends ServiceProvider
 
             view()->startPush('styles');
             echo '<style data-plugin-admin-style="admin-theme">'.PHP_EOL.$css.PHP_EOL.'</style>';
+            if ($navigationCss !== null) {
+                echo '<style data-plugin-admin-component="admin-navigation">'.PHP_EOL
+                    .$navigationCss
+                    .PHP_EOL.'</style>';
+            }
+            if ($pageCss !== null) {
+                echo '<style data-plugin-admin-component="admin-pages">'.PHP_EOL
+                    .$pageCss
+                    .PHP_EOL.'</style>';
+            }
             echo '<style data-plugin-admin-settings="admin-theme">'.PHP_EOL
                 .$this->app->make(ThemeSettings::class)->css()
                 .PHP_EOL.'</style>';
@@ -82,9 +94,9 @@ class ArtInpaAdminProThemeServiceProvider extends ServiceProvider
         }
     }
 
-    private function stylesheet(): ?string
+    private function stylesheet(string $filename): ?string
     {
-        $path = __DIR__.'/../resources/css/admin-theme.css';
+        $path = __DIR__.'/../resources/css/'.$filename;
 
         if (! is_file($path) || ! is_readable($path)) {
             return null;

@@ -36,17 +36,28 @@ class RegisteredUserController extends Controller
             'first_name' => ['required', 'string', 'max:120'],
             'last_name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+()\-.\s]{5,50}$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['accepted'],
         ]);
 
         $name = trim($validated['first_name'].' '.$validated['last_name']);
 
+        $requiresEmailVerification = filter_var(
+            $settings->values()['general.email_verification_required'] ?? true,
+            FILTER_VALIDATE_BOOL,
+        );
+
         $user = User::create([
             'name' => $name,
             'email' => $validated['email'],
+            'phone' => filled($validated['phone'] ?? null) ? trim($validated['phone']) : null,
             'password' => Hash::make($validated['password']),
         ]);
+
+        if (! $requiresEmailVerification) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
 
         $defaultRole = $settings->values()['general.default_user_role'] ?? 'user';
 
@@ -58,6 +69,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('verification.notice', absolute: false));
+        return redirect($requiresEmailVerification
+            ? route('verification.notice', absolute: false)
+            : route('front.account', absolute: false));
     }
 }

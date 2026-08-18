@@ -50,6 +50,14 @@ class DeploymentAssetBuildContractTest extends TestCase
         self::assertStringContainsString('cp -R /opt/art-inpa/public/build/. public/build/', $entrypoint);
         self::assertStringContainsString('seed_missing_entries /opt/art-inpa/modules modules', $entrypoint);
         self::assertStringContainsString('seed_missing_entries /opt/art-inpa/public/platform public/platform', $entrypoint);
+        self::assertStringContainsString(
+            'sync_required_entry /opt/art-inpa/modules/admin-theme modules/admin-theme',
+            $entrypoint,
+        );
+        self::assertStringContainsString(
+            'sync_required_entry /opt/art-inpa/modules/page-builder modules/page-builder',
+            $entrypoint,
+        );
         self::assertStringContainsString('The deployment image is incomplete.', $entrypoint);
         self::assertStringContainsString('if [ -z "${APP_KEY:-}" ] && [ "$INSTALLATION_FLAG" != "1" ]; then', $entrypoint);
         self::assertStringContainsString('base64_encode(random_bytes(32))', $entrypoint);

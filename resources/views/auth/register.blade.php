@@ -52,6 +52,20 @@
             <x-input-error :messages="$errors->get('email')" class="ainpa-auth-error" />
         </label>
 
+        <label class="ainpa-auth-field" for="phone">
+            <span>Phone Number <small>(optional)</small></span>
+            <input
+                id="phone"
+                type="tel"
+                name="phone"
+                value="{{ old('phone') }}"
+                autocomplete="tel"
+                inputmode="tel"
+                placeholder="Enter your phone number"
+            >
+            <x-input-error :messages="$errors->get('phone')" class="ainpa-auth-error" />
+        </label>
+
         <label class="ainpa-auth-field" for="password">
             <span>Password</span>
             <span class="ainpa-auth-password">

@@ -4,7 +4,7 @@ Default protected admin dashboard theme for the Art INPA platform.
 
 ## Purpose
 
-This plugin changes the admin dashboard visual layer through the existing platform plugin asset pipeline. It does not edit Laravel core views, does not create database settings, and does not require JavaScript.
+This plugin owns the admin dashboard visual layer through the existing platform plugin asset pipeline. The platform keeps ownership of menu data, routes, permissions, and Alpine interaction state; the theme owns the shell, sidebar, flyouts, colors, spacing, cards, forms, and responsive presentation.
 
 ## Install
 
@@ -15,6 +15,7 @@ This plugin changes the admin dashboard visual layer through the existing platfo
 
 ```text
 data-plugin-admin-style="admin-theme"
+data-plugin-admin-component="admin-navigation"
 ```
 
 The default admin theme injects CSS from its ServiceProvider and does not write
@@ -32,10 +33,26 @@ to `public/platform/plugins`.
 
 ## Fast Editing
 
-The main editable file is:
+The main theme file is:
 
 ```text
 resources/css/admin-theme.css
+```
+
+The sidebar has one dedicated, last-loaded component contract:
+
+```text
+resources/css/admin-navigation.css
+```
+
+Keep sidebar styling in that component file. Do not add navigation overrides to
+core views or to the general theme file.
+
+Page-specific admin presentation that previously lived in Blade `<style>`
+blocks is owned by:
+
+```text
+resources/css/admin-pages.css
 ```
 
 The first section of the file contains CSS variables. Edit those values for quick changes:
@@ -53,12 +70,14 @@ After editing a deployed CSS file directly, clear browser cache or change the fi
 
 ## Compatibility
 
-- Injects CSS through the plugin ServiceProvider into the admin layout
-  `styles` stack.
+- Injects the general theme, the navigation component, and saved theme settings
+  through the plugin ServiceProvider into the admin layout `styles` stack.
 - Does not use the public asset publisher, so installing/updating the default
   admin theme does not require write access to `public/platform/plugins`.
 - Targets the current admin layout classes such as `z4-admin-bar`, `z4-admin-sidebar`, `z4-admin-link`, and standard Tailwind utility classes used by admin pages.
-- Avoids core Blade changes and avoids database-backed settings for v1.
+- Keeps dynamic menu behavior in the platform and all navigation presentation in
+  the plugin. Closed groups open as side flyouts on hover; clicked groups and the
+  group containing the current route open inline.
 
 ## Verification
 

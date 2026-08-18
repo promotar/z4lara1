@@ -6,6 +6,7 @@ use App\Platform\Core\Models\PlatformMediaMetadata;
 use App\Platform\Core\Models\PlatformSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -109,6 +110,10 @@ class SettingsRepository
                     return;
                 }
 
+                if ((bool) ($setting->sensitive_flag ?? false) && trim((string) $raw) === '') {
+                    return;
+                }
+
                 $changed = $this->saveSettingValue($setting, $this->normalizeValue($setting, $raw), $changedBy, $source) || $changed;
             });
 
@@ -159,6 +164,9 @@ class SettingsRepository
                             'options' => $definition['options'] ?? [],
                             'help_text' => $definition['help_text'] ?? null,
                             'is_public' => $definition['is_public'] ?? false,
+                            'min_value' => $definition['min_value'] ?? null,
+                            'max_value' => $definition['max_value'] ?? null,
+                            'unit' => $definition['unit'] ?? null,
                         ],
                     ])
                     ->all();
@@ -301,21 +309,38 @@ class SettingsRepository
 
     private function fieldPayload(PlatformSetting $setting): array
     {
+        $isSensitive = (bool) ($setting->sensitive_flag ?? false);
+
         return [
             'label' => $setting->label,
             'type' => $setting->type,
-            'value' => $this->settingValue($setting),
+            'value' => $isSensitive ? '' : $this->settingValue($setting),
             'has_custom_value' => $setting->value !== null,
+            'has_secret_value' => $isSensitive && $setting->value !== null && $this->settingValue($setting) !== '',
             'default' => $setting->default_value,
             'options' => $this->resolvedOptions($setting),
             'help_text' => $setting->help_text,
             'is_public' => $setting->is_public,
+            'min_value' => $setting->min_value ?? null,
+            'max_value' => $setting->max_value ?? null,
+            'unit' => $setting->unit ?? null,
         ];
     }
 
     private function settingValue(PlatformSetting $setting): mixed
     {
-        return $setting->value ?? $setting->default_value;
+        $value = $setting->value ?? $setting->default_value;
+        if (! (bool) ($setting->sensitive_flag ?? false) || ! is_string($value) || $value === '') {
+            return $value;
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (Throwable) {
+            // Existing plaintext values remain readable and will be encrypted
+            // the next time an administrator changes the sensitive setting.
+            return $value;
+        }
     }
 
     private function normalizeValue(PlatformSetting $setting, mixed $value): mixed
@@ -474,13 +499,16 @@ class SettingsRepository
 
     private function saveSettingValue(PlatformSetting $setting, mixed $value, ?int $changedBy, string $source): bool
     {
-        $oldValue = $setting->value;
+        $oldValue = $this->settingValue($setting);
 
         if ($oldValue === $value) {
             return false;
         }
 
-        $setting->forceFill(['value' => $value])->save();
+        $storedValue = (bool) ($setting->sensitive_flag ?? false)
+            ? Crypt::encryptString((string) $value)
+            : $value;
+        $setting->forceFill(['value' => $storedValue])->save();
         $this->recordSettingChange($setting, $oldValue, $value, $changedBy, $source);
 
         return true;
@@ -604,6 +632,10 @@ class SettingsRepository
                 'label' => 'General Settings',
                 'description' => '',
             ],
+            'mail' => [
+                'label' => 'Email & SMTP',
+                'description' => 'Central outbound email configuration used by verification, password reset, notifications, and all platform mail.',
+            ],
             'seo' => [
                 'label' => 'SEO Settings',
                 'description' => 'Default SEO metadata used by public pages when a page-specific value is not available.',
@@ -634,14 +666,26 @@ class SettingsRepository
                 'site_address_url' => ['label' => 'Site Address URL', 'type' => 'url', 'default' => (string) config('app.url', 'http://localhost'), 'sort_order' => 50, 'is_public' => true],
                 'admin_email' => ['label' => 'Administration Email Address', 'type' => 'email', 'default' => 'admin@z4rank.com', 'sort_order' => 60],
                 'membership_enabled' => ['label' => 'Membership', 'type' => 'boolean', 'default' => true, 'sort_order' => 70, 'help_text' => 'Allow anyone to register.'],
-                'default_user_role' => ['label' => 'New User Default Role', 'type' => 'select', 'default' => 'user', 'sort_order' => 80],
-                'site_language' => ['label' => 'Site Language', 'type' => 'select', 'default' => 'ar', 'sort_order' => 90, 'options' => ['ar' => 'Arabic', 'en' => 'English'], 'is_public' => true],
-                'timezone' => ['label' => 'Timezone', 'type' => 'select', 'default' => 'Asia/Amman', 'sort_order' => 100, 'options' => ['Asia/Amman' => 'Asia/Amman', 'UTC' => 'UTC', 'Asia/Riyadh' => 'Asia/Riyadh', 'Europe/London' => 'Europe/London', 'America/New_York' => 'America/New_York']],
-                'date_format' => ['label' => 'Date Format', 'type' => 'radio', 'default' => 'F j, Y', 'sort_order' => 110, 'options' => ['F j, Y' => 'June 23, 2026', 'Y-m-d' => '2026-06-23', 'm/d/Y' => '06/23/2026', 'd/m/Y' => '23/06/2026', 'd.m.Y' => '23.06.2026', 'custom' => 'Custom']],
-                'custom_date_format' => ['label' => 'Custom Date Format', 'type' => 'text', 'default' => 'F j, Y', 'sort_order' => 120],
-                'time_format' => ['label' => 'Time Format', 'type' => 'radio', 'default' => 'g:i a', 'sort_order' => 130, 'options' => ['g:i a' => '1:14 pm', 'g:i A' => '1:14 PM', 'H:i' => '13:14', 'custom' => 'Custom']],
-                'custom_time_format' => ['label' => 'Custom Time Format', 'type' => 'text', 'default' => 'g:i a', 'sort_order' => 140],
-                'week_starts_on' => ['label' => 'Week Starts On', 'type' => 'select', 'default' => 'monday', 'sort_order' => 150, 'options' => ['saturday' => 'Saturday', 'sunday' => 'Sunday', 'monday' => 'Monday']],
+                'email_verification_required' => ['label' => 'Require Email Verification', 'type' => 'boolean', 'default' => true, 'sort_order' => 80, 'help_text' => 'Require newly registered users to verify their email address before accessing verified areas.'],
+                'default_user_role' => ['label' => 'New User Default Role', 'type' => 'select', 'default' => 'user', 'sort_order' => 90],
+                'site_language' => ['label' => 'Site Language', 'type' => 'select', 'default' => 'ar', 'sort_order' => 100, 'options' => ['ar' => 'Arabic', 'en' => 'English'], 'is_public' => true],
+                'timezone' => ['label' => 'Timezone', 'type' => 'select', 'default' => 'Asia/Amman', 'sort_order' => 110, 'options' => ['Asia/Amman' => 'Asia/Amman', 'UTC' => 'UTC', 'Asia/Riyadh' => 'Asia/Riyadh', 'Europe/London' => 'Europe/London', 'America/New_York' => 'America/New_York']],
+                'date_format' => ['label' => 'Date Format', 'type' => 'radio', 'default' => 'F j, Y', 'sort_order' => 120, 'options' => ['F j, Y' => 'June 23, 2026', 'Y-m-d' => '2026-06-23', 'm/d/Y' => '06/23/2026', 'd/m/Y' => '23/06/2026', 'd.m.Y' => '23.06.2026', 'custom' => 'Custom']],
+                'custom_date_format' => ['label' => 'Custom Date Format', 'type' => 'text', 'default' => 'F j, Y', 'sort_order' => 130],
+                'time_format' => ['label' => 'Time Format', 'type' => 'radio', 'default' => 'g:i a', 'sort_order' => 140, 'options' => ['g:i a' => '1:14 pm', 'g:i A' => '1:14 PM', 'H:i' => '13:14', 'custom' => 'Custom']],
+                'custom_time_format' => ['label' => 'Custom Time Format', 'type' => 'text', 'default' => 'g:i a', 'sort_order' => 150],
+                'week_starts_on' => ['label' => 'Week Starts On', 'type' => 'select', 'default' => 'monday', 'sort_order' => 160, 'options' => ['saturday' => 'Saturday', 'sunday' => 'Sunday', 'monday' => 'Monday']],
+            ],
+            'mail' => [
+                'smtp_enabled' => ['label' => 'Enable SMTP', 'type' => 'boolean', 'default' => (string) config('mail.default', 'log') === 'smtp', 'sort_order' => 10, 'help_text' => 'When disabled, outgoing messages are written to the application log and no SMTP connection is made.'],
+                'smtp_host' => ['label' => 'SMTP Host', 'type' => 'text', 'default' => (string) config('mail.mailers.smtp.host', '127.0.0.1'), 'sort_order' => 20],
+                'smtp_port' => ['label' => 'SMTP Port', 'type' => 'number', 'default' => (int) config('mail.mailers.smtp.port', 587), 'sort_order' => 30],
+                'smtp_encryption' => ['label' => 'Encryption', 'type' => 'select', 'default' => 'tls', 'sort_order' => 40, 'options' => ['tls' => 'STARTTLS / Automatic', 'smtps' => 'Implicit TLS', 'none' => 'None']],
+                'smtp_username' => ['label' => 'SMTP Username', 'type' => 'text', 'default' => '', 'sort_order' => 50],
+                'smtp_password' => ['label' => 'SMTP Password', 'type' => 'password', 'default' => '', 'sort_order' => 60, 'sensitive_flag' => true, 'cache_enabled' => false, 'help_text' => 'Stored encrypted. Leave blank to keep the current password.'],
+                'smtp_timeout' => ['label' => 'Connection Timeout', 'type' => 'number', 'default' => 30, 'sort_order' => 70, 'min_value' => 1, 'max_value' => 300, 'unit' => 'seconds'],
+                'from_address' => ['label' => 'From Email Address', 'type' => 'email', 'default' => (string) config('mail.from.address', 'hello@example.com'), 'sort_order' => 80],
+                'from_name' => ['label' => 'From Name', 'type' => 'text', 'default' => (string) config('app.name', 'Art INPA'), 'sort_order' => 90],
             ],
             'seo' => [
                 'seo_title' => ['label' => 'Default SEO Title', 'type' => 'text', 'default' => 'Z4Rank', 'sort_order' => 10, 'is_public' => true],

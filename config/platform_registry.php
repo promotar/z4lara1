@@ -74,7 +74,7 @@ return [
         'admin.users.*' => ['uri' => 'admin/users*', 'methods' => ['GET', 'POST', 'PATCH'], 'description' => 'User admin routes', 'status' => 'active'],
         'admin.roles.*' => ['uri' => 'admin/roles*', 'methods' => ['GET', 'POST', 'PATCH'], 'description' => 'Role admin routes', 'status' => 'active'],
         'admin.permissions.*' => ['uri' => 'admin/permissions*', 'methods' => ['GET', 'POST'], 'description' => 'Permission admin routes', 'status' => 'active'],
-        'admin.settings.*' => ['uri' => 'admin/settings*', 'methods' => ['GET', 'PATCH'], 'description' => 'Settings admin routes', 'status' => 'active'],
+        'admin.settings.*' => ['uri' => 'admin/settings*', 'methods' => ['GET', 'POST', 'PATCH'], 'description' => 'Settings admin routes', 'status' => 'active'],
         'admin.backups.*' => ['uri' => 'admin/backups*', 'methods' => ['GET', 'POST', 'DELETE'], 'description' => 'Super-admin system backup checkpoint routes', 'status' => 'active'],
         'admin.media.*' => ['uri' => 'admin/media*', 'methods' => ['GET', 'POST', 'PATCH', 'DELETE'], 'description' => 'Media library upload, SEO metadata, and bulk delete routes', 'status' => 'active'],
         'admin.pages.*' => ['uri' => 'admin/pages*', 'methods' => ['GET', 'POST', 'PATCH', 'DELETE'], 'description' => 'Content page management routes', 'status' => 'active'],
