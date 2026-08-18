@@ -90,612 +90,15 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $translate('Settings') }}</h2>
     </x-slot>
 
-    <style>
-        .wp-settings {
-            background: #f0f0f1;
-            color: #1d2327;
-        }
-
-        .wp-settings section {
-            background: transparent;
-            border: 0;
-            box-shadow: none;
-        }
-
-        .wp-settings h3 {
-            color: #1d2327;
-            font-size: 20px;
-            font-weight: 400;
-        }
-
-        .wp-settings p,
-        .wp-settings label {
-            color: #50575e;
-        }
-
-        .wp-settings input[type="text"],
-        .wp-settings input[type="email"],
-        .wp-settings input[type="url"],
-        .wp-settings input[type="file"],
-        .wp-settings input[type="color"],
-        .wp-settings select,
-        .wp-settings textarea {
-            border-color: #8c8f94;
-            color: #2c3338;
-            box-shadow: none;
-            background-color: #ffffff;
-        }
-
-        .wp-settings input[type="text"]:focus,
-        .wp-settings input[type="email"]:focus,
-        .wp-settings input[type="url"]:focus,
-        .wp-settings select:focus,
-        .wp-settings textarea:focus {
-            border-color: #2271b1;
-            box-shadow: 0 0 0 1px #2271b1;
-        }
-
-        .wp-settings input[type="checkbox"],
-        .wp-settings input[type="radio"] {
-            border-color: #8c8f94;
-            color: #2271b1;
-        }
-
-        .wp-settings .color-field {
-            align-items: center;
-            display: flex;
-            gap: 12px;
-        }
-
-        .wp-settings .color-field input[type="color"] {
-            height: 38px;
-            padding: 2px;
-            width: 58px;
-        }
-
-        .wp-settings .color-field input[type="text"] {
-            max-width: 120px;
-        }
-
-        .wp-settings code {
-            background: #f0f0f1;
-            color: #3c434a;
-        }
-
-        .wp-settings .format-options {
-            background: transparent;
-            border: 0;
-            display: grid;
-            gap: 10px;
-            padding: 0;
-        }
-
-        .wp-settings .format-option {
-            align-items: center;
-            color: #2c3338;
-            display: flex;
-            gap: 10px;
-            min-height: 24px;
-        }
-
-        .wp-settings .format-option input[type="radio"] {
-            margin: 0;
-        }
-
-        .wp-settings .format-example {
-            color: #2c3338;
-            min-width: 132px;
-        }
-
-        .wp-settings .format-code {
-            background: #e8e8e8;
-            color: #3c434a;
-            display: inline-block;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            min-width: 52px;
-            padding: 2px 7px;
-            text-align: center;
-        }
-
-        .wp-settings .format-custom-input {
-            border-color: #8c8f94;
-            max-width: 70px;
-            min-height: 30px;
-            padding: 3px 6px;
-        }
-
-        .wp-settings .format-preview {
-            color: #1d2327;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .wp-settings button[type="submit"] {
-            background: #3858e9;
-            border-color: #3858e9;
-            color: #ffffff;
-        }
-
-        .wp-settings button[type="submit"]:hover {
-            background: #2145e6;
-            border-color: #2145e6;
-        }
-
-        .wp-settings .settings-panel-header {
-            border: 0;
-            background: transparent;
-            padding-left: 0;
-            padding-right: 0;
-            padding-bottom: 12px;
-        }
-
-        .wp-settings .settings-field-list {
-            border-top: 1px solid #dcdcde;
-        }
-
-        .wp-settings .settings-field-row {
-            display: grid;
-            grid-template-columns: 220px minmax(0, 1fr);
-            column-gap: 32px;
-            align-items: start;
-            padding-left: 0;
-            padding-right: 0;
-            padding-top: 14px;
-            padding-bottom: 14px;
-        }
-
-        .wp-settings .settings-field-row > div {
-            grid-column: auto !important;
-        }
-
-        .wp-settings .settings-field-row > div:first-child label {
-            color: #1d2327;
-            font-weight: 600;
-        }
-
-        .wp-settings .settings-field-row > div:last-child {
-            max-width: 540px;
-        }
-
-        .wp-settings .settings-tab-bar {
-            border-bottom: 1px solid #c3c4c7;
-        }
-
-        .wp-settings .settings-tab {
-            border: 1px solid transparent;
-            border-bottom: 0;
-            color: #2271b1;
-            margin-bottom: -1px;
-            padding: 9px 14px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .wp-settings .settings-tab:hover {
-            color: #135e96;
-        }
-
-        .wp-settings .settings-tab.is-active {
-            background: #f0f0f1;
-            border-color: #c3c4c7;
-            color: #1d2327;
-        }
-
-        .wp-settings [data-settings-panel][hidden] {
-            display: none !important;
-        }
-
-        .wp-settings [data-media-panel][hidden] {
-            display: none !important;
-        }
-
-        .wp-settings .media-current {
-            background: #ffffff;
-            border: 1px solid #dcdcde;
-            border-radius: 4px;
-            display: inline-flex;
-            gap: 12px;
-            padding: 10px;
-            position: relative;
-        }
-
-        .wp-settings .media-current img {
-            background: #f6f7f7;
-            border-radius: 3px;
-            height: 72px;
-            object-fit: contain;
-            width: 120px;
-        }
-
-        .wp-settings .media-remove {
-            align-items: center;
-            background: #d63638;
-            border-radius: 9999px;
-            color: #ffffff;
-            display: inline-flex;
-            font-size: 15px;
-            font-weight: 700;
-            height: 24px;
-            justify-content: center;
-            line-height: 1;
-            position: absolute;
-            right: -9px;
-            top: -9px;
-            width: 24px;
-        }
-
-        .wp-settings .media-button {
-            background: #ffffff;
-            border: 1px solid #2271b1;
-            border-radius: 3px;
-            color: #2271b1;
-            display: flex;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 7px 12px;
-            width: max-content;
-        }
-
-        .wp-settings .media-button-primary {
-            border-color: #3858e9;
-            color: #3858e9;
-        }
-
-        .wp-settings .media-button-danger {
-            border-color: #d63638;
-            color: #b32d2e;
-        }
-
-        .wp-settings .site-icon-preview {
-            background: linear-gradient(90deg, #d8edf8 0%, #b4dff5 26%, #b8c0c7 57%, #a9adb2 100%);
-            border: 1px solid #8c8f94;
-            border-radius: 4px;
-            display: flex;
-            height: 86px;
-            overflow: hidden;
-            width: 350px;
-        }
-
-        .wp-settings .site-icon-large {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            width: 90px;
-        }
-
-        .wp-settings .site-icon-large img {
-            height: 58px;
-            object-fit: contain;
-            width: 58px;
-        }
-
-        .wp-settings .site-icon-browser {
-            align-items: center;
-            display: flex;
-            flex: 1;
-            gap: 12px;
-            padding: 16px 10px;
-        }
-
-        .wp-settings .site-icon-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .wp-settings .site-icon-dots span {
-            background: #858a90;
-            border-radius: 9999px;
-            display: block;
-            height: 12px;
-            width: 12px;
-        }
-
-        .wp-settings .site-icon-tab {
-            align-items: center;
-            background: #f6f7f7;
-            border-radius: 5px;
-            display: flex;
-            gap: 9px;
-            min-width: 160px;
-            padding: 10px 12px;
-        }
-
-        .wp-settings .site-icon-tab img {
-            height: 22px;
-            object-fit: contain;
-            width: 22px;
-        }
-
-        .wp-settings .site-icon-tab-title {
-            color: #2c3338;
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .wp-settings .site-icon-tab-close {
-            color: #646970;
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        .wp-settings .site-icon-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .wp-settings .site-logo-preview {
-            align-items: center;
-            background: #ffffff;
-            border: 1px solid #dcdcde;
-            border-radius: 4px;
-            display: flex;
-            height: 96px;
-            justify-content: center;
-            padding: 16px;
-            width: 350px;
-        }
-
-        .wp-settings .site-logo-preview img {
-            max-height: 64px;
-            max-width: 300px;
-            object-fit: contain;
-        }
-
-        .wp-settings .site-logo-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .wp-settings .media-modal[hidden] {
-            display: none !important;
-        }
-
-        .wp-settings .media-modal {
-            align-items: center;
-            background: rgba(0, 0, 0, 0.45);
-            bottom: 0;
-            display: flex;
-            justify-content: center;
-            left: 0;
-            padding: 32px;
-            position: fixed;
-            right: 0;
-            top: 0;
-            z-index: 3000;
-        }
-
-        .wp-settings .media-modal-panel {
-            background: #ffffff;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
-            height: calc(100vh - 64px);
-            max-height: 820px;
-            max-width: 1280px;
-            min-height: 560px;
-            overflow: hidden;
-            width: min(1280px, calc(100vw - 64px));
-        }
-
-        .wp-settings .media-modal-header {
-            align-items: center;
-            border-bottom: 1px solid #dcdcde;
-            display: flex;
-            justify-content: space-between;
-            min-height: 68px;
-            padding: 18px 22px;
-        }
-
-        .wp-settings .media-modal-header h3 {
-            font-size: 22px;
-            line-height: 1.2;
-            margin: 0;
-            overflow-wrap: anywhere;
-        }
-
-        .wp-settings .media-close {
-            align-items: center;
-            background: transparent;
-            border: 0;
-            color: #646970;
-            display: inline-flex;
-            font-size: 20px;
-            height: 32px;
-            justify-content: center;
-            width: 32px;
-        }
-
-        .wp-settings .media-modal-tabs {
-            background: #f6f7f7;
-            border-bottom: 1px solid #dcdcde;
-            display: flex;
-            gap: 0;
-            padding: 0 20px;
-        }
-
-        .wp-settings .media-modal-tabs .settings-tab {
-            background: transparent;
-            border: 0;
-            border-bottom: 3px solid transparent;
-            margin: 0;
-            padding: 13px 16px 10px;
-        }
-
-        .wp-settings .media-modal-tabs .settings-tab.is-active {
-            background: #ffffff;
-            border: 1px solid #dcdcde;
-            border-bottom: 3px solid #2271b1;
-            border-top: 0;
-            color: #1d2327;
-        }
-
-        .wp-settings .media-modal-body {
-            flex: 1;
-            overflow: auto;
-            padding: 22px;
-        }
-
-        .wp-settings .media-upload-panel {
-            align-items: center;
-            border: 0;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            justify-content: center;
-            min-height: 420px;
-            text-align: center;
-        }
-
-        .wp-settings .media-upload-title {
-            color: #1d2327;
-            font-size: 22px;
-            line-height: 1.3;
-        }
-
-        .wp-settings .media-modal-footer {
-            align-items: center;
-            background: #f6f7f7;
-            border-top: 1px solid #dcdcde;
-            display: flex;
-            justify-content: flex-end;
-            padding: 14px 16px;
-        }
-
-        .wp-settings .media-set-button {
-            background: #2271b1;
-            border: 1px solid #2271b1;
-            border-radius: 3px;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 8px 14px;
-        }
-
-        .wp-settings .media-set-button:disabled {
-            background: #dcdcde;
-            border-color: #dcdcde;
-            color: #8c8f94;
-            cursor: not-allowed;
-        }
-
-        .wp-settings .media-library-grid {
-            align-content: start;
-            align-items: start;
-            display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            max-height: 420px;
-            overflow: auto;
-        }
-
-        .wp-settings .media-library-layout {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: minmax(0, 1fr) 340px;
-        }
-
-        .wp-settings .media-library-item {
-            background: #ffffff;
-            border: 1px solid #dcdcde;
-            border-radius: 4px;
-            height: 132px;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .wp-settings .media-library-item:hover {
-            border-color: #2271b1;
-            box-shadow: 0 0 0 1px #2271b1;
-        }
-
-        .wp-settings .media-library-item.is-selected {
-            border-color: #2271b1;
-            box-shadow: 0 0 0 2px #2271b1;
-        }
-
-        .wp-settings .media-library-item img {
-            background: #f6f7f7;
-            height: 114px;
-            object-fit: contain;
-            width: 100%;
-        }
-
-        .wp-settings .media-details {
-            background: #f6f7f7;
-            border: 1px solid #dcdcde;
-            border-radius: 4px;
-            padding: 14px;
-        }
-
-        .wp-settings .media-details[hidden] {
-            display: none !important;
-        }
-
-        .wp-settings .media-details-preview {
-            background: #ffffff;
-            border: 1px solid #dcdcde;
-            border-radius: 4px;
-            margin-bottom: 14px;
-            padding: 10px;
-        }
-
-        .wp-settings .media-details-preview img {
-            max-height: 130px;
-            object-fit: contain;
-            width: 100%;
-        }
-
-        .wp-settings .media-details-field {
-            display: block;
-            margin-top: 12px;
-        }
-
-        .wp-settings .media-details-field span {
-            color: #1d2327;
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .wp-settings .media-details-field input,
-        .wp-settings .media-details-field textarea {
-            width: 100%;
-        }
-
-        .wp-settings .media-details-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            margin-top: 14px;
-        }
-
-        @media (max-width: 767px) {
-            .wp-settings .settings-field-row {
-                grid-template-columns: 1fr;
-                row-gap: 8px;
-            }
-
-            .wp-settings .media-library-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 
     <div class="wp-settings py-8">
         <div class="mx-auto max-w-6xl space-y-6 sm:px-6 lg:px-8">
             @if (session('status'))
                 <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{{ session('status') }}</div>
+            @endif
+
+            @if ($errors->any())
+                <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ $errors->first() }}</div>
             @endif
 
             <div class="settings-tab-bar flex flex-wrap gap-1">
@@ -773,6 +176,26 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                        @elseif ($field['type'] === 'password')
+                                            <input
+                                                id="{{ $groupKey }}_{{ $fieldKey }}"
+                                                type="password"
+                                                name="settings[{{ $groupKey }}][{{ $fieldKey }}]"
+                                                value=""
+                                                autocomplete="new-password"
+                                                placeholder="{{ ! empty($field['has_secret_value']) ? 'Encrypted password stored — leave blank to keep it' : 'Enter SMTP password' }}"
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            >
+                                        @elseif ($field['type'] === 'number')
+                                            <input
+                                                id="{{ $groupKey }}_{{ $fieldKey }}"
+                                                type="number"
+                                                name="settings[{{ $groupKey }}][{{ $fieldKey }}]"
+                                                value="{{ $field['value'] }}"
+                                                @if(isset($field['min_value']) && $field['min_value'] !== null) min="{{ $field['min_value'] }}" @endif
+                                                @if(isset($field['max_value']) && $field['max_value'] !== null) max="{{ $field['max_value'] }}" @endif
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            >
                                         @elseif ($field['type'] === 'color')
                                             <div class="color-field">
                                                 <input
@@ -990,6 +413,16 @@
                 </div>
             </form>
 
+            <form method="POST" action="{{ route('admin.settings.mail.test') }}" class="smtp-test-card" data-settings-mail-test hidden>
+                @csrf
+                <label>
+                    <span class="mb-2 block text-sm font-semibold text-gray-900">Send Test Email</span>
+                    <input type="email" name="test_email" value="{{ old('test_email', data_get($groups, 'general.fields.admin_email.value', '')) }}" required class="block w-full rounded-md border-gray-300 shadow-sm">
+                    <small class="mt-2 block text-gray-500">Uses the currently saved SMTP configuration.</small>
+                </label>
+                <button type="submit" class="rounded-md border border-blue-600 bg-white px-4 py-2 text-sm font-semibold text-blue-700">Send Test</button>
+            </form>
+
             <div class="media-modal" data-media-modal hidden>
                 <div class="media-modal-panel">
                     <div class="media-modal-header">
@@ -1083,6 +516,7 @@
             const tabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
             const panels = Array.from(document.querySelectorAll('[data-settings-panel]'));
             const settingsForm = document.querySelector('form[action="{{ route('admin.settings.update') }}"]');
+            const smtpTestForm = document.querySelector('[data-settings-mail-test]');
             const mediaModal = document.querySelector('[data-media-modal]');
             const mediaModalTitle = document.querySelector('[data-media-modal-title]');
             const mediaSetButton = document.querySelector('[data-use-selected-media]');
@@ -1114,6 +548,10 @@
                 if (settingsForm) {
                     settingsForm.dataset.activeSettingsTab = activeKey;
                     settingsForm.action = settingsForm.action.split('#')[0] + `#settings-${activeKey}`;
+                }
+
+                if (smtpTestForm) {
+                    smtpTestForm.hidden = activeKey !== 'mail';
                 }
 
                 history.replaceState(null, '', `#settings-${activeKey}`);

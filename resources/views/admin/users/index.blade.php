@@ -17,23 +17,41 @@
                 <div class="ainpa-alert ainpa-alert-danger">{{ $errors->first() }}</div>
             @endif
 
-            <div class="admin-access-toolbar">
-                <div>
-                    <h3 class="admin-access-title">Users</h3>
-                    <p class="admin-access-subtitle">Create users, update account access, and assign roles or direct permissions.</p>
+            <div class="admin-access-toolbar admin-user-toolbar">
+                <div class="admin-user-toolbar-actions">
+                    <form method="GET" action="{{ route('admin.users.index') }}" class="admin-user-search" x-ref="userSearchForm">
+                        <input
+                            type="search"
+                            name="q"
+                            value="{{ $search }}"
+                            class="admin-input"
+                            placeholder="Name, email, or phone"
+                            autocomplete="off"
+                            aria-label="Search users"
+                            @if ($search !== '') autofocus @endif
+                            @input.debounce.400ms="$refs.userSearchForm.requestSubmit()"
+                        >
+                        <button type="submit" class="ainpa-button">Search</button>
+                        @if ($search !== '')
+                            <a href="{{ route('admin.users.index') }}" class="admin-user-search-clear">Clear</a>
+                        @endif
+                    </form>
+                    <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true">
+                        New Account
+                    </button>
                 </div>
-                <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true">
-                    Create User
-                </button>
             </div>
 
             <section class="admin-access-card">
-                <div class="admin-access-card-header">
-                    <h3 class="admin-access-card-title">Registered Users</h3>
+                <div class="admin-access-card-header admin-user-list-header">
+                    <h3 class="admin-access-card-title">Accounts</h3>
+                    <p class="admin-user-results">
+                        {{ number_format($users->total()) }} {{ $users->total() === 1 ? 'account' : 'accounts' }}
+                    </p>
                 </div>
 
                 <div class="admin-access-accordion">
-                    @foreach ($users as $managedUser)
+                    @forelse ($users as $managedUser)
                         <article class="admin-access-accordion-item">
                             <button
                                 type="button"
@@ -44,10 +62,11 @@
                                 <span class="admin-access-entity">
                                     <span class="admin-access-entity-name">{{ $managedUser->name }}</span>
                                     <span class="admin-access-entity-meta">{{ $managedUser->email }}</span>
+                                    @if ($managedUser->phone)<span class="admin-user-phone">{{ $managedUser->phone }}</span>@endif
                                 </span>
                                 <span class="admin-access-count">
-                                    {{ $managedUser->roles->count() }} roles / {{ $managedUser->permissions->count() }} direct permissions
-                                    · {{ $managedUser->email_verified_at ? 'Email verified' : 'Email not verified' }}
+                                    {{ $managedUser->roles->count() }} roles
+                                    · {{ $managedUser->email_verified_at ? 'Active' : 'Pending activation' }}
                                 </span>
                             </button>
 
@@ -74,6 +93,11 @@
                                         </label>
 
                                         <label class="admin-field">
+                                            <span class="admin-field-label">Phone Number</span>
+                                            <input name="phone" type="tel" value="{{ old('_form') === 'update-'.$managedUser->id ? old('phone', $managedUser->phone) : $managedUser->phone }}" class="admin-input" autocomplete="tel">
+                                        </label>
+
+                                        <label class="admin-field">
                                             <span class="admin-field-label">Confirm New Password</span>
                                             <input name="password_confirmation" type="password" class="admin-input" autocomplete="new-password">
                                         </label>
@@ -96,23 +120,6 @@
                                                 @endforeach
                                             </div>
                                         </div>
-
-                                        <div>
-                                            <div class="admin-field-label">Direct Permissions</div>
-                                            <div class="admin-option-grid">
-                                                @foreach ($permissions as $permission)
-                                                    <label class="admin-option">
-                                                        <input
-                                                            type="checkbox"
-                                                            name="permissions[]"
-                                                            value="{{ $permission->name }}"
-                                                            @checked(in_array($permission->name, old('_form') === 'update-'.$managedUser->id ? old('permissions', $managedUser->permissions->pluck('name')->all()) : $managedUser->permissions->pluck('name')->all(), true))
-                                                        >
-                                                        <span>{{ $permission->name }}</span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div class="admin-access-actions">
@@ -123,12 +130,12 @@
                                 <div class="admin-access-actions">
                                     @if ($managedUser->email_verified_at)
                                         <p class="admin-access-note">
-                                            Email verified on {{ $managedUser->email_verified_at->format('Y-m-d H:i') }}.
+                                            Active since {{ $managedUser->email_verified_at->format('Y-m-d H:i') }}.
                                         </p>
                                     @else
                                         <div>
                                             <p class="admin-access-note">
-                                                This email is not verified. An administrator can approve it without requiring the user to open a verification email.
+                                                This user is waiting for email verification. Activating the account manually will mark the email as verified.
                                             </p>
                                             <form
                                                 method="POST"
@@ -137,15 +144,21 @@
                                             >
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="ainpa-button ainpa-button-primary">Verify Email as Admin</button>
+                                                <button type="submit" class="ainpa-button ainpa-button-primary">Activate User</button>
                                             </form>
                                         </div>
                                     @endif
                                 </div>
                             </div>
                         </article>
-                    @endforeach
+                    @empty
+                        <div class="admin-access-note">No accounts found.</div>
+                    @endforelse
                 </div>
+
+                @if ($users->hasPages())
+                    <div class="admin-user-pagination">{{ $users->links() }}</div>
+                @endif
             </section>
 
             <template x-teleport="body">
@@ -163,8 +176,7 @@
                     <section class="admin-modal-panel" x-transition.scale.origin.center>
                         <div class="admin-modal-header">
                             <div>
-                                <h3 id="create-user-title" class="admin-modal-title">Create User</h3>
-                                <p class="admin-modal-subtitle">Create the account and assign roles or direct permissions.</p>
+                                <h3 id="create-user-title" class="admin-modal-title">New Account</h3>
                             </div>
                             <button type="button" class="admin-modal-close" @click="createOpen = false">
                                 Close
@@ -193,6 +205,11 @@
                                     </label>
 
                                     <label class="admin-field">
+                                        <span class="admin-field-label">Phone Number</span>
+                                        <input name="phone" type="tel" value="{{ old('_form') === 'create' ? old('phone') : '' }}" class="admin-input" autocomplete="tel">
+                                    </label>
+
+                                    <label class="admin-field">
                                         <span class="admin-field-label">Confirm Password</span>
                                         <input name="password_confirmation" type="password" class="admin-input" required autocomplete="new-password">
                                     </label>
@@ -215,23 +232,6 @@
                                             @endforeach
                                         </div>
                                     </div>
-
-                                    <div>
-                                        <div class="admin-field-label">Direct Permissions</div>
-                                        <div class="admin-option-grid">
-                                            @foreach ($permissions as $permission)
-                                                <label class="admin-option">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="permissions[]"
-                                                        value="{{ $permission->name }}"
-                                                        @checked(in_array($permission->name, old('_form') === 'create' ? old('permissions', []) : [], true))
-                                                    >
-                                                    <span>{{ $permission->name }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -239,7 +239,7 @@
                                 <button type="button" class="admin-modal-cancel" @click="createOpen = false">
                                     Cancel
                                 </button>
-                                <button type="submit" class="ainpa-button ainpa-button-primary">Create User</button>
+                                <button type="submit" class="ainpa-button ainpa-button-primary">Create Account</button>
                             </div>
                         </form>
                     </section>

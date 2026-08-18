@@ -10,17 +10,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('q', ''));
+
         return view('admin.users.index', [
-            'users' => User::with(['roles', 'permissions'])->orderBy('id')->get(),
+            'users' => User::query()
+                ->with('roles')
+                ->when($search !== '', function ($query) use ($search): void {
+                    $query->where(function ($query) use ($search): void {
+                        $query->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('email', 'like', '%'.$search.'%')
+                            ->orWhere('phone', 'like', '%'.$search.'%');
+                    });
+                })
+                ->orderBy('id')
+                ->paginate(50)
+                ->withQueryString(),
             'roles' => Role::orderBy('name')->get(),
-            'permissions' => Permission::orderBy('name')->get(),
+            'search' => $search,
         ]);
     }
 
@@ -29,11 +41,10 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+()\-.\s]{5,50}$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'roles' => ['array'],
             'roles.*' => ['exists:roles,name'],
-            'permissions' => ['array'],
-            'permissions.*' => ['exists:permissions,name'],
         ]);
 
         $roles = $data['roles'] ?? [];
@@ -48,11 +59,11 @@ class UserController extends Controller
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'phone' => filled($data['phone'] ?? null) ? trim($data['phone']) : null,
             'password' => Hash::make($data['password']),
         ]);
 
         $user->syncRoles($roles);
-        $user->syncPermissions($data['permissions'] ?? []);
 
         return back()->with('status', 'تم إنشاء المستخدم.');
     }
@@ -62,11 +73,10 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+()\-.\s]{5,50}$/'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'roles' => ['array'],
             'roles.*' => ['exists:roles,name'],
-            'permissions' => ['array'],
-            'permissions.*' => ['exists:permissions,name'],
         ]);
 
         $roles = $data['roles'] ?? [];
@@ -74,14 +84,14 @@ class UserController extends Controller
 
         $user->name = $data['name'];
         $user->email = $data['email'];
+        $user->phone = filled($data['phone'] ?? null) ? trim($data['phone']) : null;
         if (! empty($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
         $user->save();
         $user->syncRoles($roles);
-        $user->syncPermissions($data['permissions'] ?? []);
 
-        return back()->with('status', 'تم تحديث المستخدم وصلاحياته.');
+        return back()->with('status', 'تم تحديث المستخدم وأدواره.');
     }
 
     public function verifyEmail(User $user): RedirectResponse

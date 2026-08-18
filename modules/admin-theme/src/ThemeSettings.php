@@ -76,7 +76,7 @@ class ThemeSettings
     }
 
     /**
-     * @param array<string, mixed> $values
+     * @param  array<string, mixed>  $values
      */
     public function save(array $values): void
     {
@@ -151,6 +151,10 @@ class ThemeSettings
 :root {
     --ainpa-admin-sidebar-width: {$number('sidebar_width')}px;
     --ainpa-admin-topbar-height: {$number('header_height')}px;
+    --ainpa-admin-sidebar: {$color('sidebar_background')};
+    --ainpa-admin-sidebar-deep: color-mix(in srgb, {$color('sidebar_background')} 78%, #240000);
+    --ainpa-admin-sidebar-text: {$color('sidebar_text_color')};
+    --ainpa-admin-active-menu: {$color('active_menu_color')};
     --ainpa-primary: {$color('primary_color')};
     --ainpa-admin-primary: {$color('primary_color')};
     --ainpa-page-bg: {$color('page_background')};
@@ -165,21 +169,6 @@ html body {
     background: {$color('page_background')} !important;
     font-family: {$font} !important;
     font-size: {$number('base_font_size')}px !important;
-}
-html body .z4-admin-sidebar {
-    background: {$color('sidebar_background')} !important;
-    width: {$number('sidebar_width')}px !important;
-}
-html body .z4-admin-sidebar,
-html body .z4-admin-sidebar a,
-html body .z4-admin-sidebar button {
-    color: {$color('sidebar_text_color')} !important;
-}
-html body .z4-admin-link.is-active,
-html body .z4-admin-link[aria-current="page"],
-html body .z4-admin-submenu-link.is-active,
-html body .z4-admin-submenu-link[aria-current="page"] {
-    background: {$color('active_menu_color')} !important;
 }
 html body .z4-admin-bar {
     height: {$number('header_height')}px !important;

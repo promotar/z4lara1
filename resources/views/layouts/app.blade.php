@@ -35,7 +35,7 @@
         @stack('styles')
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100" style="padding-top: 32px; padding-left: 160px;">
+        <div class="z4-admin-shell min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
             <!-- Page Heading -->

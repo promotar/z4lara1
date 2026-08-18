@@ -9,6 +9,8 @@ class AdminThemeSubmenuPositioningTest extends TestCase
     public function test_flyout_coordinates_are_applied_directly_to_the_visible_panels(): void
     {
         $themePath = __DIR__.'/../../modules/admin-theme/resources/css/admin-theme.css';
+        $navigationThemePath = __DIR__.'/../../modules/admin-theme/resources/css/admin-navigation.css';
+        $pageThemePath = __DIR__.'/../../modules/admin-theme/resources/css/admin-pages.css';
 
         if (! is_file($themePath)) {
             self::markTestSkipped('The optional admin theme plugin is not installed.');
@@ -16,9 +18,17 @@ class AdminThemeSubmenuPositioningTest extends TestCase
 
         $navigation = file_get_contents(__DIR__.'/../../resources/views/layouts/navigation.blade.php');
         $theme = file_get_contents($themePath);
+        $navigationTheme = file_get_contents($navigationThemePath);
+        $pageTheme = file_get_contents($pageThemePath);
+        $provider = file_get_contents(__DIR__.'/../../modules/admin-theme/src/ArtInpaAdminProThemeServiceProvider.php');
+        $layout = file_get_contents(__DIR__.'/../../resources/views/layouts/app.blade.php');
 
         self::assertIsString($navigation);
         self::assertIsString($theme);
+        self::assertIsString($navigationTheme);
+        self::assertIsString($pageTheme);
+        self::assertIsString($provider);
+        self::assertIsString($layout);
         self::assertStringContainsString("panel.style.setProperty('left', panelLeft + 'px', 'important')", $navigation);
         self::assertStringContainsString("panel.style.setProperty('top', panelTop + 'px', 'important')", $navigation);
         self::assertStringContainsString('const panelTop = Math.max(42, Math.min(groupRect.top', $navigation);
@@ -29,5 +39,17 @@ class AdminThemeSubmenuPositioningTest extends TestCase
         self::assertStringNotContainsString('--z4-submenu-flyout-left', $theme);
         self::assertStringContainsString('html body .dashboard-sidebar button:hover {', $theme);
         self::assertDoesNotMatchRegularExpression('/html body\\s*\\{[^}]*transform:\\s*translateX/s', $theme);
+        self::assertStringNotContainsString('always-open inline navigation', $theme);
+        self::assertStringNotContainsString('never use hover flyouts', $theme);
+        self::assertStringContainsString('.z4-admin-section:not(.is-open):hover > .z4-admin-section-body', $navigationTheme);
+        self::assertStringContainsString('.z4-admin-section.is-open > .z4-admin-section-body', $navigationTheme);
+        self::assertStringContainsString('position: fixed !important', $navigationTheme);
+        self::assertStringContainsString('data-plugin-admin-component="admin-navigation"', $provider);
+        self::assertStringContainsString('data-plugin-admin-component="admin-pages"', $provider);
+        self::assertStringContainsString('.media-workspace', $pageTheme);
+        self::assertStringContainsString('.wp-settings', $pageTheme);
+        self::assertStringContainsString('.admin-user-search', $pageTheme);
+        self::assertStringContainsString('class="z4-admin-shell min-h-screen bg-gray-100"', $layout);
+        self::assertStringNotContainsString('style="padding-top: 32px; padding-left: 160px;"', $layout);
     }
 }
