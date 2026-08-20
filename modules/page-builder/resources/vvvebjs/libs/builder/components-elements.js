@@ -54,7 +54,7 @@ Vvveb.Components.extend("_base","elements/figure", {
     image: "icons/image.svg",
     resizable:true,
     html: `<figure>
-		  <img src="${Vvveb.baseUrl}icons/image.svg" alt="Trulli">
+		  <img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Trulli">
 		  <figcaption>Fig.1 - Trulli, Puglia, Italy.</figcaption>
 		  <div class="border"></div>
 		</figure>`,
@@ -422,37 +422,37 @@ Vvveb.Components.add("elements/gallery", {
 			<div class="gallery masonry has-shadow" data-component-gallery>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/1.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/2.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/3.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/4.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/5.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/6.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 				<div class="item">
 					<a>
-						<img src="../../media/posts/7.jpg">
+						<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 					</a>
 				</div>
 			</div>
@@ -550,7 +550,7 @@ Vvveb.Components.add("elements/gallery", {
 			inputtype: ButtonInput,
 			data: {text:"Add image", icon:"la la-plus"},
 			onChange: function(node) {
-				 node.append(generateElements('<div class="item"><a><img src="../../media/posts/1.jpg"></a></div>')[0]);
+				 node.append(generateElements('<div class="item"><a><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio"></a></div>')[0]);
 				 
 				 //render component properties again to include the new image
 				 //Vvveb.Components.render("ellements/gallery");
@@ -817,7 +817,7 @@ Vvveb.Components.add("elements/flip-box", {
 		  <div class="flip-box-inner">
 			<div class="flip-box-front">
 				  <div class="card">
-				  <img src="../../media/posts/1.jpg" class="card-img-top" alt="Post">
+				  <img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="card-img-top" alt="Choose an image from Media Studio">
 				  <div class="card-body">
 					<h5 class="card-title">Card title</h5>
 					<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -829,7 +829,7 @@ Vvveb.Components.add("elements/flip-box", {
 			<div class="flip-box-back">
 				<div class="d-flex align-items-center flex-column">
 				  <div class="flex-shrink-0">
-					<img src="../../media/posts/2.jpg" alt="Post">
+					<img src="/page-builder-assets/v6/libs/builder/icons/image.svg" alt="Choose an image from Media Studio">
 				  </div>
 				  <div class="flex-grow-1 ms-3">
 					<p>
@@ -1073,10 +1073,10 @@ Vvveb.Components.add("elements/carousel", {
     html: `
 	  <div class="swiper" data-slides-per-view="3" data-draggable="true">
 		<div class="swiper-wrapper">
-		  <div class="swiper-slide"><img src="/media/4.jpg" class="img-fluid"><p>Slide 1</p></div>
-		  <div class="swiper-slide"><img src="/media/2.jpg" class="img-fluid"><p>Slide 2</p></div>
-		  <div class="swiper-slide"><img src="/media/5.jpg" class="img-fluid"><p>Slide 3</p></div>
-		  <div class="swiper-slide"><img src="/media/7.jpg" class="img-fluid"><p>Slide 4</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slide 1</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slide 2</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slide 3</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slide 4</p></div>
 		</div>
 		<div class="swiper-pagination"></div>
 
@@ -1113,7 +1113,7 @@ Vvveb.Components.add("elements/carousel", {
 			container:".swiper-wrapper",
 			prefix:"Slide ",
 			removeElement: false,//handle manually with removeSlide
-			//"newElement": `<div class="swiper-slide"><img src="../../media/posts/1.jpg" class="img-fluid"><p>Slide 1</p></div>`
+			//"newElement": `<div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid"><p>Slide 1</p></div>`
 		},
         onChange: function(node, value, input, component, event) {
 			let element = node;
@@ -1124,9 +1124,8 @@ Vvveb.Components.add("elements/carousel", {
 
 			if (event.action) {
 				if (event.action == "add") {
-					let random = Math.floor(Math.random() * 6) + 1;
 					let index = element.swiper.slides.length + 1;
-					element.swiper.appendSlide(generateElements(`<div class="swiper-slide"><img src="../../media/posts/${random}.jpg" class="img-fluid"><p>Slide ${index}</p></div>`)[0]);
+					element.swiper.appendSlide(generateElements(`<div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slide ${index}</p></div>`)[0]);
 					element.swiper.slideTo(index);
 					//temporary solution to better update list
 					Vvveb.Components.render("elements/carousel");
@@ -1272,10 +1271,10 @@ Vvveb.Components.add("elements/slider", {
      html: `
 	  <div class="swiper" data-slides-per-view="1" data-draggable="true" data-navigation='{"nextEl": ".swiper-button-next","prevEl": ".swiper-button-prev"}'>
 		<div class="swiper-wrapper">
-		  <div class="swiper-slide"><img src="/media/posts/1.jpg" class="img-fluid"><p>Slider 1</p></div>
-		  <div class="swiper-slide"><img src="/media/posts/2.jpg" class="img-fluid"><p>Slider 2</p></div>
-		  <div class="swiper-slide"><img src="/media/posts/3.jpg" class="img-fluid"><p>Slider 3</p></div>
-		  <div class="swiper-slide"><img src="/media/posts/4.jpg" class="img-fluid"><p>Slider 4</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slider 1</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slider 2</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slider 3</p></div>
+		  <div class="swiper-slide"><img src="/page-builder-assets/v6/libs/builder/icons/image.svg" class="img-fluid" alt="Choose an image from Media Studio"><p>Slider 4</p></div>
 		</div>
 		<div class="swiper-pagination"></div>
 

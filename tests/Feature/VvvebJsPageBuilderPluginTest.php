@@ -24,6 +24,7 @@ class VvvebJsPageBuilderPluginTest extends TestCase
         $plugin = new Plugin(['slug' => $manifest['slug'], 'manifest' => $manifest]);
 
         $this->assertSame('page-builder', $manifest['slug']);
+        $this->assertSame('3.4.1', $manifest['version']);
         $this->assertSame('Modules\\PageBuilder\\VvvebJsServiceProvider', $manifest['provider']);
         $this->assertSame('src/VvvebJsServiceProvider.php', $manifest['provider_file']);
         $this->assertSame('filter', $manifest['hooks']['editor.extensions']['type']);
@@ -59,6 +60,49 @@ class VvvebJsPageBuilderPluginTest extends TestCase
         $this->assertStringNotContainsString('@import', $document);
         $this->assertStringNotContainsString('onclick=', $document);
         $this->assertStringNotContainsString('javascript:', $document);
+    }
+
+    public function test_editor_uploads_through_the_platform_media_contract(): void
+    {
+        $integration = (string) file_get_contents(
+            base_path('modules/page-builder/resources/vvvebjs/integration/js/vvveb-integration.js'),
+        );
+
+        $this->assertStringContainsString("body.append('media', file)", $integration);
+        $this->assertStringNotContainsString("body.append('file', file)", $integration);
+        $this->assertStringContainsString('media.media_url || media.url', $integration);
+        $this->assertStringContainsString("new URL(String(media.media_url || media.url || ''), window.location.origin)", $integration);
+        $this->assertStringContainsString("mediaUrl.pathname.startsWith('/storage/')", $integration);
+        $this->assertStringContainsString('path: platformMediaPath.slice(1)', $integration);
+
+        $routes = (string) file_get_contents(base_path('modules/page-builder/routes/web.php'));
+        $controller = (string) file_get_contents(
+            base_path('modules/page-builder/src/Http/Controllers/Admin/PageController.php'),
+        );
+
+        $this->assertStringContainsString("'/page-builder-assets/v6/{path}'", $routes);
+        $this->assertStringContainsString("url('/page-builder-assets/v6')", $controller);
+    }
+
+    public function test_loaded_builder_elements_do_not_seed_legacy_media_urls(): void
+    {
+        $runtimeSources = [
+            'modules/page-builder/resources/vvvebjs/libs/builder/components-html.js',
+            'modules/page-builder/resources/vvvebjs/libs/builder/components-elements.js',
+            'modules/page-builder/resources/vvvebjs/libs/builder/section.js',
+            'modules/page-builder/resources/vvvebjs/demo/landing/sections/sections.js',
+            'modules/page-builder/resources/vvvebjs/libs/builder/sections-bootstrap4.js',
+        ];
+
+        foreach ($runtimeSources as $source) {
+            $contents = (string) file_get_contents(base_path($source));
+
+            $this->assertDoesNotMatchRegularExpression(
+                '~(?:src|poster)=["\'](?:\.\./\.\./|/)media/~',
+                $contents,
+                $source.' still seeds a legacy media URL.',
+            );
+        }
     }
 
     public function test_required_page_builder_is_reactivated_when_registry_state_is_tampered_with(): void

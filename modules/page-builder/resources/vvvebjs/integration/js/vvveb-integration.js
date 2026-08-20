@@ -87,31 +87,51 @@
             return originalGallery.call(this);
         };
 
-        MediaModal.prototype.onUpload = function (event) {
-            const file = event.target.files?.[0];
-            if (!file || !Vvveb.MediaModal) return;
+        MediaModal.prototype.onUpload = async function (event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length || !Vvveb.MediaModal) return;
+
             Vvveb.MediaModal.showUploadLoading();
-            const body = new FormData();
-            body.append('file', file);
-            fetch(config.mediaUploadUrl, {
-                method: 'POST',
-                headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': config.csrfToken},
-                body,
-                credentials: 'same-origin'
-            }).then(response => {
-                if (!response.ok) throw new Error('Upload failed');
-                return response.json();
-            }).then(data => {
-                const media = data.media;
-                const item = Vvveb.MediaModal.addFile({
-                    name: media.name,
-                    type: 'file',
-                    path: String(media.url).replace(/^\//, ''),
-                    size: media.size_bytes || 1
-                }, true);
-                item.scrollIntoView({behavior: 'smooth', block: 'center'});
-            }).catch(() => displayToast('bg-danger', 'Media', 'Upload failed'))
-              .finally(() => Vvveb.MediaModal.hideUploadLoading());
+
+            try {
+                for (const file of files) {
+                    const body = new FormData();
+                    body.append('media', file);
+
+                    const response = await fetch(config.mediaUploadUrl, {
+                        method: 'POST',
+                        headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': config.csrfToken},
+                        body,
+                        credentials: 'same-origin'
+                    });
+                    const data = await response.json().catch(() => ({}));
+
+                    if (!response.ok || !data?.media) {
+                        throw new Error(data?.message || 'Upload failed');
+                    }
+
+                    const media = data.media;
+                    const mediaUrl = new URL(String(media.media_url || media.url || ''), window.location.origin);
+                    if (!mediaUrl.pathname.startsWith('/storage/')) {
+                        throw new Error('The media library returned an invalid URL.');
+                    }
+
+                    const platformMediaPath = mediaUrl.pathname;
+
+                    const item = Vvveb.MediaModal.addFile({
+                        name: media.name || file.name,
+                        type: 'file',
+                        path: platformMediaPath.slice(1),
+                        size: file.size || 1
+                    }, true);
+                    item.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            } catch (error) {
+                displayToast('bg-danger', 'Media', error?.message || 'Upload failed');
+            } finally {
+                event.target.value = '';
+                Vvveb.MediaModal.hideUploadLoading();
+            }
         };
     }
 

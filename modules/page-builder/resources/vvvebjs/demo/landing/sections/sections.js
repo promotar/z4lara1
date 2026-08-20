@@ -2440,7 +2440,7 @@ Vvveb.Sections.add("navigation/navigation-1", {
               <span data-v-menu-item-name data-v-if-not="category.type = 'text'"></span>
               <span data-v-menu-item-content>
                 <p>
-                  <img src="/media/vvveb.svg" height="24" alt="" class="me-2">Mega menu
+                  <img src="/page-builder-assets/v6/libs/builder/icons/image.svg" height="24" alt="" class="me-2">Mega menu
                 </p>
               </span>
             </a>
@@ -2922,7 +2922,7 @@ Vvveb.Sections.add("navigation/navigation-1", {
               <span data-v-menu-item-name data-v-if-not="category.type = 'text'"></span>
               <span data-v-menu-item-content>
                 <p>
-                  <img src="/media/vvveb.svg" height="24" alt="" class="me-2">Mega menu
+                  <img src="/page-builder-assets/v6/libs/builder/icons/image.svg" height="24" alt="" class="me-2">Mega menu
                 </p>
               </span>
             </a>
@@ -3535,7 +3535,7 @@ Vvveb.Sections.add("navigation/navigation-1", {
               <span data-v-menu-item-name data-v-if-not="category.type = 'text'"></span>
               <span data-v-menu-item-content>
                 <p>
-                  <img src="/media/vvveb.svg" height="24" alt="" class="me-2">Mega menu
+                  <img src="/page-builder-assets/v6/libs/builder/icons/image.svg" height="24" alt="" class="me-2">Mega menu
                 </p>
               </span>
             </a>

@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Modules\PageBuilder\Http\Controllers\PublicPageController;
 use Modules\PageBuilder\Http\Controllers\VvvebAssetController;
 
+Route::get('/page-builder-assets/v6/{path}', [VvvebAssetController::class, 'show'])
+    ->where('path', '.*')
+    ->name('page-builder.assets.v6');
+
 Route::get('/page-builder-assets/v5/{path}', [VvvebAssetController::class, 'show'])
     ->where('path', '.*')
     ->name('page-builder.assets.v5');
