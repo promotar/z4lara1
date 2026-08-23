@@ -24,7 +24,7 @@ class VvvebJsPageBuilderPluginTest extends TestCase
         $plugin = new Plugin(['slug' => $manifest['slug'], 'manifest' => $manifest]);
 
         $this->assertSame('page-builder', $manifest['slug']);
-        $this->assertSame('3.4.1', $manifest['version']);
+        $this->assertSame('3.4.2', $manifest['version']);
         $this->assertSame('Modules\\PageBuilder\\VvvebJsServiceProvider', $manifest['provider']);
         $this->assertSame('src/VvvebJsServiceProvider.php', $manifest['provider_file']);
         $this->assertSame('filter', $manifest['hooks']['editor.extensions']['type']);
@@ -70,6 +70,9 @@ class VvvebJsPageBuilderPluginTest extends TestCase
 
         $this->assertStringContainsString("body.append('media', file)", $integration);
         $this->assertStringNotContainsString("body.append('file', file)", $integration);
+        $this->assertStringContainsString("typeof MediaModal === 'function'", $integration);
+        $this->assertStringNotContainsString('if (window.MediaModal)', $integration);
+        $this->assertStringContainsString('mediaModalPrototype.onUpload = async function', $integration);
         $this->assertStringContainsString('media.media_url || media.url', $integration);
         $this->assertStringContainsString("new URL(String(media.media_url || media.url || ''), window.location.origin)", $integration);
         $this->assertStringContainsString("mediaUrl.pathname.startsWith('/storage/')", $integration);

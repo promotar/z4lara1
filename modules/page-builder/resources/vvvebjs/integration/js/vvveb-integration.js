@@ -80,14 +80,16 @@
     const settingsModal = document.querySelector('#art-inpa-vvveb-settings');
     settingsModal.addEventListener('show.bs.modal', loadRevisions);
 
-    if (window.MediaModal) {
-        const originalGallery = MediaModal.prototype.initGallery;
-        MediaModal.prototype.initGallery = function () {
+    if (typeof MediaModal === 'function') {
+        const mediaModalPrototype = MediaModal.prototype;
+        const originalGallery = mediaModalPrototype.initGallery;
+
+        mediaModalPrototype.initGallery = function () {
             window.mediaScanUrl = config.mediaUrl;
             return originalGallery.call(this);
         };
 
-        MediaModal.prototype.onUpload = async function (event) {
+        mediaModalPrototype.onUpload = async function (event) {
             const files = Array.from(event.target.files || []);
             if (!files.length || !Vvveb.MediaModal) return;
 
