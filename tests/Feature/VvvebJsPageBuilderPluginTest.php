@@ -83,8 +83,8 @@ class VvvebJsPageBuilderPluginTest extends TestCase
             base_path('modules/page-builder/src/Http/Controllers/Admin/PageController.php'),
         );
 
-        $this->assertStringContainsString("'/page-builder-assets/v6/{path}'", $routes);
-        $this->assertStringContainsString("url('/page-builder-assets/v6')", $controller);
+        $this->assertStringContainsString("'/page-builder-assets/v7/{path}'", $routes);
+        $this->assertStringContainsString("url('/page-builder-assets/v7')", $controller);
     }
 
     public function test_loaded_builder_elements_do_not_seed_legacy_media_urls(): void

@@ -145,7 +145,7 @@ class PageController extends Controller
         $record = $this->findPage($page);
         $template = dirname(__DIR__, 4).'/resources/vvvebjs/editor.html';
         abort_unless(is_file($template), 503, 'VvvebJs assets are not installed.');
-        $assetBase = url('/page-builder-assets/v6');
+        $assetBase = url('/page-builder-assets/v7');
 
         $config = [
             'csrfToken' => csrf_token(),
