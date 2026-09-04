@@ -4,8 +4,8 @@
     $vvvebRenderer = app(\Modules\PageBuilder\ThemeCompositionService::class);
     $vvvebView = $vvvebRenderer->pageViewData($page, (bool) ($isPreview ?? false));
     extract($vvvebView, EXTR_SKIP);
-    $siteLanguage = ($platformSettings['general.site_language'] ?? 'ar') === 'en' ? 'en' : 'ar';
-    $htmlDirection = $siteLanguage === 'ar' ? 'rtl' : 'ltr';
+    $siteLanguage = $platformLocale ?? app()->getLocale();
+    $htmlDirection = $platformDirection ?? app(\App\Platform\Core\Localization\PlatformLocale::class)->direction($siteLanguage);
 @endphp
 <html lang="{{ $siteLanguage }}" dir="{{ $htmlDirection }}">
     <head>

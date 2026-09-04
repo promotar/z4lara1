@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApplyPlatformLocale;
 use App\Http\Middleware\EnforceRoutePermission;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsurePlatformInstalled;
@@ -50,11 +51,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            ApplyPlatformLocale::class,
             EnsureRegisteredRoute::class,
             EnforceRoutePermission::class,
         ]);
 
-        $middleware->api(append: [EnforceRoutePermission::class]);
+        $middleware->api(append: [
+            ApplyPlatformLocale::class,
+            EnforceRoutePermission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

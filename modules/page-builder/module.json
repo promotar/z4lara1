@@ -1,10 +1,10 @@
 {
   "name": "Page Builder",
   "slug": "page-builder",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "type": "feature",
   "core": true,
-  "platform_version": ">=3.4.3 <4.0.0",
+  "platform_version": ">=3.4.4 <4.0.0",
   "description": "The single VvvebJs visual builder for pages and reusable designs with ordered theme headers and footers.",
   "author": "Art INPA",
   "provider": "Modules\\PageBuilder\\VvvebJsServiceProvider",

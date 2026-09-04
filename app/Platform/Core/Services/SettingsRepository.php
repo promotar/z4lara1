@@ -617,7 +617,7 @@ class SettingsRepository
                 'membership_enabled' => ['label' => 'Membership', 'type' => 'boolean', 'default' => true, 'sort_order' => 70, 'help_text' => 'Allow anyone to register.'],
                 'email_verification_required' => ['label' => 'Require Email Verification', 'type' => 'boolean', 'default' => true, 'sort_order' => 80, 'help_text' => 'Require newly registered users to verify their email address before accessing verified areas.'],
                 'default_user_role' => ['label' => 'New User Default Role', 'type' => 'select', 'default' => 'user', 'sort_order' => 90],
-                'site_language' => ['label' => 'Site Language', 'type' => 'select', 'default' => 'ar', 'sort_order' => 100, 'options' => ['ar' => 'Arabic', 'en' => 'English'], 'is_public' => true],
+                'site_language' => ['label' => 'Site Language', 'type' => 'select', 'default' => 'en', 'sort_order' => 100, 'options' => ['en' => 'English', 'ar' => 'Arabic'], 'is_public' => true],
                 'timezone' => ['label' => 'Timezone', 'type' => 'select', 'default' => 'Asia/Amman', 'sort_order' => 110, 'options' => ['Asia/Amman' => 'Asia/Amman', 'UTC' => 'UTC', 'Asia/Riyadh' => 'Asia/Riyadh', 'Europe/London' => 'Europe/London', 'America/New_York' => 'America/New_York']],
                 'date_format' => ['label' => 'Date Format', 'type' => 'radio', 'default' => 'F j, Y', 'sort_order' => 120, 'options' => ['F j, Y' => 'June 23, 2026', 'Y-m-d' => '2026-06-23', 'm/d/Y' => '06/23/2026', 'd/m/Y' => '23/06/2026', 'd.m.Y' => '23.06.2026', 'custom' => 'Custom']],
                 'custom_date_format' => ['label' => 'Custom Date Format', 'type' => 'text', 'default' => 'F j, Y', 'sort_order' => 130],

@@ -18,9 +18,9 @@
     $ogImage = $platformSettings['seo.open_graph_image'] ?? null;
     $siteIcon = $platformSettings['general.site_icon'] ?? null;
     $siteLogo = $platformSettings['general.site_logo'] ?? null;
-    $siteLanguage = ($platformSettings['general.site_language'] ?? 'ar') === 'en' ? 'en' : 'ar';
-    $isArabicLanguage = $siteLanguage === 'ar';
-    $htmlDirection = $isArabicLanguage ? 'rtl' : 'ltr';
+    $siteLanguage = $platformLocale ?? app()->getLocale();
+    $htmlDirection = $platformDirection ?? app(\App\Platform\Core\Localization\PlatformLocale::class)->direction($siteLanguage);
+    $isArabicLanguage = str_starts_with(strtolower($siteLanguage), 'ar');
     $translations = [
         'Home' => 'الرئيسية',
         'My Account' => 'حسابي',

@@ -44,7 +44,7 @@ class AdminThemePolicyTest extends TestCase
             'version' => '1.0.0',
             'type' => 'theme',
             'theme' => ['scope' => 'admin'],
-            'platform_version' => '>=3.4.3 <4.0.0',
+            'platform_version' => '>=3.4.4 <4.0.0',
             'description' => 'Custom admin theme.',
             'author' => 'Tests',
             'provider' => 'Modules\\CustomAdminTheme\\CustomAdminThemeServiceProvider',

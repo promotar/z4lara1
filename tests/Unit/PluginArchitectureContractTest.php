@@ -23,7 +23,6 @@ class PluginArchitectureContractTest extends TestCase
     public function test_every_runtime_plugin_declares_the_unified_platform_contract(): void
     {
         $manifests = glob(dirname(__DIR__, 2).'/modules/*/module.json') ?: [];
-
         self::assertNotEmpty($manifests);
 
         foreach ($manifests as $manifestPath) {
@@ -31,8 +30,8 @@ class PluginArchitectureContractTest extends TestCase
 
             self::assertIsArray($manifest, $manifestPath.' must contain valid JSON.');
             self::assertContains($manifest['type'] ?? null, ['feature', 'theme', 'service'], $manifestPath);
-            self::assertMatchesRegularExpression(
-                '/^>=3\.4\.3 <4\.0\.0$/',
+            self::assertSame(
+                '>=3.4.4 <4.0.0',
                 (string) ($manifest['platform_version'] ?? ''),
                 $manifestPath,
             );

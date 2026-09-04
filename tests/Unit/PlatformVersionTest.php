@@ -18,7 +18,7 @@ class PlatformVersionTest extends TestCase
         preg_match('/^PLATFORM_VERSION=(\d+\.\d+\.\d+)$/m', $environment, $matches);
         $declaredVersion = $matches[1];
 
-        $this->assertSame('3.4.3', $declaredVersion);
+        $this->assertSame('3.4.4', $declaredVersion);
         $this->assertSame($declaredVersion, config('platform.version'));
         $this->assertStringContainsString(
             "env('PLATFORM_VERSION', '{$declaredVersion}')",
@@ -28,7 +28,7 @@ class PlatformVersionTest extends TestCase
 
     public function test_current_platform_version_satisfies_supported_plugin_contracts(): void
     {
-        config()->set('platform.version', '3.4.3');
+        config()->set('platform.version', '3.4.4');
         $version = new PlatformVersion;
 
         $this->assertTrue($version->supports('>=3.4.3 <4.0.0'));

@@ -1,13 +1,13 @@
 {
   "name": "Admin Theme",
   "slug": "admin-theme",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "theme",
   "theme": {
     "scope": "admin",
     "default": true
   },
-  "platform_version": ">=3.4.3 <4.0.0",
+  "platform_version": ">=3.4.4 <4.0.0",
   "description": "Professional light admin dashboard theme using the Art INPA red and orange visual identity.",
   "author": "Art INPA",
   "provider": "Modules\\ArtInpaAdminProTheme\\ArtInpaAdminProThemeServiceProvider",

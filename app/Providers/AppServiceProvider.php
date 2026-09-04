@@ -9,6 +9,7 @@ use App\Platform\Core\Contracts\EditorialContentProvider;
 use App\Platform\Core\Contracts\LatestContentProvider;
 use App\Platform\Core\Hooks\HookLoader;
 use App\Platform\Core\Hooks\HookManager;
+use App\Platform\Core\Localization\PlatformLocale;
 use App\Platform\Core\Rendering\NullEditorialContentProvider;
 use App\Platform\Core\Rendering\NullLatestContentProvider;
 use App\Platform\Core\Services\ActivePluginStylesheets;
@@ -39,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PluginAssetRegistry::class);
         $this->app->singleton(ActivePluginStylesheets::class);
         $this->app->scoped(SettingsRepository::class);
+        $this->app->scoped(PlatformLocale::class);
         $this->app->scoped(PlatformMailConfigurator::class);
         $this->app->singleton(EditorialContentProvider::class, NullEditorialContentProvider::class);
         $this->app->singleton(LatestContentProvider::class, NullLatestContentProvider::class);
@@ -61,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
 
         Queue::before(function (): void {
             try {
+                $this->app->make(PlatformLocale::class)->apply();
                 $this->app->make(PlatformMailConfigurator::class)->apply();
             } catch (Throwable) {
                 // A mail configuration refresh must not prevent an unrelated
