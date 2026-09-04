@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Platform\Core\Services\SettingsRepository;
+use App\Platform\Core\Users\UserDeletionCoordinator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 
@@ -105,6 +108,35 @@ class UserController extends Controller
         ])->save();
 
         return back()->with('status', 'تم تفعيل البريد الإلكتروني للمستخدم بواسطة الإدارة.');
+    }
+
+    public function destroy(Request $request, User $user, UserDeletionCoordinator $deletions): RedirectResponse
+    {
+        if ($request->user()?->is($user)) {
+            throw ValidationException::withMessages([
+                'user' => 'You cannot delete the account currently in use.',
+            ]);
+        }
+
+        if ($user->hasRole('super-admin') && ! User::role('super-admin')->whereKeyNot($user->getKey())->exists()) {
+            throw ValidationException::withMessages([
+                'user' => 'The final super administrator cannot be deleted.',
+            ]);
+        }
+
+        $blockers = $deletions->blockers($user);
+        if ($blockers !== []) {
+            throw ValidationException::withMessages(['user' => $blockers]);
+        }
+
+        DB::transaction(function () use ($deletions, $user): void {
+            $deletions->cleanup($user);
+            DB::table('sessions')->where('user_id', $user->getKey())->delete();
+            DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+            $user->delete();
+        }, 3);
+
+        return redirect()->route('admin.users.index')->with('status', 'User deleted.');
     }
 
     /** @param list<string> $roles */

@@ -9,6 +9,9 @@
 
     <form method="POST" action="{{ route('login') }}" class="ainpa-auth-form">
         @csrf
+        @if ($returnTo ?? null)
+            <input type="hidden" name="return_to" value="{{ $returnTo }}">
+        @endif
 
         <label class="ainpa-auth-field" for="email">
             <span>Email Address</span>

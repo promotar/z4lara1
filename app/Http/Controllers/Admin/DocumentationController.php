@@ -7,6 +7,7 @@ use App\Platform\Core\Logs\PlatformLogManager;
 use App\Platform\Core\Registry\PlatformRegistry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -14,15 +15,17 @@ use Illuminate\View\View;
 
 class DocumentationController extends Controller
 {
-    public function index(PlatformRegistry $registry, PlatformLogManager $logs): View
+    public function index(Request $request, PlatformRegistry $registry, PlatformLogManager $logs): View
     {
         return view('admin.documentation.index', [
             'tasks' => DB::table('documentation_tasks')
                 ->orderByRaw('completed_at IS NOT NULL')
                 ->orderBy('sort_order')
                 ->orderBy('id')
-                ->get(),
+                ->paginate(25, ['*'], 'tasks_page')
+                ->withQueryString(),
             'operationLogs' => $this->operationLogs(),
+            'activeDocumentationTab' => $request->has('operations_page') ? 'implementation' : 'tasks',
             'functions' => $registry->functions(),
             'hooks' => $registry->hooks(),
             'routes' => $registry->routes(),
@@ -113,18 +116,20 @@ class DocumentationController extends Controller
         return response()->download($this->reportPath($report));
     }
 
-    private function operationLogs(): array
+    private function operationLogs(): LengthAwarePaginator
     {
         if (! DB::getSchemaBuilder()->hasTable('operation_logs')) {
-            return [];
+            return new LengthAwarePaginator([], 0, 50, 1, [
+                'pageName' => 'operations_page',
+                'path' => request()->url(),
+            ]);
         }
 
         return DB::table('operation_logs')
             ->latest('created_at')
             ->latest('id')
-            ->limit(120)
-            ->get()
-            ->all();
+            ->paginate(50, ['*'], 'operations_page')
+            ->withQueryString();
     }
 
     private function reportSummaries(): array

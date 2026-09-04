@@ -7,6 +7,8 @@ use App\Platform\Core\Models\PlatformMediaMetadata;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -26,9 +28,19 @@ class MediaController extends Controller
             ]);
         }
 
-        return view('admin.media.index', [
-            'mediaLibrary' => $mediaLibrary,
-        ]);
+        $perPage = 48;
+        $pageName = 'media_page';
+        $page = max(1, (int) $request->query($pageName, 1));
+        $media = new LengthAwarePaginator(
+            array_slice($mediaLibrary, ($page - 1) * $perPage, $perPage),
+            count($mediaLibrary),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'pageName' => $pageName],
+        );
+        $media->appends($request->except($pageName));
+
+        return view('admin.media.index', ['mediaLibrary' => $media]);
     }
 
     public function store(Request $request): RedirectResponse|JsonResponse
@@ -182,7 +194,7 @@ class MediaController extends Controller
             ->all();
     }
 
-    private function publicMediaFilePaths(): \Illuminate\Support\Collection
+    private function publicMediaFilePaths(): Collection
     {
         return collect(Storage::disk('public')->allFiles())->unique()->values();
     }
@@ -212,7 +224,7 @@ class MediaController extends Controller
     }
 
     /**
-     * @param array{alt_text?: string|null, title?: string|null, caption?: string|null, description?: string|null} $metadata
+     * @param  array{alt_text?: string|null, title?: string|null, caption?: string|null, description?: string|null}  $metadata
      */
     private function saveMediaMetadata(string $url, array $metadata): void
     {
@@ -296,7 +308,7 @@ class MediaController extends Controller
     }
 
     /**
-     * @param array<string, mixed> $item
+     * @param  array<string, mixed>  $item
      * @return array<string, mixed>
      */
     private function mediaPayload(array $item): array

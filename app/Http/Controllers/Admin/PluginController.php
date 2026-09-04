@@ -22,14 +22,15 @@ class PluginController extends Controller
 
     private const MAX_PLUGIN_EXTRACTED_BYTES = 209715200;
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $plugins = Plugin::query()
             ->latest('created_at')
-            ->get()
-            ->each(function (Plugin $plugin): void {
-                $plugin->setAttribute('admin_settings_link', $this->settingsLink($plugin));
-            });
+            ->paginate(25)
+            ->withQueryString();
+        $plugins->getCollection()->each(function (Plugin $plugin): void {
+            $plugin->setAttribute('admin_settings_link', $this->settingsLink($plugin));
+        });
 
         return view('admin.plugins.index', [
             'plugins' => $plugins,

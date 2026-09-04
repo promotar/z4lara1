@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\DocumentationController;
 use App\Http\Controllers\Admin\MediaController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Ai\AiChatController;
 use App\Http\Controllers\InstallationController;
 use App\Http\Controllers\ProfileController;
-use App\Platform\Core\Services\PluginOwnedPageGuard;
 use App\Platform\Core\Services\PluginRouteLoader;
 use App\Platform\Core\Services\SettingsRepository;
 use Illuminate\Support\Facades\DB;
@@ -97,15 +97,9 @@ Route::post('/ai/message', [AiChatController::class, 'message'])
     ->middleware('throttle:60,1')
     ->name('ai.message');
 
-Route::get('/account', function (PluginOwnedPageGuard $pluginPages) {
-    $user = request()->user();
-
-    if ($user?->hasRole('student') && $pluginPages->isRouteAvailable('lms.front.student.overview')) {
-        return redirect()->route('lms.front.student.overview');
-    }
-
-    return view('frontend.account');
-})->middleware(['auth', 'verified'])->name('front.account');
+Route::get('/account', AccountController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('front.account');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -177,6 +171,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::patch('/users/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('users.verify-email');
         Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
     Route::middleware('permission:roles.manage')->group(function () {

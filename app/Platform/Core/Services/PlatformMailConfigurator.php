@@ -3,7 +3,6 @@
 namespace App\Platform\Core\Services;
 
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Schema;
 
 class PlatformMailConfigurator
 {
@@ -16,10 +15,6 @@ class PlatformMailConfigurator
      */
     public function apply(): void
     {
-        if (! Schema::hasTable('platform_settings')) {
-            return;
-        }
-
         $environmentUsername = config('mail.mailers.smtp.username');
         $environmentPassword = config('mail.mailers.smtp.password');
         $values = $this->settings->values();

@@ -118,7 +118,7 @@ class PluginAssetRegistryTest extends TestCase
             'version' => '1.0.0',
             'provider' => 'Tests\\Fixtures\\UnusedProvider',
             'type' => $type,
-            'platform_version' => '>=2.0.0 <3.0.0',
+            'platform_version' => '>=3.4.3 <4.0.0',
             'assets' => [
                 'source' => 'resources/assets',
                 'frontend' => [

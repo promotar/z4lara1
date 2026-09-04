@@ -7,12 +7,17 @@
     "scope": "admin",
     "default": true
   },
-  "platform_version": ">=2.5.0 <3.0.0",
+  "platform_version": ">=3.4.3 <4.0.0",
   "description": "Professional light admin dashboard theme using the Art INPA red and orange visual identity.",
   "author": "Art INPA",
   "provider": "Modules\\ArtInpaAdminProTheme\\ArtInpaAdminProThemeServiceProvider",
   "provider_file": "src/ArtInpaAdminProThemeServiceProvider.php",
   "dependencies": [],
+  "integrations": {
+    "user_deletion": {
+      "mode": "none"
+    }
+  },
   "routes": {
     "admin": {
       "file": "routes/admin.php",

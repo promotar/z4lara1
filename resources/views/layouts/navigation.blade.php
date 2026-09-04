@@ -105,6 +105,7 @@
                     return [
                         'label' => $t($label),
                         'href' => $href,
+                        'route_name' => $routeName,
                         'active' => $directActive || $childActive,
                         'icon' => (string) ($item['icon'] ?: strtoupper(substr((string) $item['title'], 0, 1))),
                         'visible' => true,
@@ -126,7 +127,12 @@
     }
 
     if ($menuItems === [] && ! $hasAdminAccess) {
-            $menuItems = [
+        $moduleItems = collect($moduleNavigation['items'] ?? [])
+            ->filter(static fn (array $item): bool => (bool) ($item['visible'] ?? true))
+            ->values()
+            ->all();
+
+        $menuItems = $moduleItems !== [] ? $moduleItems : [
                 [
                     'label' => $t('Home'),
                     'href' => route('front.home'),
@@ -145,8 +151,37 @@
                     'type' => 'link',
                     'children' => [],
                 ],
+        ];
+
+        if ($moduleItems !== []) {
+            $menuItems[] = [
+                'label' => $t('My Account'),
+                'href' => route('front.account'),
+                'route_name' => 'front.account',
+                'active' => request()->routeIs('front.account'),
+                'icon' => 'A',
+                'visible' => true,
+                'type' => 'link',
+                'children' => [],
             ];
+        }
     }
+
+    $findAccountItem = function (array $items) use (&$findAccountItem): ?array {
+        foreach ($items as $item) {
+            if (($item['route_name'] ?? null) === 'front.account' && ($item['visible'] ?? true)) {
+                return $item;
+            }
+
+            $match = $findAccountItem($item['children'] ?? []);
+            if ($match !== null) {
+                return $match;
+            }
+        }
+
+        return null;
+    };
+    $accountMenuItem = $findAccountItem($menuItems);
 
     $activeAdminSection = collect($menuItems)->first(fn (array $item): bool =>
         (bool) ($item['active'] ?? false)
@@ -184,7 +219,14 @@
         </div>
 
         <div class="z4-admin-bar-actions">
-            <a href="{{ route('profile.edit') }}" class="z4-admin-profile-link">{{ $user->name }}</a>
+            @if ($accountMenuItem !== null && $accountMenuItem['href'])
+                <a href="{{ $accountMenuItem['href'] }}" class="z4-admin-profile-link" @if($accountMenuItem['target'] ?? null) target="{{ $accountMenuItem['target'] }}" @endif>
+                    <span class="z4-admin-icon z4-admin-profile-icon" aria-hidden="true">{{ $accountMenuItem['icon'] }}</span>
+                    <span>{{ $accountMenuItem['label'] }}</span>
+                </a>
+            @else
+                <span class="z4-admin-profile-link" aria-label="{{ $user->name }}">{{ $user->name }}</span>
+            @endif
             <form method="POST" action="{{ route('logout') }}" class="z4-admin-logout-form">
                 @csrf
                 <button type="submit" class="z4-admin-bar-button">{{ $t('Log Out') }}</button>

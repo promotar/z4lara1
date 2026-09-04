@@ -331,8 +331,8 @@ class MenuSettingsController extends Controller
 
         $routeName = (string) ($data['route_name'] ?? '');
 
-        if ($routeName !== 'dashboard' && ! str_starts_with($routeName, 'admin.')) {
-            throw ValidationException::withMessages(['route_name' => 'Admin sections accept dashboard or admin.* routes only.']);
+        if (! in_array($routeName, ['dashboard', 'front.account'], true) && ! str_starts_with($routeName, 'admin.')) {
+            throw ValidationException::withMessages(['route_name' => 'Admin sections accept dashboard, front.account, or admin.* routes only.']);
         }
 
         $duplicate = MenuItem::query()

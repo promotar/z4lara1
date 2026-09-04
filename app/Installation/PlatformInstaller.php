@@ -73,6 +73,7 @@ final class PlatformInstaller
         Config::set('database.connections.mysql', $this->connection($database));
         DB::purge('mysql');
         Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        Artisan::call('platform:sync-settings');
         $this->requiredCorePlugins->bootstrap();
 
         User::query()->delete();
@@ -132,6 +133,7 @@ final class PlatformInstaller
         // Updates are intentionally non-destructive: only pending migrations
         // run, and existing platform records are never truncated or reseeded.
         Artisan::call('migrate', ['--force' => true, '--no-interaction' => true]);
+        Artisan::call('platform:sync-settings');
 
         $this->state->setInstalled(true);
         Artisan::call('optimize:clear');

@@ -80,6 +80,7 @@ class PluginManifestReader
             'dependencies.*' => ['nullable'],
             'platform_version' => ['required', 'string', 'max:100'],
             'type' => ['required', 'string', 'in:feature,theme,service'],
+            'integrations.user_deletion.mode' => ['required', 'string', 'in:none,participant'],
             'migrations' => ['nullable', 'string', 'regex:/^(?!.*\.\.)(?![\/\\\\])[A-Za-z0-9_.\/-]+$/'],
             'install.migrations' => ['nullable', 'string', 'regex:/^(?!.*\.\.)(?![\/\\\\])[A-Za-z0-9_.\/-]+$/'],
             'uninstall' => ['required', 'array'],

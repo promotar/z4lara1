@@ -4,8 +4,8 @@ namespace App\Platform\Core\Services;
 
 use App\Platform\Core\Models\PlatformMediaMetadata;
 use App\Platform\Core\Models\PlatformSetting;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -16,26 +16,37 @@ use Throwable;
 
 class SettingsRepository
 {
+    /** @var array<string, array<string, mixed>>|null */
+    private ?array $allMemo = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $valuesMemo = null;
+
     /**
      * @return array<string, array<string, mixed>>
      */
     public function all(): array
     {
-        if (! Schema::hasTable('platform_settings')) {
-            return $this->definitionPayloads();
+        if ($this->allMemo !== null) {
+            return $this->allMemo;
         }
 
-        $this->syncDefinitions();
-        $this->importLegacyJsonValues();
+        try {
+            $settings = PlatformSetting::query()
+                ->orderBy('group_key')
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get()
+                ->groupBy('group_key');
+        } catch (QueryException $exception) {
+            if (! $this->isMissingSettingsTable($exception)) {
+                throw $exception;
+            }
 
-        $settings = PlatformSetting::query()
-            ->orderBy('group_key')
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get()
-            ->groupBy('group_key');
+            return $this->allMemo = $this->definitionPayloads();
+        }
 
-        return collect($this->groups())
+        return $this->allMemo = collect($this->groups())
             ->map(function (array $group, string $groupKey) use ($settings): array {
                 $fields = $settings->get($groupKey, collect())
                     ->mapWithKeys(fn (PlatformSetting $setting): array => [
@@ -66,7 +77,6 @@ class SettingsRepository
         ?int $changedBy = null,
         string $source = 'admin.settings',
     ): void {
-        $this->syncDefinitions();
         $changed = false;
 
         PlatformSetting::query()
@@ -118,7 +128,7 @@ class SettingsRepository
             });
 
         if ($changed) {
-            $this->clearSettingsCaches();
+            $this->forgetMemoizedValues();
         }
     }
 
@@ -132,18 +142,24 @@ class SettingsRepository
      */
     public function values(): array
     {
-        if (! Schema::hasTable('platform_settings')) {
-            return $this->defaultValues();
+        if ($this->valuesMemo !== null) {
+            return $this->valuesMemo;
         }
 
-        $this->syncDefinitions();
+        try {
+            return $this->valuesMemo = PlatformSetting::query()
+                ->get()
+                ->mapWithKeys(fn (PlatformSetting $setting): array => [
+                    $setting->group_key.'.'.$setting->setting_key => $this->settingValue($setting),
+                ])
+                ->all();
+        } catch (QueryException $exception) {
+            if (! $this->isMissingSettingsTable($exception)) {
+                throw $exception;
+            }
 
-        return PlatformSetting::query()
-            ->get()
-            ->mapWithKeys(fn (PlatformSetting $setting): array => [
-                $setting->group_key.'.'.$setting->setting_key => $this->settingValue($setting),
-            ])
-            ->all();
+            return $this->valuesMemo = $this->defaultValues();
+        }
     }
 
     /**
@@ -194,6 +210,16 @@ class SettingsRepository
         }
 
         return $values;
+    }
+
+    private function isMissingSettingsTable(QueryException $exception): bool
+    {
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'platform_settings')
+            && (str_contains($message, 'no such table')
+                || str_contains($message, 'base table or view not found')
+                || str_contains($message, "doesn't exist"));
     }
 
     /**
@@ -390,11 +416,7 @@ class SettingsRepository
             'front.home' => 'Default storefront home',
         ];
 
-        if (
-            Schema::hasTable('platform_pages')
-            && Schema::hasColumn('platform_pages', 'content_type')
-            && Route::has('pages.show')
-        ) {
+        if (Route::has('pages.show')) {
             DB::table('platform_pages')
                 ->where('content_type', 'page')
                 ->orderBy('sort_order')
@@ -414,87 +436,19 @@ class SettingsRepository
      */
     private function roleOptions(): array
     {
-        if (Schema::hasTable('roles')) {
-            $roles = DB::table('roles')
-                ->orderBy('name')
-                ->pluck('name', 'name')
-                ->all();
+        $roles = DB::table('roles')
+            ->orderBy('name')
+            ->pluck('name', 'name')
+            ->all();
 
-            if ($roles !== []) {
-                return $roles;
-            }
+        if ($roles !== []) {
+            return $roles;
         }
 
         return [
             'user' => 'User',
             'customer' => 'Customer',
         ];
-    }
-
-    private function syncDefinitions(): void
-    {
-        if (! Schema::hasTable('platform_settings')) {
-            return;
-        }
-
-        foreach ($this->definitions() as $groupKey => $fields) {
-            foreach ($fields as $key => $definition) {
-                PlatformSetting::query()->updateOrCreate(
-                    [
-                        'group_key' => $groupKey,
-                        'setting_key' => $key,
-                    ],
-                    array_merge([
-                        'label' => $definition['label'],
-                        'type' => $definition['type'],
-                        'default_value' => $definition['default'],
-                        'options' => $definition['options'] ?? null,
-                        'help_text' => $definition['help_text'] ?? null,
-                        'sort_order' => $definition['sort_order'] ?? 0,
-                        'is_public' => $definition['is_public'] ?? false,
-                    ], $this->registryPayload($groupKey, $definition)),
-                );
-            }
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $definition
-     * @return array<string, mixed>
-     */
-    private function registryPayload(string $groupKey, array $definition): array
-    {
-        $isPublic = (bool) ($definition['is_public'] ?? false);
-        $payload = [
-            'validation_rules' => $definition['validation_rules'] ?? null,
-            'description' => $definition['description'] ?? $definition['help_text'] ?? null,
-            'category' => $definition['category'] ?? $groupKey,
-            'module' => $definition['module'] ?? 'core',
-            'visibility_level' => $definition['visibility_level'] ?? ($isPublic ? 'public' : 'admin'),
-            'admin_access_level' => $definition['admin_access_level'] ?? 'manage_settings',
-            'editable' => $definition['editable'] ?? true,
-            'required' => $definition['required'] ?? false,
-            'sensitive_flag' => $definition['sensitive_flag'] ?? false,
-            'public_exposure_allowed' => $definition['public_exposure_allowed'] ?? $isPublic,
-            'frontend_available' => $definition['frontend_available'] ?? $isPublic,
-            'cache_enabled' => $definition['cache_enabled'] ?? true,
-            'cache_ttl' => $definition['cache_ttl'] ?? null,
-            'ui_component' => $definition['ui_component'] ?? $definition['type'],
-            'ui_label' => $definition['ui_label'] ?? $definition['label'],
-            'allowed_values' => $definition['allowed_values'] ?? $definition['options'] ?? null,
-            'min_value' => $definition['min_value'] ?? null,
-            'max_value' => $definition['max_value'] ?? null,
-            'unit' => $definition['unit'] ?? null,
-            'depends_on' => $definition['depends_on'] ?? null,
-            'restart_required' => $definition['restart_required'] ?? false,
-            'approval_required' => $definition['approval_required'] ?? false,
-            'status' => $definition['status'] ?? 'active',
-            'version' => $definition['version'] ?? 1,
-        ];
-
-        return collect($payload)
-            ->filter(fn (mixed $value, string $column): bool => Schema::hasColumn('platform_settings', $column))
-            ->all();
     }
 
     private function saveSettingValue(PlatformSetting $setting, mixed $value, ?int $changedBy, string $source): bool
@@ -545,18 +499,13 @@ class SettingsRepository
         ]);
     }
 
-    private function clearSettingsCaches(): void
+    public function forgetMemoizedValues(): void
     {
-        foreach (['cache:clear', 'view:clear'] as $command) {
-            try {
-                Artisan::call($command);
-            } catch (Throwable) {
-                // Cache clearing should not block a committed database setting update.
-            }
-        }
+        $this->allMemo = null;
+        $this->valuesMemo = null;
     }
 
-    private function importLegacyJsonValues(): void
+    public function importLegacyJsonValues(): void
     {
         if (! Schema::hasTable('platform_settings')) {
             return;
@@ -654,7 +603,7 @@ class SettingsRepository
     /**
      * @return array<string, array<string, array<string, mixed>>>
      */
-    private function definitions(): array
+    public function definitions(): array
     {
         return [
             'general' => [

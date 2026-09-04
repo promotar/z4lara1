@@ -50,10 +50,10 @@
                 <section class="media-library media-library-panel is-grid" data-media-library>
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-900">Media Library</h3>
-                        <span class="text-sm text-gray-500">{{ count($mediaLibrary) }} images</span>
+                        <span class="text-sm text-gray-500">{{ $mediaLibrary->total() }} media files</span>
                     </div>
 
-                    @if (empty($mediaLibrary))
+                    @if ($mediaLibrary->isEmpty())
                         <p class="text-sm text-gray-600">No media files uploaded yet.</p>
                     @else
                         <div class="media-grid">
@@ -84,6 +84,7 @@
                                 </article>
                             @endforeach
                         </div>
+                        <x-platform-pagination :paginator="$mediaLibrary" page-name="media_page" />
                     @endif
                 </section>
 

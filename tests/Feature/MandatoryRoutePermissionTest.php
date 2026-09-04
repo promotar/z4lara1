@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Platform\Core\Access\RoutePermissionCatalog;
 use App\Platform\Core\Services\PermissionManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -115,6 +116,29 @@ class MandatoryRoutePermissionTest extends TestCase
 
         $this->assertFalse($student->fresh()->hasPermissionTo($catalog->permissionName('dashboard')));
         $this->assertFalse($student->fresh()->hasPermissionTo($catalog->permissionName('admin.settings.index')));
+    }
+
+    public function test_route_permission_sync_ignores_closure_middleware_without_losing_capabilities(): void
+    {
+        $registeredRoute = Route::get('/admin/closure-middleware-regression', fn () => response('ok'))
+            ->middleware('permission:users.manage')
+            ->name('admin.closure-middleware-regression');
+        $action = $registeredRoute->getAction();
+        $action['middleware'][] = static fn ($request, $next) => $next($request);
+        $registeredRoute->setAction($action);
+        Route::getRoutes()->refreshNameLookups();
+
+        $catalog = app(RoutePermissionCatalog::class);
+        $route = Route::getRoutes()->getByName('admin.closure-middleware-regression');
+
+        $this->assertNotNull($route);
+        $this->assertSame(['users.manage'], $catalog->capabilities($route));
+        $catalog->sync();
+
+        $this->assertDatabaseHas('permissions', [
+            'name' => 'route.admin.closure-middleware-regression',
+            'guard_name' => 'web',
+        ]);
     }
 
     public function test_non_super_admin_cannot_assign_the_super_admin_role(): void

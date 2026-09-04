@@ -34,7 +34,7 @@ class PageController extends Controller
         }
 
         return view('page-builder::pages.index', [
-            'pages' => $pages->latest('updated_at')->latest('id')->get(),
+            'pages' => $pages->latest('updated_at')->latest('id')->paginate(25)->withQueryString(),
             'search' => $search,
         ]);
     }

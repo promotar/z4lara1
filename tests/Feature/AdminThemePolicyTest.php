@@ -44,12 +44,15 @@ class AdminThemePolicyTest extends TestCase
             'version' => '1.0.0',
             'type' => 'theme',
             'theme' => ['scope' => 'admin'],
-            'platform_version' => '>=2.5.0 <3.0.0',
+            'platform_version' => '>=3.4.3 <4.0.0',
             'description' => 'Custom admin theme.',
             'author' => 'Tests',
             'provider' => 'Modules\\CustomAdminTheme\\CustomAdminThemeServiceProvider',
             'provider_file' => 'src/CustomAdminThemeServiceProvider.php',
             'dependencies' => [],
+            'integrations' => [
+                'user_deletion' => ['mode' => 'none'],
+            ],
             'uninstall' => [
                 'tables' => [],
                 'settings' => [],

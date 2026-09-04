@@ -71,7 +71,12 @@
                             </button>
 
                             <div x-show="open === '{{ $managedUser->id }}'" x-cloak class="admin-access-panel">
-                                <form method="POST" action="{{ route('admin.users.update', $managedUser) }}" class="admin-access-form">
+                                <form
+                                    id="admin-user-update-{{ $managedUser->id }}"
+                                    method="POST"
+                                    action="{{ route('admin.users.update', $managedUser) }}"
+                                    class="admin-access-form"
+                                >
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="_form" value="update-{{ $managedUser->id }}">
@@ -122,32 +127,56 @@
                                         </div>
                                     </div>
 
-                                    <div class="admin-access-actions">
-                                        <button type="submit" class="ainpa-button ainpa-button-primary">Save User</button>
-                                    </div>
                                 </form>
 
-                                <div class="admin-access-actions">
-                                    @if ($managedUser->email_verified_at)
-                                        <p class="admin-access-note">
-                                            Active since {{ $managedUser->email_verified_at->format('Y-m-d H:i') }}.
-                                        </p>
-                                    @else
-                                        <div>
+                                <div class="admin-user-action-bar">
+                                    <div class="admin-user-action-status">
+                                        @if ($managedUser->email_verified_at)
+                                            <span class="admin-user-status-dot" aria-hidden="true"></span>
                                             <p class="admin-access-note">
-                                                This user is waiting for email verification. Activating the account manually will mark the email as verified.
+                                                Active since {{ $managedUser->email_verified_at->format('Y-m-d H:i') }}
                                             </p>
+                                        @else
+                                            <span class="admin-user-status-dot is-pending" aria-hidden="true"></span>
+                                            <p class="admin-access-note">
+                                                Email verification is pending.
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    <div class="admin-user-action-buttons">
+                                        <button
+                                            type="submit"
+                                            form="admin-user-update-{{ $managedUser->id }}"
+                                            class="ainpa-button ainpa-button-primary"
+                                        >Save User</button>
+
+                                        @unless ($managedUser->email_verified_at)
                                             <form
                                                 method="POST"
                                                 action="{{ route('admin.users.verify-email', $managedUser) }}"
+                                                class="admin-user-inline-form"
                                                 onsubmit="return confirm('Verify this user email as an administrator?')"
                                             >
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="ainpa-button ainpa-button-primary">Activate User</button>
+                                                <button type="submit" class="ainpa-button ainpa-button-success">Activate User</button>
                                             </form>
-                                        </div>
-                                    @endif
+                                        @endunless
+
+                                        @if (! auth()->user()->is($managedUser))
+                                            <form
+                                                method="POST"
+                                                action="{{ route('admin.users.destroy', $managedUser) }}"
+                                                class="admin-user-inline-form"
+                                                onsubmit="return confirm('Delete this user account? This action is blocked when protected plugin data exists.')"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="ainpa-button ainpa-button-danger">Delete User</button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </article>
@@ -157,7 +186,7 @@
                 </div>
 
                 @if ($users->hasPages())
-                    <div class="admin-user-pagination">{{ $users->links() }}</div>
+                    <x-platform-pagination :paginator="$users" />
                 @endif
             </section>
 

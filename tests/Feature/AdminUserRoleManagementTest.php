@@ -22,6 +22,9 @@ class AdminUserRoleManagementTest extends TestCase
         $this->assertIsString($source);
         $this->assertStringContainsString('name="roles[]"', $source);
         $this->assertStringContainsString('Activate User', $source);
+        $this->assertStringContainsString('class="admin-user-action-bar"', $source);
+        $this->assertStringContainsString('form="admin-user-update-{{ $managedUser->id }}"', $source);
+        $this->assertStringContainsString('ainpa-button-success', $source);
         $this->assertStringNotContainsString('Direct Permissions', $source);
         $this->assertStringNotContainsString('name="permissions[]"', $source);
     }

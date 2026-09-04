@@ -18,6 +18,7 @@ use App\Platform\Core\Services\PluginAssetRegistry;
 use App\Platform\Core\Services\PluginFilesystem;
 use App\Platform\Core\Services\PluginRuntimeGate;
 use App\Platform\Core\Services\PluginServiceProviderLoader;
+use App\Platform\Core\Services\SettingsRepository;
 use App\Platform\Core\Views\ViewNamespaceRegistrar;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Queue;
@@ -37,7 +38,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PluginRuntimeGate::class);
         $this->app->singleton(PluginAssetRegistry::class);
         $this->app->singleton(ActivePluginStylesheets::class);
-        $this->app->singleton(PlatformMailConfigurator::class);
+        $this->app->scoped(SettingsRepository::class);
+        $this->app->scoped(PlatformMailConfigurator::class);
         $this->app->singleton(EditorialContentProvider::class, NullEditorialContentProvider::class);
         $this->app->singleton(LatestContentProvider::class, NullLatestContentProvider::class);
         $this->app->singleton(RoutePermissionCatalog::class);

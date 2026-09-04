@@ -539,6 +539,126 @@
     }
 }
 
+/* Account controls: the theme owns all admin presentation. */
+html body .z4-admin-profile-link {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    gap: 8px;
+    min-height: 36px;
+    padding: 4px 9px 4px 5px;
+}
+
+html body .z4-admin-profile-link .z4-admin-profile-icon {
+    align-items: center;
+    background: var(--ainpa-primary-soft, #fff1f0);
+    border: 1px solid var(--ainpa-border-strong, #efc4bd);
+    border-radius: 50% !important;
+    color: var(--ainpa-primary, #b40000);
+    display: inline-flex !important;
+    flex: 0 0 26px !important;
+    font-size: 11px;
+    font-weight: 800;
+    height: 26px !important;
+    justify-content: center;
+    line-height: 1 !important;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 26px !important;
+}
+
+html body .admin-user-action-bar {
+    align-items: center;
+    background: #ffffff;
+    border-top: 1px solid var(--ainpa-border, #eadbd7);
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding: 14px 0 0;
+}
+
+html body .admin-user-action-status,
+html body .admin-user-action-buttons {
+    align-items: center;
+    display: flex;
+}
+
+html body .admin-user-action-status {
+    gap: 8px;
+    min-width: 0;
+}
+
+html body .admin-user-action-status .admin-access-note {
+    margin: 0;
+}
+
+html body .admin-user-status-dot {
+    background: #138a5b;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px #e4f7ef;
+    flex: 0 0 7px;
+    height: 7px;
+    width: 7px;
+}
+
+html body .admin-user-status-dot.is-pending {
+    background: #b46900;
+    box-shadow: 0 0 0 4px #fff3d9;
+}
+
+html body .admin-user-action-buttons {
+    flex-wrap: wrap;
+    gap: 9px;
+    justify-content: flex-end;
+}
+
+html body .admin-user-inline-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+html body .admin-user-action-buttons .ainpa-button {
+    box-shadow: none !important;
+    min-height: 36px;
+    min-width: 104px;
+    padding: 8px 14px;
+}
+
+html body .admin-user-action-buttons .ainpa-button-success {
+    background: #e8f7ef !important;
+    border-color: #a9ddc4 !important;
+    color: #0b7049 !important;
+}
+
+html body .admin-user-action-buttons .ainpa-button-success:hover {
+    background: #d7f1e4 !important;
+    border-color: #78c9a2 !important;
+}
+
+html body .admin-user-action-buttons .ainpa-button-danger {
+    background: #fff4f4 !important;
+    border-color: #efb9b9 !important;
+    color: #aa1b1b !important;
+}
+
+html body .admin-user-action-buttons .ainpa-button-danger:hover {
+    background: #ffe5e5 !important;
+    border-color: #df8f8f !important;
+}
+
+@media (max-width: 720px) {
+    html body .admin-user-action-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    html body .admin-user-action-buttons {
+        justify-content: flex-start;
+    }
+}
+
 html {
     background: var(--ainpa-admin-bg);
 }
@@ -1900,6 +2020,147 @@ tbody tr:hover {
 .admin-danger-form {
     display: flex;
     justify-content: flex-end;
+}
+
+.admin-permission-accordion,
+.admin-route-group-accordion {
+    background: #ffffff;
+    border: 1px solid var(--ainpa-admin-border);
+    border-radius: var(--ainpa-admin-radius);
+    overflow: hidden;
+}
+
+.admin-permission-accordion + .admin-permission-accordion,
+.admin-route-group-accordion + .admin-route-group-accordion {
+    margin-top: 12px;
+}
+
+.admin-permission-accordion-button,
+.admin-route-group-accordion-button {
+    align-items: center;
+    background: #ffffff;
+    border: 0;
+    color: var(--ainpa-admin-text);
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 14px 16px;
+    text-align: left;
+    width: 100%;
+}
+
+.admin-permission-accordion-button:hover,
+.admin-permission-accordion-button:focus-visible,
+.admin-permission-accordion-button[aria-expanded="true"],
+.admin-route-group-accordion-button:hover,
+.admin-route-group-accordion-button:focus-visible,
+.admin-route-group-accordion-button[aria-expanded="true"] {
+    background: #f7fbff;
+}
+
+.admin-permission-accordion-button:focus-visible,
+.admin-route-group-accordion-button:focus-visible {
+    box-shadow: inset var(--ainpa-admin-focus);
+    outline: 0;
+}
+
+.admin-permission-accordion-copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.admin-permission-accordion-copy .admin-field-hint {
+    margin: 0;
+}
+
+.admin-permission-accordion-meta {
+    align-items: center;
+    display: inline-flex;
+    gap: 10px;
+}
+
+.admin-permission-chevron {
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    display: inline-block;
+    height: 8px;
+    transform: rotate(45deg);
+    transition: transform 150ms ease;
+    width: 8px;
+}
+
+.admin-permission-chevron.is-open {
+    transform: rotate(225deg);
+}
+
+.admin-permission-accordion-panel,
+.admin-route-group-accordion-panel {
+    border-top: 1px solid var(--ainpa-admin-border);
+    padding: 14px 16px 16px;
+}
+
+.ainpa-admin-page .platform-pagination,
+.z4-admin-main .platform-pagination {
+    align-items: center;
+    background: #ffffff;
+    border-top: 1px solid var(--ainpa-admin-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 14px 18px;
+}
+
+.ainpa-admin-page .platform-pagination__links,
+.ainpa-admin-page .platform-pagination__jump,
+.z4-admin-main .platform-pagination__links,
+.z4-admin-main .platform-pagination__jump {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ainpa-admin-page .platform-pagination__link,
+.ainpa-admin-page .platform-pagination__jump button,
+.z4-admin-main .platform-pagination__link,
+.z4-admin-main .platform-pagination__jump button {
+    border-color: var(--ainpa-admin-border);
+    border-radius: var(--ainpa-admin-radius-sm);
+    min-height: 34px;
+}
+
+.ainpa-admin-page .platform-pagination__link.is-current,
+.ainpa-admin-page .platform-pagination__jump button,
+.z4-admin-main .platform-pagination__link.is-current,
+.z4-admin-main .platform-pagination__jump button {
+    background: var(--ainpa-admin-primary);
+    border-color: var(--ainpa-admin-primary);
+    color: #ffffff;
+}
+
+.admin-route-groups {
+    background: #fbfdff;
+}
+
+.admin-route-group-accordion-panel .admin-option-grid,
+.admin-permission-accordion-panel > .admin-option-grid {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .admin-permission-accordion-button,
+    .admin-route-group-accordion-button {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-permission-accordion-meta {
+        justify-content: space-between;
+        width: 100%;
+    }
 }
 
 .admin-danger-zone {

@@ -56,6 +56,10 @@ final class PlatformInstallerUpdateTest extends TestCase
             ->with('migrate', ['--force' => true, '--no-interaction' => true])
             ->once()
             ->andReturn(0);
+        Artisan::shouldReceive('call')
+            ->with('platform:sync-settings')
+            ->once()
+            ->andReturn(0);
         Artisan::shouldReceive('call')->with('migrate:fresh', \Mockery::any())->never();
         Artisan::shouldReceive('call')->with('db:wipe', \Mockery::any())->never();
         Artisan::shouldReceive('call')->with('optimize:clear')->once()->andReturn(0);

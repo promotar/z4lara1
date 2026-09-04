@@ -91,7 +91,7 @@
                                     </a>
                                 @endif
                             </form>
-                            <span class="text-sm text-gray-500">{{ $pages->count() }} pages</span>
+                            <span class="text-sm text-gray-500">{{ $pages->total() }} pages</span>
                         </div>
                     </div>
                 </div>
@@ -201,6 +201,8 @@
                         </table>
                     </div>
                 @endif
+
+                <x-platform-pagination :paginator="$pages" />
             </section>
         </div>
     </div>

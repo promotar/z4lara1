@@ -24,7 +24,7 @@ class VvvebJsPageBuilderPluginTest extends TestCase
         $plugin = new Plugin(['slug' => $manifest['slug'], 'manifest' => $manifest]);
 
         $this->assertSame('page-builder', $manifest['slug']);
-        $this->assertSame('3.4.2', $manifest['version']);
+        $this->assertSame('3.4.3', $manifest['version']);
         $this->assertSame('Modules\\PageBuilder\\VvvebJsServiceProvider', $manifest['provider']);
         $this->assertSame('src/VvvebJsServiceProvider.php', $manifest['provider_file']);
         $this->assertSame('filter', $manifest['hooks']['editor.extensions']['type']);

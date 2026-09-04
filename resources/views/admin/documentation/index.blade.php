@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -9,7 +9,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8" x-data="{ tab: 'tasks' }">
+    <div class="py-8" x-data="{ tab: @js($activeDocumentationTab) }">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             @if (session('status'))
                 <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{{ session('status') }}</div>
@@ -81,6 +81,7 @@
                         </tbody>
                     </table>
                 </div>
+                <x-platform-pagination :paginator="$tasks" page-name="tasks_page" />
             </section>
 
             <section x-show="tab === 'implementation'" x-cloak class="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
@@ -97,6 +98,7 @@
                         </tbody>
                     </table>
                 </div>
+                <x-platform-pagination :paginator="$operationLogs" page-name="operations_page" />
             </section>
 
             <section x-show="tab === 'standards'" x-cloak class="grid gap-4 lg:grid-cols-2">

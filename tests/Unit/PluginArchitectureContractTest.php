@@ -32,11 +32,12 @@ class PluginArchitectureContractTest extends TestCase
             self::assertIsArray($manifest, $manifestPath.' must contain valid JSON.');
             self::assertContains($manifest['type'] ?? null, ['feature', 'theme', 'service'], $manifestPath);
             self::assertMatchesRegularExpression(
-                '/^>=2\.\d+\.\d+ <3\.0\.0$/',
+                '/^>=3\.4\.3 <4\.0\.0$/',
                 (string) ($manifest['platform_version'] ?? ''),
                 $manifestPath,
             );
             self::assertNotEmpty($manifest['provider'] ?? null, $manifestPath);
+            self::assertContains(data_get($manifest, 'integrations.user_deletion.mode'), ['none', 'participant'], $manifestPath);
             self::assertIsArray($manifest['uninstall'] ?? null, $manifestPath);
             self::assertArrayNotHasKey('script', $manifest['uninstall'], $manifestPath);
             self::assertIsArray(data_get($manifest, 'uninstall.tables'), $manifestPath);
@@ -212,5 +213,4 @@ class PluginArchitectureContractTest extends TestCase
 
         return $files;
     }
-
 }

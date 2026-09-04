@@ -50,12 +50,6 @@
         ]];
     }
 
-    $frontendMenuRouteNames = collect($frontendMenuItems)
-        ->pluck('route_name')
-        ->filter()
-        ->values()
-        ->all();
-
     $frontendMenuHref = function (array $item): ?string {
         $routeName = $item['route_name'] ?? null;
         $url = $item['url'] ?? null;
@@ -123,6 +117,7 @@
             <link rel="stylesheet" href="{{ $frontendStyleBundleUrl }}">
         @endif
         @include('platform.plugin-assets', ['scope' => 'frontend', 'kind' => 'styles'])
+        @stack('styles')
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">
         <div class="min-h-screen">
@@ -153,9 +148,6 @@
                             @endif
                         @endforeach
                         @auth
-                            @if (! in_array('front.account', $frontendMenuRouteNames, true))
-                                <a href="{{ route('front.account') }}" class="text-slate-700 hover:text-slate-950">{{ $t('My Account') }}</a>
-                            @endif
                             @if (auth()->user()->hasAnyRole(['super-admin', 'admin', 'staff', 'employee']) || auth()->user()->getAllPermissions()->isNotEmpty())
                                 <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-950">{{ $t('Dashboard') }}</a>
                             @endif

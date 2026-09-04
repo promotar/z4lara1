@@ -301,6 +301,7 @@ fi
 if [ "$INSTALLATION_FLAG" = "1" ]; then
     echo ">>> Existing installation detected; applying non-destructive database migrations..."
     php artisan migrate --force --no-interaction
+    php artisan platform:sync-settings --no-interaction
 fi
 
 php artisan package:discover --ansi >/dev/null

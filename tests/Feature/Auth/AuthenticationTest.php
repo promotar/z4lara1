@@ -42,6 +42,25 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_login_preserves_only_a_safe_internal_return_path(): void
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+            'return_to' => '/courses/watercolor?lesson=2',
+        ])->assertRedirect('/courses/watercolor?lesson=2');
+
+        auth()->logout();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+            'return_to' => 'https://attacker.example/account',
+        ])->assertRedirect(route('front.account', absolute: false));
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();

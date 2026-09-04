@@ -6,8 +6,16 @@
     <div class="ainpa-admin-page">
         <div
             class="ainpa-page-container admin-access-page"
-            x-data="{ createOpen: @js(old('_form') === 'create'), open: @js(str_starts_with((string) old('_form'), 'update-') ? str_replace('update-', '', (string) old('_form')) : null) }"
-            @keydown.escape.window="createOpen = false"
+            x-data="{
+                createOpen: @js(old('_form') === 'create'),
+                openRoles: @js(str_starts_with((string) old('_form'), 'update-') ? [str_replace('update-', '', (string) old('_form'))] : []),
+                toggleRole(roleId) {
+                    this.openRoles = this.openRoles.includes(roleId)
+                        ? this.openRoles.filter((id) => id !== roleId)
+                        : [...this.openRoles, roleId];
+                },
+            }"
+            @keydown.escape.window="createOpen = false; openRoles = []"
         >
             @if (session('status'))
                 <div class="ainpa-alert ainpa-alert-success">{{ session('status') }}</div>
@@ -38,17 +46,21 @@
                             <button
                                 type="button"
                                 class="admin-access-accordion-button"
-                                @click="open = open === '{{ $role->id }}' ? null : '{{ $role->id }}'"
-                                :aria-expanded="(open === '{{ $role->id }}').toString()"
+                                @click="toggleRole('{{ $role->id }}')"
+                                :aria-expanded="openRoles.includes('{{ $role->id }}').toString()"
+                                aria-controls="role-panel-{{ $role->id }}"
                             >
                                 <span class="admin-access-entity">
                                     <span class="admin-access-entity-name">{{ $role->name }}</span>
                                     <span class="admin-access-entity-meta">{{ $role->users_count }} assigned users</span>
                                 </span>
-                                <span class="admin-access-count">{{ $role->permissions->count() }} permissions</span>
+                                <span class="admin-access-count admin-permission-accordion-meta">
+                                    <span>{{ $role->permissions->count() }} permissions</span>
+                                    <span class="admin-permission-chevron" :class="{ 'is-open': openRoles.includes('{{ $role->id }}') }" aria-hidden="true"></span>
+                                </span>
                             </button>
 
-                            <div x-show="open === '{{ $role->id }}'" x-cloak class="admin-access-panel">
+                            <div id="role-panel-{{ $role->id }}" x-show="openRoles.includes('{{ $role->id }}')" x-transition.opacity.duration.150ms x-cloak class="admin-access-panel">
                                 <form method="POST" action="{{ route('admin.roles.update', $role) }}" class="admin-access-form">
                                     @csrf
                                     @method('PATCH')
@@ -66,6 +78,7 @@
                                     </label>
 
                                     @include('admin.roles._permission-fields', [
+                                        'accordionScope' => 'role-'.$role->id,
                                         'selectedPermissions' => old('_form') === 'update-'.$role->id
                                             ? old('permissions', $role->permissions->pluck('name')->all())
                                             : $role->permissions->pluck('name')->all(),
@@ -136,6 +149,7 @@
                                 </label>
 
                                 @include('admin.roles._permission-fields', [
+                                    'accordionScope' => 'create-role',
                                     'selectedPermissions' => old('_form') === 'create' ? old('permissions', []) : [],
                                 ])
                             </div>

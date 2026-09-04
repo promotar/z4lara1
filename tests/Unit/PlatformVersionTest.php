@@ -18,7 +18,7 @@ class PlatformVersionTest extends TestCase
         preg_match('/^PLATFORM_VERSION=(\d+\.\d+\.\d+)$/m', $environment, $matches);
         $declaredVersion = $matches[1];
 
-        $this->assertSame('2.5.2', $declaredVersion);
+        $this->assertSame('3.4.3', $declaredVersion);
         $this->assertSame($declaredVersion, config('platform.version'));
         $this->assertStringContainsString(
             "env('PLATFORM_VERSION', '{$declaredVersion}')",
@@ -28,12 +28,12 @@ class PlatformVersionTest extends TestCase
 
     public function test_current_platform_version_satisfies_supported_plugin_contracts(): void
     {
-        config()->set('platform.version', '2.0.0');
+        config()->set('platform.version', '3.4.3');
         $version = new PlatformVersion;
 
-        $this->assertTrue($version->supports('>=2.0.0 <3.0.0'));
-        $this->assertTrue($version->supports('^2.0'));
-        $this->assertFalse($version->supports('>=3.0.0'));
+        $this->assertTrue($version->supports('>=3.4.3 <4.0.0'));
+        $this->assertTrue($version->supports('^3.4'));
+        $this->assertFalse($version->supports('>=4.0.0'));
         $this->assertFalse($version->supports('invalid-constraint'));
     }
 }

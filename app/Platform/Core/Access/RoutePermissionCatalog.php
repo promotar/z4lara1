@@ -80,14 +80,16 @@ final class RoutePermissionCatalog
             || $route->getName() === 'dashboard'
             || in_array('staff', $middleware, true)
             || in_array('super-admin', $middleware, true)
-            || collect($middleware)->contains(fn (string $name): bool => str_starts_with($name, 'permission:'));
+            || collect($middleware)->contains(
+                fn (mixed $name): bool => is_string($name) && str_starts_with($name, 'permission:'),
+            );
     }
 
     /** @return list<string> */
     public function capabilities(Route $route): array
     {
         return collect($route->gatherMiddleware())
-            ->filter(fn (string $name): bool => str_starts_with($name, 'permission:'))
+            ->filter(fn (mixed $name): bool => is_string($name) && str_starts_with($name, 'permission:'))
             ->flatMap(fn (string $name): array => preg_split('/[|,]/', substr($name, strlen('permission:'))) ?: [])
             ->map(fn (string $name): string => trim($name))
             ->filter()

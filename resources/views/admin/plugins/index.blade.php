@@ -102,6 +102,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                <x-platform-pagination :paginator="$plugins" />
             </div>
         </div>
     </div>
