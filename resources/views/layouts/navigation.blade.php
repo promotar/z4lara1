@@ -257,7 +257,10 @@
                                     const visiblePanelRect = panel.getBoundingClientRect();
                                     const panelHeight = Math.min(visiblePanelRect.height || panel.scrollHeight || 320, window.innerHeight - 58);
                                     const panelWidth = Math.min(Math.max(visiblePanelRect.width || panel.scrollWidth || 250, 250), 310);
-                                    const panelLeft = Math.max(4, Math.min(sectionRect.right + 2, window.innerWidth - panelWidth - 8));
+                                    const rtl = (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
+                                    const panelLeft = rtl
+                                        ? Math.max(8, Math.min(sectionRect.left - panelWidth - 2, window.innerWidth - panelWidth - 8))
+                                        : Math.max(4, Math.min(sectionRect.right + 2, window.innerWidth - panelWidth - 8));
                                     const panelTop = Math.max(42, Math.min(sectionRect.top, window.innerHeight - panelHeight - 12));
 
                                     panel.style.setProperty('left', panelLeft + 'px', 'important');
@@ -275,7 +278,10 @@
                                     const visiblePanelRect = panel.getBoundingClientRect();
                                     const panelHeight = Math.min(visiblePanelRect.height || panel.scrollHeight || 260, window.innerHeight - 58);
                                     const panelWidth = Math.min(Math.max(visiblePanelRect.width || panel.scrollWidth || 220, 220), 300);
-                                    const panelLeft = Math.max(4, Math.min(groupRect.right + 2, window.innerWidth - panelWidth - 8));
+                                    const rtl = (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
+                                    const panelLeft = rtl
+                                        ? Math.max(8, Math.min(groupRect.left - panelWidth - 2, window.innerWidth - panelWidth - 8))
+                                        : Math.max(4, Math.min(groupRect.right + 2, window.innerWidth - panelWidth - 8));
                                     const panelTop = Math.max(42, Math.min(groupRect.top, window.innerHeight - panelHeight - 12));
 
                                     panel.style.setProperty('left', panelLeft + 'px', 'important');

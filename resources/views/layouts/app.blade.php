@@ -74,20 +74,21 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
                     }
                 }
 
+                /* Flyout panels are positioned by JS (navigation.blade.php) so they open
+                   to the left of the right-aligned sidebar; keep CSS offsets neutral. */
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-section:not(.is-open):hover > .z4-admin-section-body,
                 [dir="rtl"] .z4-admin-sidebar .z4-admin-menu-group:not(.is-open):hover > .z4-admin-submenu,
                 [dir="rtl"] .z4-admin-sidebar .z4-admin-section.is-open .z4-admin-menu-group:not(.is-open):hover > .z4-admin-submenu {
                     left: auto !important;
-                    right: calc(100% + 10px) !important;
-                    border-left: 0 !important;
-                    border-right: 2px solid rgba(74, 144, 226, 0.45) !important;
-                    box-shadow: -20px 22px 48px rgba(1, 8, 20, 0.35) !important;
+                    right: auto !important;
+                    box-shadow: -22px 24px 54px rgba(80, 39, 22, 0.16) !important;
                 }
 
                 [dir="rtl"] .z4-admin-sidebar .z4-admin-section:not(.is-open):hover > .z4-admin-section-body::before {
                     left: auto !important;
                     right: -8px !important;
                     border-right: 0 !important;
-                    border-left: 8px solid rgba(7, 17, 31, 0.98) !important;
+                    border-left: 8px solid #ffffff !important;
                 }
 
                 [dir="rtl"] .z4-mobile-drawer {
