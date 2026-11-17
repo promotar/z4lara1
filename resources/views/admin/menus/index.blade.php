@@ -106,6 +106,14 @@
                                         <input name="key" placeholder="main" class="admin-input">
                                     </label>
                                     <label class="admin-field">
+                                        <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                        <div style="display:flex;align-items:center;gap:6px">
+                                            <span class="z4-icon-preview" aria-hidden="true"></span>
+                                            <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
+                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                        </div>
+                                    </label>
+                                    <label class="admin-field">
                                         <span class="admin-field-label" data-i18n="core.menus.sort">{{ __('core.menus.sort') }}</span>
                                         <input type="number" name="sort_order" value="0" class="admin-input">
                                     </label>
@@ -167,6 +175,14 @@
                                                         <span class="admin-field-label">Key</span>
                                                         <input name="key" value="{{ preg_replace('/^platform\./', '', $menu->key) }}" class="admin-input">
                                                     </label>
+                                                    <label class="admin-field">
+                                                        <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                                        <div style="display:flex;align-items:center;gap:6px">
+                                                            <span class="z4-icon-preview" aria-hidden="true"></span>
+                                                            <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
+                                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                                        </div>
+                                                    </label>
                                                 </div>
                                                 <div class="admin-menu-form-grid admin-menu-form-grid-settings">
                                                     <label class="admin-field">
@@ -208,6 +224,14 @@
                                 <label class="admin-field">
                                     <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
                                     <input name="name" required placeholder="{{ __('core.menus.new_admin_section') }}" class="admin-input">
+                                </label>
+                                <label class="admin-field">
+                                    <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                    <div style="display:flex;align-items:center;gap:6px">
+                                        <span class="z4-icon-preview" aria-hidden="true"></span>
+                                        <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
+                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                    </div>
                                 </label>
                                 <label class="admin-field admin-menu-sort-field">
                                     <span class="admin-field-label" data-i18n="core.menus.order">{{ __('core.menus.order') }}</span>

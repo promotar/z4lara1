@@ -72,6 +72,7 @@ class MenuSettingsController extends Controller
         $menu = Menu::query()->create([
             'key' => $key,
             'name' => $data['name'],
+            'icon' => $data['icon'] ?? null,
             'location' => $location,
             'description' => $data['description'] ?? null,
             'source' => 'platform',
@@ -107,6 +108,7 @@ class MenuSettingsController extends Controller
         $menu->update([
             'key' => $this->uniqueMenuKey(($data['key'] ?? null) ?: $data['name'], $menu->location, $menu->id),
             'name' => $data['name'],
+            'icon' => $data['icon'] ?? null,
             'description' => $data['description'] ?? null,
             'is_active' => (bool) ($data['is_active'] ?? false),
             'sort_order' => (int) ($data['sort_order'] ?? 0),
@@ -219,6 +221,7 @@ class MenuSettingsController extends Controller
     {
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'icon' => ['nullable', 'string', 'max:64'],
             'key' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z0-9_.:-]+$/'],
             'description' => ['nullable', 'string', 'max:500'],
             'sort_order' => ['nullable', 'integer', 'min:-10000', 'max:10000'],

@@ -59,7 +59,7 @@ class MenuManager
                     'url' => null,
                     'route_name' => null,
                     'route_params' => [],
-                    'icon' => self::menuIcon((string) $menu->key, (string) $menu->name),
+                    'icon' => $menu->icon ?: self::menuIcon((string) $menu->key, (string) $menu->name),
                     'target' => null,
                     'permission' => null,
                     'metadata' => [
