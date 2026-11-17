@@ -901,3 +901,9 @@
 .menus.open_menu = "فتح القائمة"
 .menus.close_menu = "إغلاق القائمة"
 .header.primary_nav = "التنقل الرئيسي"
+
+# hero slider (2026-11-18)
+.hero.label = "مختارات مميزة"
+.hero.prev = "الشريحة السابقة"
+.hero.next = "الشريحة التالية"
+.hero.go_to = "الانتقال إلى الشريحة"

@@ -895,3 +895,9 @@
 .menus.open_menu = "Open menu"
 .menus.close_menu = "Close menu"
 .header.primary_nav = "Primary navigation"
+
+# hero slider (2026-11-18)
+.hero.label = "Featured highlights"
+.hero.prev = "Previous slide"
+.hero.next = "Next slide"
+.hero.go_to = "Go to slide"
