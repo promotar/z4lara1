@@ -1,0 +1,120 @@
+.ainpa-account-page {
+    --account-brand: #9b111e;
+    --account-deep: #59070d;
+    --account-soft: #fff1f2;
+    --account-ink: #172033;
+    --account-muted: #667085;
+    --account-border: #e7e1df;
+    min-height: calc(100vh - 5rem);
+    padding: clamp(1.25rem, 4vw, 3.5rem) 1rem 4rem;
+    background: #f7f7f8;
+    color: var(--account-ink);
+}
+
+.ainpa-account-page,
+.ainpa-account-page * { box-sizing: border-box; }
+.ainpa-account-page [x-cloak] { display: none !important; }
+.ainpa-account-shell { width: min(100%, 75rem); margin-inline: auto; }
+
+.ainpa-account-workspace {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    min-height: 38rem;
+    overflow: hidden;
+    border: 1px solid var(--account-border);
+    border-radius: 1.4rem;
+    background: #fff;
+    box-shadow: 0 1.25rem 3.5rem rgb(23 32 51 / 10%);
+}
+
+.ainpa-account-sidebar {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--account-deep);
+    color: #fff;
+}
+
+.ainpa-account-profile-card { display: flex; min-width: 0; gap: .8rem; align-items: center; padding: 1rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: .9rem; background: rgb(255 255 255 / 7%); }
+.ainpa-account-avatar { display: grid; flex: 0 0 3rem; width: 3rem; height: 3rem; place-items: center; border-radius: .75rem; background: var(--account-brand); font-size: 1.25rem; font-weight: 800; }
+.ainpa-account-profile-card__content { min-width: 0; }
+.ainpa-account-profile-card__content p { margin: 0 0 .15rem; color: #fecdd3; font-size: .7rem; font-weight: 700; }
+.ainpa-account-profile-card__content h2,
+.ainpa-account-profile-card__content span { display: block; overflow: hidden; margin: 0; text-overflow: ellipsis; white-space: nowrap; }
+.ainpa-account-profile-card__content h2 { color: #fff; font-size: 1rem; font-weight: 800; }
+.ainpa-account-profile-card__content span { margin-top: .2rem; color: #f1d6d9; font-size: .74rem; }
+
+.ainpa-account-tabs { display: grid; gap: .4rem; margin-top: 1.25rem; }
+.ainpa-account-tabs button { display: flex; width: 100%; min-height: 2.85rem; gap: .65rem; align-items: center; padding: .65rem .8rem; border: 1px solid transparent; border-radius: .7rem; background: transparent; color: #f6dadd; font: inherit; font-size: .88rem; font-weight: 700; text-align: start; cursor: pointer; }
+.ainpa-account-tabs button:hover { background: rgb(255 255 255 / 7%); color: #fff; }
+.ainpa-account-tabs button.is-active { border-color: rgb(255 255 255 / 20%); background: #fff; color: var(--account-deep); }
+.ainpa-account-tabs button:focus-visible { outline: 3px solid #fda4af; outline-offset: 2px; }
+.ainpa-account-tab-icon { display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: .45rem; background: rgb(255 255 255 / 12%); font-size: .72rem; font-weight: 800; }
+.ainpa-account-tabs button.is-active .ainpa-account-tab-icon { background: var(--account-soft); }
+.ainpa-account-tabs b { margin-inline-start: auto; padding: .18rem .42rem; border-radius: 999px; background: rgb(255 255 255 / 13%); font-size: .68rem; }
+.ainpa-account-tabs button.is-active b { background: var(--account-soft); }
+
+.ainpa-account-sidebar__actions { margin-top: auto; padding-top: 1.5rem; }
+.ainpa-account-logout,
+.ainpa-account-sidebar__actions .ainpa-account-button { width: 100%; }
+.ainpa-account-tab-panels { min-width: 0; padding: clamp(1.25rem, 4vw, 2.5rem); }
+.ainpa-account-tab-panels > [role="tabpanel"] { min-height: 30rem; outline: none; }
+
+.ainpa-account-content-header { display: flex; gap: 1.5rem; align-items: flex-start; justify-content: space-between; padding-bottom: 1.4rem; border-bottom: 1px solid var(--account-border); }
+.ainpa-account-kicker { margin: 0 0 .4rem; color: var(--account-brand); font-size: .72rem; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+.ainpa-account-content-header h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.25rem); font-weight: 850; }
+.ainpa-account-content-header h1 + p { max-width: 38rem; margin: .55rem 0 0; color: var(--account-muted); line-height: 1.7; }
+.ainpa-account-status-pill { flex: 0 0 auto; padding: .35rem .7rem; border: 1px solid #bbf7d0; border-radius: 999px; background: #f0fdf4; color: #166534; font-size: .75rem; font-weight: 800; }
+
+.ainpa-account-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-top: 1.5rem; }
+.ainpa-account-detail-grid article { min-width: 0; padding: 1.1rem; border: 1px solid var(--account-border); border-radius: .85rem; background: #fff; }
+.ainpa-account-detail-grid span { display: block; margin-bottom: .45rem; color: var(--account-muted); font-size: .72rem; font-weight: 750; text-transform: uppercase; }
+.ainpa-account-detail-grid strong { display: block; overflow-wrap: anywhere; font-size: .95rem; }
+.ainpa-account-role-list { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.2rem; }
+.ainpa-account-role-list span { padding: .35rem .65rem; border-radius: 999px; background: var(--account-soft); color: var(--account-deep); font-size: .75rem; font-weight: 750; }
+.ainpa-account-content-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.ainpa-account-button { display: inline-flex; min-height: 2.7rem; align-items: center; justify-content: center; padding: .62rem .95rem; border: 1px solid var(--account-border); border-radius: .7rem; background: #fff; color: var(--account-ink); font: inherit; font-size: .84rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+.ainpa-account-button:hover { border-color: var(--account-brand); color: var(--account-brand); }
+.ainpa-account-button--primary { border-color: var(--account-brand); background: var(--account-brand); color: #fff; }
+.ainpa-account-button--primary:hover { background: var(--account-deep); color: #fff; }
+.ainpa-account-button--ghost { border-color: rgb(255 255 255 / 22%); background: transparent; color: #fff; }
+.ainpa-account-button--ghost:hover { border-color: rgb(255 255 255 / 40%); background: rgb(255 255 255 / 8%); color: #fff; }
+
+.account-extension-section { display: grid; gap: 1.25rem; }
+.account-section-heading { display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid var(--account-border); }
+.account-section-heading h2 { margin: 0; font-size: 1.5rem; }
+.account-section-heading p { margin: .4rem 0 0; color: var(--account-muted); line-height: 1.6; }
+.account-section-action { display: inline-flex; min-height: 2.55rem; flex: 0 0 auto; align-items: center; justify-content: center; padding: .55rem .85rem; border-radius: .65rem; background: var(--account-brand); color: #fff; font-size: .82rem; font-weight: 800; text-decoration: none; }
+.account-section-action:hover { background: var(--account-deep); color: #fff; }
+.account-item-list { display: grid; gap: .65rem; }
+.account-item { display: flex; gap: 1rem; align-items: center; justify-content: space-between; padding: .9rem 1rem; border: 1px solid var(--account-border); border-radius: .75rem; color: var(--account-ink); text-decoration: none; }
+.account-item:hover { border-color: var(--account-brand); background: var(--account-soft); }
+.account-item span:first-child { display: grid; min-width: 0; gap: .25rem; }
+.account-item strong { overflow-wrap: anywhere; }
+.account-item small, .account-item > span:last-child { color: var(--account-muted); font-size: .75rem; }
+.account-empty-state { margin: 0; padding: 1rem; border: 1px dashed var(--account-border); border-radius: .75rem; color: var(--account-muted); text-align: center; }
+.account-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0; }
+.account-summary-grid div { padding: 1rem; border: 1px solid var(--account-border); border-radius: .75rem; }
+.account-summary-grid dt { color: var(--account-muted); font-size: .72rem; font-weight: 750; text-transform: uppercase; }
+.account-summary-grid dd { margin: .4rem 0 0; font-weight: 800; }
+
+@media (max-width: 800px) {
+    .ainpa-account-workspace { grid-template-columns: 1fr; }
+    .ainpa-account-sidebar { gap: 1rem; }
+    .ainpa-account-tabs { display: flex; margin-top: 0; overflow-x: auto; }
+    .ainpa-account-tabs button { width: auto; flex: 0 0 auto; }
+    .ainpa-account-sidebar__actions { margin-top: 0; padding-top: 0; }
+    .ainpa-account-detail-grid { grid-template-columns: 1fr; }
+    .account-summary-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+    .ainpa-account-page { padding-inline: .65rem; }
+    .ainpa-account-workspace { border-radius: 1rem; }
+    .ainpa-account-content-header { flex-direction: column; gap: .75rem; }
+    .ainpa-account-content-actions { align-items: stretch; flex-direction: column; }
+    .account-section-heading { flex-direction: column; }
+    .account-section-action { width: 100%; }
+    .account-item { align-items: flex-start; flex-direction: column; }
+}

@@ -1,0 +1,27 @@
+# Art INPA project memory
+
+## Installation lifecycle
+
+The canonical installation gate is `INSTAAL_IS_ACTIVE`; the historical
+`INSTAAL_IS_ATIVE` key remains synchronized for compatibility. A value of `0`
+opens `/install`, while `1` marks the platform as installed.
+
+The first installer screen asks the operator to choose between `Update
+platform` and `Fresh installation`. Update mode performs no database operation
+and does not invoke the installer. It only changes the canonical and
+compatibility installation-state flags to `1`, preserving every other runtime
+and `.env` value. Fresh mode records the choice in the encrypted session and
+continues the existing platform, database, and owner wizard unchanged. Direct
+access to fresh wizard steps is rejected until fresh mode is selected.
+
+Explicit process or container environment values take precedence over
+persisted runtime values. `storage/app/platform/installation.env` fills only
+missing values and persists the generated application key and installation
+state. It uses mode `660` with the `www-data` group so Apache can safely update
+installation state without exposing the file publicly.
+
+On an uninstalled clean deployment, the Docker entrypoint generates and
+persists a cryptographically random `APP_KEY` before Laravel starts. On an
+installed platform, startup never replaces a missing key because doing so
+would invalidate encrypted data. The runtime platform directory is excluded
+from Docker build context.

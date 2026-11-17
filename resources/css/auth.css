@@ -1,0 +1,775 @@
+@layer components {
+    :root {
+        --ainpa-auth-bg: #f6f8fb;
+        --ainpa-auth-card: #ffffff;
+        --ainpa-auth-text: #0f172a;
+        --ainpa-auth-muted: #5f6878;
+        --ainpa-auth-border: #d9dee7;
+        --ainpa-auth-border-strong: #c8cfdb;
+        --ainpa-auth-red: #c4000b;
+        --ainpa-auth-red-dark: #a90009;
+        --ainpa-auth-red-soft: #fff2f3;
+        --ainpa-auth-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+        --ainpa-auth-focus: 0 0 0 4px rgba(196, 0, 11, 0.12);
+    }
+
+    .ainpa-auth-body {
+        background:
+            radial-gradient(circle at top left, rgba(196, 0, 11, 0.08), transparent 28rem),
+            radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.06), transparent 30rem),
+            var(--ainpa-auth-bg);
+        color: var(--ainpa-auth-text);
+        font-family: Figtree, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        min-height: 100vh;
+        text-rendering: geometricPrecision;
+    }
+
+    .ainpa-auth-stage {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 32px;
+    }
+
+    .ainpa-auth-card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(217, 222, 231, 0.72);
+        border-radius: 14px;
+        box-shadow: var(--ainpa-auth-shadow);
+        overflow: hidden;
+        padding: 34px 86px 46px;
+        width: min(100%, 820px);
+    }
+
+    .ainpa-auth-logo {
+        align-items: center;
+        color: var(--ainpa-auth-red);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+        margin: 0 auto 24px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .ainpa-auth-logo img {
+        display: block;
+        height: auto;
+        max-height: 128px;
+        max-width: 260px;
+        object-fit: contain;
+        width: auto;
+    }
+
+    .ainpa-auth-logo img + .ainpa-auth-logo-fallback {
+        display: none;
+    }
+
+    .ainpa-auth-logo svg {
+        display: none;
+    }
+
+    .ainpa-auth-logo-fallback strong,
+    .ainpa-auth-logo-fallback small {
+        display: block;
+    }
+
+    .ainpa-auth-logo-fallback strong {
+        color: var(--ainpa-auth-red);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 44px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        line-height: 1;
+    }
+
+    .ainpa-auth-logo-fallback small {
+        color: #7f1d1d;
+        font-size: 13px;
+        letter-spacing: 0;
+        margin-top: 4px;
+    }
+
+    .ainpa-auth-heading {
+        margin: 0 auto 26px;
+        max-width: 640px;
+        text-align: center;
+    }
+
+    .ainpa-auth-heading--password {
+        margin-bottom: 34px;
+        max-width: 620px;
+    }
+
+    .ainpa-auth-kicker {
+        color: var(--ainpa-auth-red);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        margin: 0 0 8px;
+        text-transform: uppercase;
+    }
+
+    .ainpa-auth-heading h1 {
+        color: var(--ainpa-auth-text);
+        font-size: clamp(31px, 4vw, 42px);
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        line-height: 1.15;
+        margin: 0;
+    }
+
+    .ainpa-auth-heading p {
+        color: var(--ainpa-auth-muted);
+        font-size: 17px;
+        line-height: 1.6;
+        margin: 14px 0 0;
+    }
+
+    .ainpa-auth-heading strong {
+        color: var(--ainpa-auth-red);
+        display: block;
+        font-size: 19px;
+        margin-top: 6px;
+    }
+
+    .ainpa-auth-form {
+        display: grid;
+        gap: 19px;
+    }
+
+    .ainpa-auth-form--password {
+        gap: 22px;
+        margin: 0 auto;
+        max-width: 620px;
+    }
+
+    .ainpa-auth-form--compact {
+        max-width: 520px;
+    }
+
+    .ainpa-auth-name-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ainpa-auth-field {
+        color: var(--ainpa-auth-text);
+        display: grid;
+        font-size: 15px;
+        font-weight: 700;
+        gap: 8px;
+    }
+
+    .ainpa-auth-field input {
+        background: #ffffff;
+        border: 1px solid var(--ainpa-auth-border);
+        border-radius: 8px;
+        color: var(--ainpa-auth-text);
+        font-size: 16px;
+        font-weight: 500;
+        height: 58px;
+        outline: none;
+        padding: 0 18px;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+        width: 100%;
+    }
+
+    .ainpa-auth-input-wrap {
+        display: block;
+        position: relative;
+    }
+
+    .ainpa-auth-field--icon input {
+        padding-inline-start: 64px;
+    }
+
+    .ainpa-auth-field-icon {
+        color: transparent;
+        height: 26px;
+        inset-inline-start: 22px;
+        overflow: hidden;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 26px;
+        z-index: 1;
+    }
+
+    .ainpa-auth-field-icon::before,
+    .ainpa-auth-field-icon::after,
+    .ainpa-auth-submit-icon::before,
+    .ainpa-auth-submit-icon::after {
+        content: "";
+        position: absolute;
+    }
+
+    .ainpa-auth-field-icon::before {
+        border: 2px solid #111827;
+        border-radius: 3px;
+        height: 18px;
+        left: 2px;
+        top: 4px;
+        width: 22px;
+    }
+
+    .ainpa-auth-field-icon::after {
+        border-bottom: 2px solid #111827;
+        border-left: 2px solid #111827;
+        height: 10px;
+        left: 6px;
+        top: 5px;
+        transform: rotate(-45deg);
+        width: 14px;
+    }
+
+    .ainpa-auth-field-icon:has(+ input[type="password"])::before,
+    .ainpa-auth-field-icon:has(+ input[type="text"])::before {
+        border-radius: 4px;
+        height: 15px;
+        left: 4px;
+        top: 9px;
+        width: 18px;
+    }
+
+    .ainpa-auth-field-icon:has(+ input[type="password"])::after,
+    .ainpa-auth-field-icon:has(+ input[type="text"])::after {
+        border: 2px solid #111827;
+        border-bottom: 0;
+        border-radius: 999px 999px 0 0;
+        height: 12px;
+        left: 8px;
+        top: 1px;
+        transform: none;
+        width: 10px;
+    }
+
+    .ainpa-auth-field input::placeholder {
+        color: #848c9a;
+        font-weight: 500;
+    }
+
+    .ainpa-auth-field input:focus {
+        border-color: var(--ainpa-auth-red);
+        box-shadow: var(--ainpa-auth-focus);
+    }
+
+    .ainpa-auth-field input:-webkit-autofill,
+    .ainpa-auth-field input:-webkit-autofill:hover,
+    .ainpa-auth-field input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px #fff4f2 inset !important;
+        -webkit-text-fill-color: var(--ainpa-auth-text) !important;
+        background-color: #fff4f2 !important;
+        caret-color: var(--ainpa-auth-text) !important;
+        color: var(--ainpa-auth-text) !important;
+    }
+
+    .ainpa-auth-password {
+        display: block;
+        position: relative;
+    }
+
+    .ainpa-auth-password input {
+        padding-inline-end: 72px;
+    }
+
+    .ainpa-auth-field--icon .ainpa-auth-password input {
+        padding-inline-end: 78px;
+        padding-inline-start: 64px;
+    }
+
+    .ainpa-auth-password button {
+        align-items: center;
+        border-radius: 6px;
+        color: #465163;
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 800;
+        inset-inline-end: 12px;
+        justify-content: center;
+        min-height: 44px;
+        min-width: 48px;
+        padding: 0 8px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .ainpa-auth-row {
+        align-items: center;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+    }
+
+    .ainpa-auth-row a,
+    .ainpa-auth-switch a,
+    .ainpa-auth-check a,
+    .ainpa-auth-logout button {
+        color: var(--ainpa-auth-red);
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .ainpa-auth-row a:hover,
+    .ainpa-auth-switch a:hover,
+    .ainpa-auth-check a:hover,
+    .ainpa-auth-logout button:hover {
+        color: var(--ainpa-auth-red-dark);
+    }
+
+    .ainpa-auth-check {
+        align-items: flex-start;
+        color: #3f4858;
+        display: inline-flex;
+        font-size: 15px;
+        gap: 10px;
+        line-height: 1.45;
+    }
+
+    .ainpa-auth-check input {
+        border: 1px solid var(--ainpa-auth-border-strong);
+        border-radius: 5px;
+        color: var(--ainpa-auth-red);
+        height: 22px;
+        margin-top: 1px;
+        width: 22px;
+    }
+
+    .ainpa-auth-check--terms {
+        margin-top: 2px;
+    }
+
+    .ainpa-auth-submit {
+        align-items: center;
+        background: linear-gradient(180deg, #d9000d 0%, var(--ainpa-auth-red) 100%);
+        border: 1px solid var(--ainpa-auth-red);
+        border-radius: 8px;
+        box-shadow: 0 14px 26px rgba(196, 0, 11, 0.2);
+        color: #ffffff;
+        display: inline-flex;
+        font-size: 18px;
+        font-weight: 800;
+        height: 58px;
+        justify-content: center;
+        margin-top: 4px;
+        transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+        width: 100%;
+    }
+
+    .ainpa-auth-submit:hover {
+        background: linear-gradient(180deg, #c9000c 0%, var(--ainpa-auth-red-dark) 100%);
+        box-shadow: 0 16px 30px rgba(196, 0, 11, 0.26);
+        transform: translateY(-1px);
+    }
+
+    .ainpa-auth-logo:focus-visible,
+    .ainpa-auth-row a:focus-visible,
+    .ainpa-auth-switch a:focus-visible,
+    .ainpa-auth-check a:focus-visible,
+    .ainpa-auth-logout button:focus-visible,
+    .ainpa-auth-password button:focus-visible,
+    .ainpa-auth-submit:focus-visible,
+    .ainpa-auth-check input:focus-visible {
+        border-radius: 6px;
+        outline: 3px solid rgba(196, 0, 11, 0.34);
+        outline-offset: 3px;
+    }
+
+    .ainpa-auth-submit--with-icon {
+        gap: 14px;
+    }
+
+    .ainpa-auth-submit-icon {
+        color: transparent;
+        display: inline-block;
+        height: 28px;
+        overflow: hidden;
+        position: relative;
+        width: 28px;
+    }
+
+    .ainpa-auth-submit-icon::before {
+        border: 2px solid #ffffff;
+        border-left: 0;
+        border-top: 0;
+        height: 18px;
+        left: 4px;
+        top: 2px;
+        transform: skew(-16deg) rotate(-34deg);
+        width: 20px;
+    }
+
+    .ainpa-auth-submit-icon::after {
+        background: #ffffff;
+        height: 2px;
+        left: 10px;
+        top: 15px;
+        transform: rotate(-34deg);
+        width: 14px;
+    }
+
+    .ainpa-auth-submit--outline {
+        background: #ffffff;
+        box-shadow: none;
+        color: var(--ainpa-auth-red);
+    }
+
+    .ainpa-auth-submit--outline:hover {
+        background: var(--ainpa-auth-red-soft);
+        box-shadow: none;
+        color: var(--ainpa-auth-red-dark);
+    }
+
+    .ainpa-auth-divider {
+        align-items: center;
+        color: #7b8493;
+        display: grid;
+        font-size: 15px;
+        gap: 16px;
+        grid-template-columns: 1fr auto 1fr;
+        margin: 2px 0;
+    }
+
+    .ainpa-auth-divider::before,
+    .ainpa-auth-divider::after {
+        background: var(--ainpa-auth-border);
+        content: "";
+        height: 1px;
+    }
+
+    .ainpa-auth-switch {
+        color: #505a6a;
+        font-size: 16px;
+        margin: 0;
+        text-align: center;
+    }
+
+    .ainpa-auth-switch--back {
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .ainpa-auth-switch--back a {
+        align-items: center;
+        display: inline-flex;
+        gap: 12px;
+    }
+
+    .ainpa-auth-error {
+        color: var(--ainpa-auth-red);
+        font-size: 13px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .ainpa-auth-error ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .ainpa-auth-status {
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 20px;
+        padding: 14px 16px;
+    }
+
+    .ainpa-auth-status--success {
+        background: #effaf3;
+        border: 1px solid #b9e7c5;
+        color: #166534;
+    }
+
+    .ainpa-auth-verify {
+        margin: 0 auto;
+        max-width: 630px;
+        text-align: center;
+    }
+
+    .ainpa-auth-verify-graphic {
+        background: #fdeced;
+        border-radius: 999px;
+        height: 210px;
+        margin: 12px auto 30px;
+        position: relative;
+        width: 210px;
+    }
+
+    .ainpa-auth-envelope {
+        border: 3px solid var(--ainpa-auth-red);
+        border-radius: 14px;
+        display: block;
+        height: 92px;
+        left: 50%;
+        position: absolute;
+        top: 56%;
+        transform: translate(-50%, -50%);
+        width: 134px;
+    }
+
+    .ainpa-auth-envelope::before,
+    .ainpa-auth-envelope::after {
+        border-top: 3px solid var(--ainpa-auth-red);
+        content: "";
+        height: 70px;
+        position: absolute;
+        top: 35px;
+        width: 92px;
+    }
+
+    .ainpa-auth-envelope::before {
+        left: -5px;
+        transform: rotate(34deg);
+        transform-origin: top left;
+    }
+
+    .ainpa-auth-envelope::after {
+        right: -5px;
+        transform: rotate(-34deg);
+        transform-origin: top right;
+    }
+
+    .ainpa-auth-envelope span {
+        background: #ffffff;
+        border: 3px solid var(--ainpa-auth-red);
+        border-bottom: 0;
+        border-radius: 8px 8px 0 0;
+        display: block;
+        height: 78px;
+        left: 50%;
+        position: absolute;
+        top: -42px;
+        transform: translateX(-50%);
+        width: 74px;
+    }
+
+    .ainpa-auth-verify-graphic strong {
+        align-items: center;
+        background: var(--ainpa-auth-red);
+        border-radius: 999px;
+        box-shadow: 0 10px 20px rgba(196, 0, 11, 0.25);
+        color: #ffffff;
+        display: inline-flex;
+        font-size: 38px;
+        height: 72px;
+        justify-content: center;
+        line-height: 1;
+        position: absolute;
+        right: 8px;
+        top: 28px;
+        width: 72px;
+    }
+
+    .ainpa-auth-help {
+        background: #fff6f6;
+        border: 1px solid #f0b9bd;
+        border-radius: 8px;
+        margin: 30px 0 18px;
+        padding: 22px 26px;
+        text-align: left;
+    }
+
+    .ainpa-auth-help strong {
+        color: var(--ainpa-auth-text);
+        display: block;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
+    .ainpa-auth-help p {
+        color: var(--ainpa-auth-muted);
+        margin: 0;
+    }
+
+    .ainpa-auth-logout {
+        margin-top: 24px;
+        text-align: center;
+    }
+
+    .ainpa-auth-stage:has(.ainpa-auth-form--register) {
+        align-items: flex-start;
+        padding: 24px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--register) {
+        padding: 26px 64px 34px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-logo {
+        margin-bottom: 12px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-logo img {
+        max-height: 92px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-heading {
+        margin-bottom: 18px;
+    }
+
+    .ainpa-auth-form--register {
+        gap: 16px;
+    }
+
+    .ainpa-auth-form--register .ainpa-auth-field input {
+        height: 54px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--password) {
+        padding-bottom: 36px;
+        padding-top: 28px;
+    }
+
+    .ainpa-auth-card:has(.ainpa-auth-form--password) .ainpa-auth-logo {
+        margin-bottom: 20px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ainpa-auth-field input,
+        .ainpa-auth-submit {
+            transition: none;
+        }
+
+        .ainpa-auth-submit:hover {
+            transform: none;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .ainpa-auth-stage {
+            align-items: stretch;
+            padding: 12px;
+        }
+
+        .ainpa-auth-card {
+            padding: 24px 20px 30px;
+            width: 100%;
+        }
+
+        .ainpa-auth-logo img {
+            max-height: 88px;
+            max-width: 210px;
+        }
+
+        .ainpa-auth-heading {
+            margin-bottom: 22px;
+        }
+
+        .ainpa-auth-heading p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .ainpa-auth-row {
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .ainpa-auth-name-grid {
+            gap: 14px;
+            grid-template-columns: 1fr;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register),
+        .ainpa-auth-card:has(.ainpa-auth-form--password) {
+            padding: 22px 20px 28px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-logo,
+        .ainpa-auth-card:has(.ainpa-auth-form--password) .ainpa-auth-logo {
+            margin-bottom: 12px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-logo img,
+        .ainpa-auth-card:has(.ainpa-auth-form--password) .ainpa-auth-logo img {
+            max-height: 82px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-heading {
+            margin-bottom: 16px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-heading h1 {
+            font-size: 28px;
+        }
+
+        .ainpa-auth-form--register {
+            gap: 14px;
+        }
+
+        .ainpa-auth-heading--password {
+            margin-bottom: 28px;
+        }
+
+        .ainpa-auth-form--password {
+            gap: 20px;
+        }
+
+        .ainpa-auth-verify-graphic {
+            height: 176px;
+            width: 176px;
+        }
+
+        .ainpa-auth-envelope {
+            height: 78px;
+            width: 116px;
+        }
+
+        .ainpa-auth-verify-graphic strong {
+            font-size: 30px;
+            height: 58px;
+            width: 58px;
+        }
+    }
+
+    @media (min-width: 761px) and (max-height: 820px) {
+        .ainpa-auth-stage {
+            padding: 18px;
+        }
+
+        .ainpa-auth-card {
+            padding-bottom: 30px;
+            padding-top: 24px;
+        }
+
+        .ainpa-auth-logo {
+            margin-bottom: 16px;
+        }
+
+        .ainpa-auth-logo img {
+            max-height: 96px;
+        }
+
+        .ainpa-auth-heading {
+            margin-bottom: 20px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) {
+            padding: 20px 56px 28px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-logo img {
+            max-height: 76px;
+        }
+
+        .ainpa-auth-card:has(.ainpa-auth-form--register) .ainpa-auth-heading h1 {
+            font-size: 34px;
+        }
+
+        .ainpa-auth-form--register {
+            gap: 14px;
+        }
+
+        .ainpa-auth-form--register .ainpa-auth-field input {
+            height: 52px;
+        }
+    }
+}

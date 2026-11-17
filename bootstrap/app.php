@@ -1,0 +1,76 @@
+<?php
+
+use App\Http\Middleware\ApplyPlatformLocale;
+use App\Http\Middleware\EnforceRoutePermission;
+use App\Http\Middleware\EnsurePermission;
+use App\Http\Middleware\EnsurePlatformInstalled;
+use App\Http\Middleware\EnsureRegisteredRoute;
+use App\Http\Middleware\EnsureStaffUser;
+use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\PrefixLinkRewriter;
+use App\Http\Middleware\PrefixLocaleMiddleware;
+use App\Http\Middleware\ReplaceTranslationTokens;
+use App\Http\Middleware\SeoErrorMiddleware;
+use App\Http\Middleware\SeoMiddleware;
+use App\Installation\RuntimeEnvironment;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+
+RuntimeEnvironment::load();
+
+$trustedProxies = trim((string) env('TRUSTED_PROXIES', ''));
+if (! RuntimeEnvironment::installed() && in_array($trustedProxies, ['', '127.0.0.1,::1'], true)) {
+    // Before the domain and proxy are known, Laravel trusts only the direct
+    // caller as the proxy. The installer persists a restricted proxy network
+    // after detecting the deployment topology from the forwarded request.
+    $trustedProxies = '*';
+} elseif ($trustedProxies === '') {
+    $trustedProxies = '127.0.0.1,::1';
+}
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
+        $middleware->prepend(EnsurePlatformInstalled::class);
+        $middleware->prepend(PrefixLocaleMiddleware::class);
+        $middleware->append(ReplaceTranslationTokens::class);
+        $middleware->append(SeoErrorMiddleware::class);
+        $middleware->append(PrefixLinkRewriter::class);
+        $middleware->trustProxies(
+            at: $trustedProxies,
+            headers: Request::HEADER_X_FORWARDED_FOR
+                | Request::HEADER_X_FORWARDED_HOST
+                | Request::HEADER_X_FORWARDED_PORT
+                | Request::HEADER_X_FORWARDED_PROTO
+                | Request::HEADER_X_FORWARDED_PREFIX
+        );
+
+        $middleware->alias([
+            'staff' => EnsureStaffUser::class,
+            'super-admin' => EnsureSuperAdmin::class,
+            'permission' => EnsurePermission::class,
+            'registered-route' => EnsureRegisteredRoute::class,
+        ]);
+
+        $middleware->web(append: [
+            ApplyPlatformLocale::class,
+            SeoMiddleware::class,
+            EnsureRegisteredRoute::class,
+            EnforceRoutePermission::class,
+        ]);
+
+        $middleware->api(append: [
+            ApplyPlatformLocale::class,
+            EnforceRoutePermission::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
