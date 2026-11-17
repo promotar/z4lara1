@@ -59,7 +59,7 @@ class MenuManager
                     'url' => null,
                     'route_name' => null,
                     'route_params' => [],
-                    'icon' => strtoupper(substr((string) $menu->name, 0, 1)),
+                    'icon' => self::menuIcon((string) $menu->key, (string) $menu->name),
                     'target' => null,
                     'permission' => null,
                     'metadata' => [
@@ -87,6 +87,101 @@ class MenuManager
     /**
      * @return array<int, array<string, mixed>>
      */
+    /**
+     * Resolve an icon for a menu item: explicit icon name, otherwise inferred
+     * from the label/route, otherwise the legacy letter/emoji.
+     */
+    private static function itemIcon(MenuItem $item): string
+    {
+        $icon = strtolower(trim((string) $item->icon));
+
+        if ($icon !== '' && \App\Platform\Core\UI\IconSet::has($icon)) {
+            return $icon;
+        }
+
+        $haystack = strtolower(trim($item->label.' '.$item->title.' '.$item->route_name.' '.$item->url));
+
+        $map = [
+            'account' => 'user', 'profile' => 'user',
+            'dashboard' => 'grid', 'overview' => 'grid',
+            'user' => 'users', 'role' => 'shield', 'permission' => 'key',
+            'media' => 'image', 'image' => 'image', 'photo' => 'image',
+            'page' => 'file', 'post' => 'file', 'article' => 'file',
+            'menu' => 'list', 'navigation' => 'list',
+            'plugin' => 'package', 'module' => 'package',
+            'setting' => 'settings', 'config' => 'settings',
+            'backup' => 'database', 'database' => 'database',
+            'translation' => 'languages', 'language' => 'languages', 'locale' => 'languages',
+            'seo' => 'search', 'search' => 'search',
+            'theme' => 'sliders', 'layout' => 'sliders', 'template' => 'sliders',
+            'product' => 'bag', 'store' => 'bag', 'shop' => 'bag',
+            'order' => 'receipt', 'payment' => 'card', 'invoice' => 'receipt',
+            'shipping' => 'truck', 'coupon' => 'tag', 'category' => 'tag', 'tag' => 'tag',
+            'course' => 'cap', 'lesson' => 'book', 'student' => 'users', 'instructor' => 'user',
+            'artwork' => 'image', 'exhibition' => 'image', 'gallery' => 'image',
+            'certificate' => 'award', 'award' => 'award',
+            'chat' => 'message', 'message' => 'message', 'comment' => 'message',
+            'mail' => 'mail', 'email' => 'mail', 'notification' => 'bell',
+            'report' => 'chart', 'statistic' => 'chart', 'analytics' => 'chart',
+            'log' => 'list', 'activity' => 'activity',
+            'home' => 'home', 'install' => 'download', 'update' => 'download',
+            'security' => 'shield', 'integration' => 'link',
+        ];
+
+        foreach ($map as $needle => $name) {
+            if (str_contains($haystack, $needle)) {
+                return $name;
+            }
+        }
+
+        return trim((string) $item->icon) !== ''
+            ? (string) $item->icon
+            : strtoupper(substr((string) ($item->title ?: $item->label), 0, 1));
+    }
+
+    /**
+     * Icon name for an admin menu section (falls back to the first letter).
+     */
+    private static function menuIcon(string $key, string $name): string
+    {
+        $key = strtolower($key);
+
+        $map = [
+            'overview' => 'grid',
+            'users' => 'users',
+            'system' => 'settings',
+            'frontend' => 'menu',
+            'header' => 'menu',
+            'footer' => 'list',
+            'pages' => 'file',
+            'media' => 'image',
+            'menus' => 'list',
+            'translations' => 'languages',
+            'plugins' => 'package',
+            'backups' => 'database',
+            'documentation' => 'book',
+            'permissions' => 'shield',
+            'roles' => 'shield',
+            'settings' => 'settings',
+            'seo' => 'search',
+            'blog' => 'file',
+            'lms' => 'cap',
+            'store' => 'bag',
+            'exhibitions' => 'image',
+            'certificates' => 'award',
+            'chat' => 'message',
+            'mail' => 'mail',
+        ];
+
+        foreach ($map as $needle => $icon) {
+            if (str_contains($key, $needle) && \App\Platform\Core\UI\IconSet::has($icon)) {
+                return $icon;
+            }
+        }
+
+        return strtoupper(substr($name, 0, 1));
+    }
+
     public function getFrontendMenuByKey(string $key, ?User $user = null): array
     {
         $menu = $this->menus->activeByKey($key, 'frontend');
@@ -186,7 +281,7 @@ class MenuManager
                     'url' => $item->url,
                     'route_name' => $item->route_name,
                     'route_params' => $item->route_params ?? [],
-                    'icon' => $item->icon,
+                    'icon' => self::itemIcon($item),
                     'target' => $item->target,
                     'permission' => $item->permission,
                     'metadata' => $item->metadata ?? [],

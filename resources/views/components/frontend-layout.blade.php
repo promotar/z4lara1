@@ -206,6 +206,10 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         @isset($head)
             {{ $head }}
         @endisset
+        <style>
+            .z4-menu-icon { display: inline-flex; align-items: center; margin-inline-end: 6px; vertical-align: -2px; }
+            .z4-menu-icon .z4-icon-svg { width: 15px; height: 15px; display: block; }
+        </style>
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">
         <div class="min-h-screen">
@@ -246,6 +250,9 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
                                     class="{{ $frontendStyleBundle ? $frontendStyleBundle->menuItemClass($frontendMenuItem) : '' }} {{ $frontendMenuClass($frontendMenuItem) }}"
                                         @if ($target === '_blank') target="_blank" rel="noopener" @endif
                                     >
+                                        @if (is_string($frontendMenuItem['icon'] ?? null) && \App\Platform\Core\UI\IconSet::has($frontendMenuItem['icon']))
+                                            <span class="z4-menu-icon">{!! \App\Platform\Core\UI\IconSet::render($frontendMenuItem['icon']) !!}</span>
+                                        @endif
                                         {{ $menuLabel((string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title'])) }}
                                     </a>
                                 @endif
