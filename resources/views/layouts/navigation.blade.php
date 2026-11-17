@@ -9,11 +9,6 @@
         $platformSettings = [];
     }
 
-    $menuLabel = fn (string $text): string => \App\Platform\Core\Localization\Translation::label(
-        'core.menu.'.\Illuminate\Support\Str::slug($text),
-        $text
-    );
-
     $menuItems = [];
 
     if ($hasAdminAccess) {
@@ -26,7 +21,7 @@
                     ->exists();
 
             if ($hasRegisteredAdminMenus && $storedAdminItems !== []) {
-                $mapStoredAdminItem = function (array $item) use ($menuLabel, &$mapStoredAdminItem): ?array {
+                $mapStoredAdminItem = function (array $item) use (&$mapStoredAdminItem): ?array {
                     $routeName = $item['route_name'] ?? null;
                     $url = $item['url'] ?? null;
                     $href = null;
@@ -58,10 +53,10 @@
                     }
 
                     $childActive = collect($children)->contains(fn (array $child): bool => (bool) ($child['active'] ?? false));
-                    $label = (string) ($item['label'] ?: $item['title']);
+                    $label = (string) ($item['title'] ?: $item['label']);
 
                     return [
-                        'label' => $menuLabel($label),
+                        'label' => $label,
                         'href' => $href,
                         'route_name' => $routeName,
                         'active' => $directActive || $childActive,

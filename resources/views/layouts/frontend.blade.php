@@ -39,10 +39,6 @@
     }
 
     $showTopLanguageSwitcher = count($platformLanguages ?? []) > 1 && ! $hideTopLanguageSwitcher;
-    $menuLabel = fn (string $text): string => \App\Platform\Core\Localization\Translation::label(
-        'core.menu.'.\Illuminate\Support\Str::slug($text),
-        $text
-    );
 
     try {
         $frontendMenuItems = app(\App\Platform\Core\Menus\MenuManager::class)->getFrontendMenu(auth()->user());
@@ -173,7 +169,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
                                     class="{{ $frontendStyleBundle ? $frontendStyleBundle->menuItemClass($frontendMenuItem) : '' }} {{ $frontendMenuClass($frontendMenuItem) }}"
                                     @if ($target === '_blank') target="_blank" rel="noopener" @endif
                                 >
-                                    {{ $menuLabel((string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title'])) }}
+                                    {{ (string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title']) }}
                                 </a>
                             @endif
                         @endforeach

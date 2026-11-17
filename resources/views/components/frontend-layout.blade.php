@@ -58,10 +58,6 @@
     }
 
     $showTopLanguageSwitcher = count($platformLanguages ?? []) > 1 && ! $hideTopLanguageSwitcher;
-    $menuLabel = fn (string $text): string => \App\Platform\Core\Localization\Translation::label(
-        'core.menu.'.\Illuminate\Support\Str::slug($text),
-        $text
-    );
 
     try {
         $frontendMenuItems = app(\App\Platform\Core\Menus\MenuManager::class)->getFrontendMenu(auth()->user());
@@ -255,7 +251,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
                                         @if (is_string($frontendMenuItem['icon'] ?? null) && \App\Platform\Core\UI\IconSet::has($frontendMenuItem['icon']))
                                             <span class="z4-menu-icon">{!! \App\Platform\Core\UI\IconSet::render($frontendMenuItem['icon']) !!}</span>
                                         @endif
-                                        {{ $menuLabel((string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title'])) }}
+                                        {{ (string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title']) }}
                                     </a>
                                 @endif
                             @endforeach
