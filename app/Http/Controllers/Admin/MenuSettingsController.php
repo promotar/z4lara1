@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Platform\Core\Logs\OperationLogger;
+use App\Platform\Core\Menus\MenuDefaults;
 use App\Platform\Core\Models\Menu;
 use App\Platform\Core\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
@@ -521,6 +522,8 @@ class MenuSettingsController extends Controller
             'sort_order' => 0,
         ]);
 
+        // Core default: expose the language switcher in the header/frontend menu.
+        MenuDefaults::ensureDefaultLanguageMenu();
     }
 
     private function menuFor(string $location): Menu
