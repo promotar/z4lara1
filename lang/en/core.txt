@@ -881,3 +881,12 @@
 .menus.source.core = "Core"
 .menus.default_frontend_name = "Frontend Menu"
 .menus.default_frontend_description = "Editable frontend navigation menu."
+
+# per-language pages + menu names (2026-11-18)
+.menus.language = "Language"
+.menus.language_base = "Base"
+.menus.languages_hint = "Choose a language, then edit the name for that language. Names fall back to the base language when empty."
+.page_builder.pages.edit_language_hint = "Choose the language to edit"
+.page_builder.pages.language_base = "Base"
+.page_builder.pages.language_translated = "Translated"
+.page_builder.pages.language_new = "Not translated yet"

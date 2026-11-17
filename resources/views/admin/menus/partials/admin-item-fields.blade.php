@@ -5,10 +5,10 @@
 @endphp
 
 <div x-data="{ itemType: @js($itemType) }" class="admin-menu-compact-item-form">
-    <label class="admin-field admin-menu-title-field">
+    <div class="admin-field admin-menu-title-field">
         <span class="admin-field-label" data-i18n="core.menus.display_name">{{ __('core.menus.display_name') }}</span>
-        <input name="title" value="{{ old('title', $item->title ?? '') }}" required class="admin-input">
-    </label>
+        @include('admin.menus.partials.title-i18n', ['item' => $item])
+    </div>
 
     <label class="admin-field admin-menu-type-field">
         <span class="admin-field-label" data-i18n="core.menus.type">{{ __('core.menus.type') }}</span>

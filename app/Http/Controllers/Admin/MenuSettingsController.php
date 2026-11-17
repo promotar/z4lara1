@@ -252,6 +252,9 @@ class MenuSettingsController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'label' => ['nullable', 'string', 'max:255'],
+            'translations' => ['nullable', 'array'],
+            'translations.*' => ['nullable', 'string', 'max:255'],
+            'translation_locale' => ['nullable', 'string', 'max:16'],
             'type' => ['required', 'in:link,route,header'],
             'url' => ['nullable', 'string', 'max:255'],
             'route_name' => ['nullable', 'string', 'max:255'],
@@ -326,9 +329,13 @@ class MenuSettingsController extends Controller
                 : 'get';
         }
 
+        $translations = $this->normalizedTitleTranslations($data);
+        $defaultLocale = app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
+
         return [
-            'title' => $data['title'],
+            'title' => $translations[$defaultLocale] ?? $data['title'],
             'label' => $data['label'] ?? null,
+            'title_translations' => $translations === [] ? null : $translations,
             'type' => $type,
             'url' => $type === 'link' ? ($data['url'] ?? null) : null,
             'route_name' => $type === 'route' ? ($data['route_name'] ?? null) : null,
@@ -342,6 +349,36 @@ class MenuSettingsController extends Controller
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, string>
+     */
+    private function normalizedTitleTranslations(array $data): array
+    {
+        $input = $data['translations'] ?? [];
+
+        if (! is_array($input)) {
+            return [];
+        }
+
+        $available = app(\App\Platform\Core\Localization\PlatformLocale::class)->languages();
+        $result = [];
+
+        foreach ($input as $locale => $label) {
+            $locale = str_replace('_', '-', trim((string) $locale));
+            $label = trim((string) $label);
+
+            if ($locale === '' || $label === '' || ! isset($available[$locale])) {
+                continue;
+            }
+
+            $result[$locale] = mb_substr($label, 0, 255);
+        }
+
+        return $result;
+    }
+
+    
     /** @param array<string, mixed> $data */
     private function assertAdminItemAllowed(array $data, Menu $menu, ?MenuItem $item = null): void
     {

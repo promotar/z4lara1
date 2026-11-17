@@ -15,6 +15,7 @@ class MenuItem extends Model
         'plugin_id',
         'title',
         'label',
+        'title_translations',
         'type',
         'url',
         'route_name',
@@ -32,6 +33,7 @@ class MenuItem extends Model
         return [
             'route_params' => 'array',
             'metadata' => 'array',
+            'title_translations' => 'array',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];

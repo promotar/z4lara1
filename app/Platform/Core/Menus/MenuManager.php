@@ -85,6 +85,27 @@ class MenuManager
     }
 
     /**
+     * Per-language display name with a fallback to the stored label/title.
+     */
+    private function localizedTitle(MenuItem $item): string
+    {
+        $translations = $item->title_translations;
+
+        if (is_string($translations)) {
+            $translations = json_decode($translations, true) ?: [];
+        }
+
+        $value = is_array($translations) ? ($translations[app()->getLocale()] ?? null) : null;
+
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+
+        return (string) ($item->label ?: $item->title);
+    }
+
+    
+    /**
      * Icons are opt-in: only an explicitly chosen, known icon name is returned.
      * No inference from the label/route and no letter/emoji fallback, so a menu
      * entry without a chosen icon renders without any icon at all.
@@ -189,8 +210,8 @@ class MenuManager
 
                 return [
                     'id' => $item->id,
-                    'title' => $item->title,
-                    'label' => $item->label ?: $item->title,
+                    'title' => $this->localizedTitle($item),
+                    'label' => $this->localizedTitle($item),
                     'type' => $item->type,
                     'url' => $item->url,
                     'route_name' => $item->route_name,

@@ -887,3 +887,12 @@
 .menus.source.core = "النواة"
 .menus.default_frontend_name = "قائمة الواجهة"
 .menus.default_frontend_description = "قائمة تنقل قابلة للتعديل للواجهة."
+
+# per-language pages + menu names (2026-11-18)
+.menus.language = "اللغة"
+.menus.language_base = "الأساسية"
+.menus.languages_hint = "اختر اللغة ثم عدّل الاسم الخاص بها. عند ترك الاسم فارغاً يُستخدم اسم اللغة الأساسية."
+.page_builder.pages.edit_language_hint = "اختر لغة التحرير"
+.page_builder.pages.language_base = "الأساسية"
+.page_builder.pages.language_translated = "مترجمة"
+.page_builder.pages.language_new = "غير مترجمة بعد"
