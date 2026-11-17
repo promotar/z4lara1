@@ -151,16 +151,16 @@
                                                 $isDateFormat = $fieldKey === 'date_format';
                                                 $formatOptions = $isDateFormat
                                                     ? [
-                                                        'F j, Y' => $now->format('F j, Y'),
-                                                        'Y-m-d' => $now->format('Y-m-d'),
-                                                        'm/d/Y' => $now->format('m/d/Y'),
-                                                        'd/m/Y' => $now->format('d/m/Y'),
-                                                        'd.m.Y' => $now->format('d.m.Y'),
+                                                        'F j, Y' => $now->translatedFormat('F j, Y'),
+                                                        'Y-m-d' => $now->translatedFormat('Y-m-d'),
+                                                        'm/d/Y' => $now->translatedFormat('m/d/Y'),
+                                                        'd/m/Y' => $now->translatedFormat('d/m/Y'),
+                                                        'd.m.Y' => $now->translatedFormat('d.m.Y'),
                                                     ]
                                                     : [
-                                                        'g:i a' => $now->format('g:i a'),
-                                                        'g:i A' => $now->format('g:i A'),
-                                                        'H:i' => $now->format('H:i'),
+                                                        'g:i a' => $now->translatedFormat('g:i a'),
+                                                        'g:i A' => $now->translatedFormat('g:i A'),
+                                                        'H:i' => $now->translatedFormat('H:i'),
                                                     ];
                                                 $currentFormat = (string) $field['value'];
                                                 $customFormat = $isDateFormat

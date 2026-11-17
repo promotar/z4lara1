@@ -50,7 +50,7 @@
                 <section class="media-library media-library-panel is-grid" data-media-library>
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-900" data-i18n="core.media.library">{{ __('core.media.library') }}</h3>
-                        <span class="text-sm text-gray-500">{{ $mediaLibrary->total() }} media files</span>
+                        <span class="text-sm text-gray-500">{{ __('core.media.files_count', ['count' => $mediaLibrary->total()]) }}</span>
                     </div>
 
                     @if ($mediaLibrary->isEmpty())

@@ -41,7 +41,7 @@
     </label>
 
     <label class="admin-field admin-menu-route-field" x-show="itemType === 'link'">
-        <span class="admin-field-label">URL</span>
+        <span class="admin-field-label">{{ __('core.menus.field_url') }}</span>
         <input name="url" value="{{ old('url', $item->url ?? '') }}" placeholder="/admin/custom" class="admin-input">
     </label>
 

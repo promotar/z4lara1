@@ -57,12 +57,39 @@ class PlatformLogManager
             return [];
         }
 
-        $content = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        // Read only the end of the file: platform logs can grow to gigabytes and
+        // file()/file_get_contents() would exhaust the PHP memory limit.
+        $handle = @fopen($path, 'rb');
 
-        if (! is_array($content)) {
+        if ($handle === false) {
             return [];
         }
 
-        return array_slice($content, -max(1, $lines));
+        try {
+            $window = 512 * 1024;
+            $stats = fstat($handle);
+            $size = (int) ($stats['size'] ?? 0);
+            $offset = max(0, $size - $window);
+
+            fseek($handle, $offset);
+            $chunk = (string) fread($handle, $window);
+        } finally {
+            fclose($handle);
+        }
+
+        if ($offset > 0) {
+            $firstBreak = strpos($chunk, "\n");
+
+            if ($firstBreak === false) {
+                return [];
+            }
+
+            $chunk = substr($chunk, $firstBreak + 1);
+        }
+
+        $content = preg_split('/\r\n|\r|\n/', $chunk, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $content = array_map(fn (string $line): string => mb_substr($line, 0, 4000), $content);
+
+        return array_slice($content, -max(1, min($lines, 500)));
     }
 }

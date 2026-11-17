@@ -59,7 +59,7 @@
     </label>
 
     <label class="admin-field frontend-menu-destination-field" x-show="itemType === 'link'">
-        <span class="admin-field-label">URL</span>
+        <span class="admin-field-label">{{ __('core.menus.field_url') }}</span>
         <input name="url" value="{{ old('url', $item->url ?? '') }}" placeholder="/pages/example" class="admin-input">
     </label>
 
@@ -125,7 +125,7 @@
                 <span class="admin-field-label" data-i18n="core.menus.font_weight">{{ __('core.menus.font_weight') }}</span>
                 <select name="font_weight" class="admin-input">
                     <option value="" data-i18n="core.menus.default">{{ __('core.menus.default') }}</option>
-                    @foreach (['normal' => 'Normal', 'medium' => 'Medium', 'semibold' => 'Semibold', 'bold' => 'Bold'] as $value => $label)
+                    @foreach (['normal' => __('core.common.font_normal'), 'medium' => __('core.common.font_medium'), 'semibold' => __('core.common.font_semibold'), 'bold' => __('core.common.font_bold')] as $value => $label)
                         <option value="{{ $value }}" @selected(old('font_weight', $style['font_weight'] ?? '') === $value)>{{ $label }}</option>
                     @endforeach
                 </select>

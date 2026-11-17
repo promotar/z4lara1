@@ -99,7 +99,7 @@
                             @foreach ($hooks as $name => $definition)
                                 <div class="border rounded-md p-3">
                                     <div class="font-mono text-sm text-gray-900">{{ $name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $definition['description'] ?? 'Registered hook' }}</div>
+                                    <div class="text-xs text-gray-500">{{ $definition['description'] ?? __('core.registry.registered_hook') }}</div>
                                     <div class="mt-1 text-xs text-gray-600">{{ $definition['type'] ?? 'hook' }} / {{ $definition['status'] ?? 'active' }}</div>
                                 </div>
                             @endforeach
@@ -183,7 +183,7 @@
                                     });
 
                                     if (! response.ok) {
-                                        throw new Error('Live log request failed with status ' + response.status);
+                                        throw new Error(@js(__('core.registry.live_log_failed')) + ' ' + response.status);
                                     }
 
                                     const payload = await response.json();
@@ -197,7 +197,7 @@
                                         }
                                     });
                                 } catch (exception) {
-                                    this.error = exception.message || 'Live log could not be loaded.';
+                                    this.error = exception.message || @js(__('core.registry.live_log_unavailable'));
                                 } finally {
                                     this.loading = false;
                                 }
@@ -232,10 +232,10 @@
                                 <p class="mt-1 text-sm text-gray-500" data-i18n="core.registry.live_hint">{{ __('core.registry.live_hint') }}</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="rounded-md bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600" x-text="generatedAt ? 'Updated ' + generatedAt : 'Waiting for first load'"></span>
+                                <span class="rounded-md bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600" data-updated-label="{{ __('core.registry.updated_at') }}" data-waiting-label="{{ __('core.registry.waiting') }}" x-text="generatedAt ? $el.dataset.updatedLabel + ' ' + generatedAt : $el.dataset.waitingLabel"></span>
                                 <button type="button" @click="togglePause()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50" x-text="paused ? 'Resume' : 'Pause'"></button>
                                 <button type="button" @click="load()" :disabled="loading" class="rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">
-                                    <span x-text="loading ? 'Refreshing...' : 'Refresh now'"></span>
+                                    <span data-refreshing-label="{{ __('core.registry.refreshing') }}" data-refresh-label="{{ __('core.registry.refresh_now') }}" x-text="loading ? $el.dataset.refreshingLabel : $el.dataset.refreshLabel"></span>
                                 </button>
                             </div>
                         </div>
@@ -302,17 +302,17 @@
                     <div x-show="activeTab === 'success'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="font-semibold text-gray-900" data-i18n="core.registry.success_log">{{ __('core.registry.success_log') }}</h3>
-                            <span class="text-sm text-gray-500">{{ count($successLogs) }} entries</span>
+                            <span class="text-sm text-gray-500">{{ __('core.registry.entries_count', ['count' => count($successLogs)]) }}</span>
                         </div>
-                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-green-200">{{ $successLogs === [] ? 'No success log entries.' : implode(PHP_EOL, $successLogs) }}</pre>
+                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-green-200">{{ $successLogs === [] ? __('core.registry.no_success_entries') : implode(PHP_EOL, $successLogs) }}</pre>
                     </div>
 
                     <div x-show="activeTab === 'errors'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="font-semibold text-gray-900" data-i18n="core.registry.error_log">{{ __('core.registry.error_log') }}</h3>
-                            <span class="text-sm text-gray-500">{{ count($errorLogs) }} entries</span>
+                            <span class="text-sm text-gray-500">{{ __('core.registry.entries_count', ['count' => count($errorLogs)]) }}</span>
                         </div>
-                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-red-200">{{ $errorLogs === [] ? 'No error log entries.' : implode(PHP_EOL, $errorLogs) }}</pre>
+                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-red-200">{{ $errorLogs === [] ? __('core.registry.no_error_entries') : implode(PHP_EOL, $errorLogs) }}</pre>
                     </div>
                 </div>
             </section>

@@ -5,8 +5,8 @@
 
     @php
         $locations = [
-            'admin' => 'Admin Menu',
-            'frontend' => 'Frontend Menus',
+            'admin' => __('core.menus.tab_admin'),
+            'frontend' => __('core.menus.tab_frontend'),
         ];
 
         $activeMenus = $menus->get($activeLocation, collect());
@@ -62,11 +62,11 @@
             <section class="admin-menu-card">
                 <div class="admin-menu-card-header">
                     <div>
-                        <h3 class="admin-menu-card-title">{{ $activeLocation === 'admin' ? 'Admin menu sections' : 'Frontend menus' }}</h3>
+                        <h3 class="admin-menu-card-title">{{ $activeLocation === 'admin' ? __('core.menus.heading_admin_sections') : __('core.menus.heading_frontend_menus') }}</h3>
                         <p class="admin-menu-card-subtitle">
                             {{ $activeLocation === 'admin'
-                                ? 'Each section and item below is a registered part of the admin sidebar.'
-                                : 'Frontend menus can be created, configured, and used by public layouts.' }}
+                                ? __('core.menus.hint_admin_sections')
+                                : __('core.menus.hint_frontend_menus') }}
                         </p>
                     </div>
 
@@ -145,10 +145,10 @@
                                         <div class="admin-menu-source-main">
                                             <div>
                                                 <h4 class="admin-menu-source-title">{{ $menu->name }}</h4>
-                                                <p class="admin-menu-source-meta">{{ $menu->key }} · {{ $menu->items->count() }} items · Sort {{ $menu->sort_order }}</p>
+                                                <p class="admin-menu-source-meta">{{ $menu->key }} · {{ __('core.menus.items_count', ['count' => $menu->items->count()]) }} · {{ __('core.menus.sort', ['value' => $menu->sort_order]) }}</p>
                                             </div>
                                             <span class="ainpa-status-badge {{ $menu->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
-                                                {{ $menu->is_active ? 'Active' : 'Inactive' }}
+                                                {{ $menu->is_active ? __('core.common.active') : __('core.common.inactive') }}
                                             </span>
                                         </div>
 
@@ -252,7 +252,7 @@
                                             <span class="admin-menu-compact-order">{{ $menu->sort_order }}</span>
                                             <span>
                                                 <strong>{{ $menu->name }}</strong>
-                                                <small>{{ $menu->items->count() }} items</small>
+                                                <small>{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }}</small>
                                             </span>
                                         </a>
                                         <div class="admin-menu-compact-actions">
@@ -308,9 +308,9 @@
                         <div>
                             <h3 class="admin-menu-card-title">{{ $activeMenu->name }}</h3>
                             <p class="admin-menu-card-subtitle">
-                                {{ $activeMenu->items->count() }} menu items · {{ $activeMenu->key }} · {{ ucfirst($activeMenu->source) }} source
+                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ $activeMenu->key }} · {{ __('core.menus.source', ['source' => ucfirst($activeMenu->source)]) }}
                                 @if ($activeLocation === 'frontend')
-                                    · VvvebJs hook <code>data-platform-menu-key="{{ $activeMenu->key }}"</code>
+                                    · {{ __('core.menus.vvveb_hook') }} <code>data-platform-menu-key="{{ $activeMenu->key }}"</code>
                                 @endif
                             </p>
                         </div>
@@ -348,8 +348,8 @@
                                     $item = $entry['item'];
                                     $depth = (int) $entry['depth'];
                                     $panelId = 'item-'.$item->id;
-                                    $targetLabel = $item->route_name ?: ($item->url ?: 'No target');
-                                    $badgeLabel = $depth > 0 ? 'Sub item' : 'Main item';
+                                    $targetLabel = $item->route_name ?: ($item->url ?: __('core.menus.no_target'));
+                                    $badgeLabel = $depth > 0 ? __('core.menus.badge_sub_item') : __('core.menus.badge_main_item');
                                 @endphp
 
                                 <article class="admin-menu-accordion-item {{ $depth > 0 ? 'is-child' : 'is-root' }}">
@@ -376,9 +376,9 @@
                                                 <span class="admin-menu-badge">{{ $badgeLabel }}</span>
                                                 <span class="admin-menu-badge">{{ $item->type }}</span>
                                                 <span class="ainpa-status-badge {{ $item->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
-                                                    {{ $item->is_active ? 'Active' : 'Inactive' }}
+                                                    {{ $item->is_active ? __('core.common.active') : __('core.common.inactive') }}
                                                 </span>
-                                                <span class="admin-menu-sort">Sort {{ $item->sort_order }}</span>
+                                                <span class="admin-menu-sort">{{ __('core.menus.sort', ['value' => $item->sort_order]) }}</span>
                                                 <span class="admin-menu-toggle-text" x-show="open !== '{{ $panelId }}'" data-i18n="core.menus.open">{{ __('core.menus.open') }}</span>
                                                 <span class="admin-menu-toggle-text" x-show="open === '{{ $panelId }}'" x-cloak data-i18n="core.common.close">{{ __('core.common.close') }}</span>
                                             </span>
