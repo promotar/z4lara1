@@ -67,6 +67,27 @@ class TranslationsAudit extends Command
             }
         }
 
+        // ---- 1b. prefix collisions ----
+        // Laravel's Translator::addLines() uses Arr::set(), so a key that is
+        // also the prefix of another key turns the string value into an array
+        // (and every e() call on it throws). Treat it as a hard error.
+        foreach ($textKeys as $locale => $keys) {
+            $set = $keys;
+
+            foreach (array_keys($keys) as $key) {
+                $parts = explode('.', $key);
+                $prefix = '';
+
+                foreach ($parts as $index => $part) {
+                    $prefix = $prefix === '' ? $part : $prefix.'.'.$part;
+
+                    if ($prefix !== $key && isset($set[$prefix])) {
+                        $errors[] = 'key collision: '.$prefix.' is a value and a prefix of '.$key.' ('.$locale.')';
+                    }
+                }
+            }
+        }
+
         // ---- 2. legacy core.php ----
         foreach ($locales as $locale) {
             if (is_file(lang_path($locale.'/core.php'))) {
