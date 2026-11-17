@@ -177,7 +177,32 @@
         </div>
 
         <div class="z4-admin-bar-actions">
-            {{-- Language switcher moved to Settings. --}}
+            {{-- Language switcher: panel language is stored per user (users.locale). --}}
+            @if (count($platformLanguages ?? []) > 1)
+                <form
+                    method="POST"
+                    action="{{ route('front.account.language') }}"
+                    class="z4-admin-lang-form"
+                    style="display:flex;align-items:center;gap:6px;margin-inline-end:6px"
+                >
+                    @csrf
+                    <label class="sr-only" for="z4-admin-panel-locale">Language</label>
+                    <select
+                        id="z4-admin-panel-locale"
+                        name="locale"
+                        onchange="this.form.submit()"
+                        title="Language"
+                        style="height:32px;border:1px solid #d0d5dd;border-radius:8px;background:#fff;color:#344054;font-size:13px;padding:0 8px"
+                    >
+                        @foreach ($platformLanguages as $code => $label)
+                            <option value="{{ $code }}" @selected(app()->getLocale() === $code)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <noscript>
+                        <button type="submit" class="z4-admin-bar-button">OK</button>
+                    </noscript>
+                </form>
+            @endif
             {{-- Translation shortcut moved to Settings. --}}
 
             @if ($accountMenuItem !== null && $accountMenuItem['href'])
