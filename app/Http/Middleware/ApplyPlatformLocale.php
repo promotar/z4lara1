@@ -20,7 +20,10 @@ final readonly class ApplyPlatformLocale
             $normalized = str_replace('_', '-', trim($queryLocale));
 
             if ($this->locale->isAvailable($normalized)) {
-                $this->locale->set($normalized);
+                // Visitor page language: persist in the site session so the
+                // choice survives navigation (?lang= links generated when
+                // SEO_LOCALE_MODE=query).
+                $this->locale->setSite($normalized);
             }
         }
 
