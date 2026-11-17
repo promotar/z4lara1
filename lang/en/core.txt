@@ -890,3 +890,8 @@
 .page_builder.pages.language_base = "Base"
 .page_builder.pages.language_translated = "Translated"
 .page_builder.pages.language_new = "Not translated yet"
+
+# header component (2026-11-18)
+.menus.open_menu = "Open menu"
+.menus.close_menu = "Close menu"
+.header.primary_nav = "Primary navigation"

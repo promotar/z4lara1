@@ -338,14 +338,10 @@ CSS;
      */
     private function menuPreviewItem(array $item): array
     {
-        $icon = (string) ($item['icon'] ?? '');
-
         return [
             'label' => (string) ($item['label'] ?: $item['title']),
             'href' => $this->menuItemHref($item),
             'target' => (string) ($item['target'] ?? '_self'),
-            'icon' => $icon,
-            'icon_html' => $icon !== '' && IconSet::has($icon) ? IconSet::render($icon) : '',
             'children' => collect($item['children'] ?? [])
                 ->map(fn (array $child): array => $this->menuPreviewItem($child))
                 ->values()
@@ -648,10 +644,10 @@ CSS;
 
         if ($layout === 'offcanvas') {
             $body = '<input class="platform-menu-toggle-control" type="checkbox" id="'.e($toggleId).'">'
-                .'<label class="platform-menu-toggle" for="'.e($toggleId).'" aria-label="Open menu">'.$this->menuToggleIcon($icon).'</label>'
-                .'<label class="platform-menu-overlay" for="'.e($toggleId).'" aria-label="Close menu"></label>'
+                .'<label class="platform-menu-toggle" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.open_menu')).'">'.$this->menuToggleIcon($icon).'</label>'
+                .'<label class="platform-menu-overlay" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.close_menu')).'"></label>'
                 .'<div class="platform-menu-surface">'
-                .'<label class="platform-menu-close" for="'.e($toggleId).'" aria-label="Close menu">&times;</label>'
+                .'<label class="platform-menu-close" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.close_menu')).'">&times;</label>'
                 .$itemsHtml
                 .'</div>';
         } else {

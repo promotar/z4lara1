@@ -896,3 +896,8 @@
 .page_builder.pages.language_base = "الأساسية"
 .page_builder.pages.language_translated = "مترجمة"
 .page_builder.pages.language_new = "غير مترجمة بعد"
+
+# header component (2026-11-18)
+.menus.open_menu = "فتح القائمة"
+.menus.close_menu = "إغلاق القائمة"
+.header.primary_nav = "التنقل الرئيسي"
