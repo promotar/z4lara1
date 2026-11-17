@@ -219,7 +219,7 @@ class MenuSettingsController extends Controller
      */
     private function validatedMenu(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:64'],
             'key' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z0-9_.:-]+$/'],
@@ -227,6 +227,21 @@ class MenuSettingsController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:-10000', 'max:10000'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+
+        $data['icon'] = $this->normalizedIcon($data['icon'] ?? null);
+
+        return $data;
+    }
+
+    /**
+     * Icons are opt-in: unknown values (legacy letters/emoji) are dropped so a
+     * menu entry without a chosen icon renders without any icon.
+     */
+    private function normalizedIcon(?string $icon): ?string
+    {
+        $name = strtolower(trim((string) $icon));
+
+        return $name !== '' && \App\Platform\Core\UI\IconSet::has($name) ? $name : null;
     }
 
     /**
@@ -264,6 +279,7 @@ class MenuSettingsController extends Controller
         $data['type'] = $this->normalizeItemType((string) $data['type'], $data['url'], $data['route_name']);
         $data['audience'] = (string) ($data['audience'] ?? 'all');
         $data['action_method'] = (string) ($data['action_method'] ?? 'get');
+        $data['icon'] = $this->normalizedIcon($data['icon'] ?? null);
 
         $errors = [];
 

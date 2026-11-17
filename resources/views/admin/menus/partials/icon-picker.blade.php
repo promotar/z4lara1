@@ -76,9 +76,10 @@
         if (preview) {
             const svg = item ? item.querySelector('svg').cloneNode(true) : null;
             preview.innerHTML = '';
-            if (svg) { preview.appendChild(svg); } else { preview.textContent = name ? name.slice(0, 2) : '—'; }
+            if (svg) { preview.appendChild(svg); } else { preview.textContent = '—'; }
         }
-        input.value = name || '';
+        // Icons are opt-in: anything that is not a known icon name counts as "no icon".
+        input.value = item ? item.dataset.iconName : '';
     };
 
     const openFor = (input) => {

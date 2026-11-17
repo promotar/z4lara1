@@ -55,6 +55,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
             .z4-admin-icon .z4-icon-svg { width: 16px; height: 16px; display: block; }
             .z4-admin-icon .z4-icon-text { font-size: 12px; font-weight: 800; line-height: 1; }
             .admin-menu-item-icon .z4-icon-svg { width: 16px; height: 16px; }
+            .admin-menu-item-icon .z4-icon-empty { color: #98a2b3; font-size: 12px; line-height: 1; }
         </style>
         @if (str_starts_with(strtolower((string) ($platformDirection ?? 'ltr')), 'rtl'))
             {{-- RTL: mirror the fixed admin sidebar and its offsets (core default). --}}

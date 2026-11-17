@@ -361,7 +361,13 @@
                                             :aria-expanded="open === '{{ $panelId }}'"
                                         >
                                             <span class="admin-menu-level admin-menu-level-{{ min($depth, 4) }}"></span>
-                                            <span class="admin-menu-item-icon">{!! \App\Platform\Core\UI\IconSet::render($item->icon, $item->title) !!}</span>
+                                            <span class="admin-menu-item-icon">
+                                                @if (! empty($item->icon) && \App\Platform\Core\UI\IconSet::has((string) $item->icon))
+                                                    {!! \App\Platform\Core\UI\IconSet::render($item->icon) !!}
+                                                @else
+                                                    <span class="z4-icon-empty" aria-hidden="true">—</span>
+                                                @endif
+                                            </span>
                                             <span class="admin-menu-item-main">
                                                 <span class="admin-menu-item-title">{{ $item->title }}</span>
                                                 <span class="admin-menu-item-target">{{ $targetLabel }}</span>

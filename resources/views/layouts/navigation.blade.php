@@ -65,7 +65,7 @@
                         'href' => $href,
                         'route_name' => $routeName,
                         'active' => $directActive || $childActive,
-                        'icon' => (string) ($item['icon'] ?: strtoupper(substr((string) $item['title'], 0, 1))),
+                        'icon' => (string) ($item['icon'] ?? ''),
                         'visible' => true,
                         'type' => (string) ($item['type'] ?? 'link'),
                         'target' => $item['target'] ?? null,
@@ -207,7 +207,7 @@
 
             @if ($accountMenuItem !== null && $accountMenuItem['href'])
                 <a href="{{ $accountMenuItem['href'] }}" class="z4-admin-profile-link" @if($accountMenuItem['target'] ?? null) target="{{ $accountMenuItem['target'] }}" @endif>
-                    <span class="z4-admin-icon z4-admin-profile-icon" aria-hidden="true">{!! \App\Platform\Core\UI\IconSet::render($accountMenuItem['icon'] ?? null, $accountMenuItem['label'] ?? '') !!}</span>
+                    @if (! empty($accountMenuItem['icon']))<span class="z4-admin-icon z4-admin-profile-icon" aria-hidden="true">{!! \App\Platform\Core\UI\IconSet::render($accountMenuItem['icon']) !!}</span>@endif
                     <span>{{ $accountMenuItem['label'] }}</span>
                 </a>
             @else
@@ -300,7 +300,7 @@
                             :aria-expanded="(openSection === @js($sectionKey)).toString()"
                             aria-controls="{{ $sectionKey }}"
                         >
-                            <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon'] ?? null, $item['label'] ?? '') !!}</span>
+                            @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                             <span class="z4-admin-section-label">{{ $item['label'] }}</span>
                             <span class="z4-admin-chevron" aria-hidden="true"></span>
                         </button>
@@ -325,12 +325,12 @@
                                         <div class="z4-admin-parent-row">
                                             @if ($child['href'])
                                                 <a href="{{ $child['href'] }}" class="z4-admin-link z4-admin-parent-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                                    <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon'] ?? null, $child['label'] ?? '') !!}</span>
+                                                    @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                                     <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                                 </a>
                                             @else
                                                 <span class="z4-admin-link z4-admin-parent-link {{ $child['active'] ? 'is-active' : '' }}">
-                                                    <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon'] ?? null, $child['label'] ?? '') !!}</span>
+                                                    @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                                     <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                                 </span>
                                             @endif
@@ -356,7 +356,7 @@
                                     </div>
                                 @else
                                     <a href="{{ $child['href'] }}" class="z4-admin-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                        <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon'] ?? null, $child['label'] ?? '') !!}</span>
+                                        @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                         <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                     </a>
                                 @endif
@@ -365,7 +365,7 @@
                     </section>
                 @else
                     <a href="{{ $item['href'] }}" class="z4-admin-link {{ $item['active'] ? 'is-active' : '' }}" @if($item['target'] ?? null) target="{{ $item['target'] }}" @endif>
-                        <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon'] ?? null, $item['label'] ?? '') !!}</span>
+                        @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                         <span class="z4-admin-link-label">{{ $item['label'] }}</span>
                     </a>
                 @endif
@@ -397,7 +397,7 @@
                         @foreach ($children as $child)
                             @continue(! ($child['visible'] ?? true))
                             <a href="{{ $child['href'] }}" class="z4-mobile-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon'] ?? null, $child['label'] ?? '') !!}</span>
+                                @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                 <span>{{ $child['label'] }}</span>
                             </a>
                             @foreach (($child['children'] ?? []) as $grandChild)
@@ -409,7 +409,7 @@
                         @endforeach
                     @else
                         <a href="{{ $item['href'] }}" class="z4-mobile-link {{ $item['active'] ? 'is-active' : '' }}" @if($item['target'] ?? null) target="{{ $item['target'] }}" @endif>
-                            <span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon'] ?? null, $item['label'] ?? '') !!}</span>
+                            @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                             <span>{{ $item['label'] }}</span>
                         </a>
                     @endif
