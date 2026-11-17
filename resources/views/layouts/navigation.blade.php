@@ -181,12 +181,12 @@
                     style="display:flex;align-items:center;gap:6px;margin-inline-end:6px"
                 >
                     @csrf
-                    <label class="sr-only" for="z4-admin-panel-locale">Language</label>
+                    <label class="sr-only" for="z4-admin-panel-locale">{{ __('core.nav.language') }}</label>
                     <select
                         id="z4-admin-panel-locale"
                         name="locale"
                         onchange="this.form.submit()"
-                        title="Language"
+                        title="{{ __('core.nav.language') }}"
                         style="height:32px;border:1px solid #d0d5dd;border-radius:8px;background:#fff;color:#344054;font-size:13px;padding:0 8px"
                     >
                         @foreach ($platformLanguages as $code => $label)

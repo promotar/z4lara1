@@ -7,10 +7,15 @@ use Illuminate\Contracts\Foundation\Application;
 /**
  * Loads text language files.
  *
- * Core:   lang/{locale}/core.txt       -> .account.title = core.account.title
- * Modules: modules/{slug}/lang/{locale}/core.txt -> courses.title = lms::courses.title
+ * Core:    lang/{locale}/core.txt               -> .account.title = core.account.title
+ * Modules: modules/{slug}/lang/{locale}/core.txt -> courses.title  = <slug>::courses.title
  *
- * Format: key = "value"
+ * Format:  key = "value"
+ *
+ * This loader is the single source of truth for the `core` group: it runs on
+ * boot and registers every key, which shadows a legacy lang/{locale}/core.php
+ * (Laravel never re-reads a group that is already loaded). Keeping one source
+ * per key is what makes the translations screen deterministic.
  */
 final readonly class TextTranslationLoader
 {
@@ -18,41 +23,21 @@ final readonly class TextTranslationLoader
 
     public function register(): void
     {
-        $translator = $this->app['translator'];
+        $this->scan(true);
+    }
 
-        foreach ($this->locales() as $locale) {
-            $path = lang_path($locale.'/core.txt');
-
-            if (is_file($path)) {
-                $lines = $this->parseCore((string) file_get_contents($path));
-
-                if ($lines !== []) {
-                    $translator->addLines($lines, $locale);
-                }
-            }
-        }
-
-        foreach (glob(base_path('modules/*/lang'), GLOB_ONLYDIR) ?: [] as $directory) {
-            $slug = basename(dirname($directory));
-
-            if (preg_match('/^[a-z0-9_\-]+$/', $slug) !== 1) {
-                continue;
-            }
-
-            foreach ($this->locales() as $locale) {
-                $path = $directory.'/'.$locale.'/core.txt';
-
-                if (! is_file($path)) {
-                    continue;
-                }
-
-                $lines = $this->parseModule((string) file_get_contents($path));
-
-                if ($lines !== []) {
-                    $translator->addLines($lines, $locale, $slug);
-                }
-            }
-        }
+    /**
+     * Read every text language file without touching the translator.
+     *
+     * @return array{
+     *     locales: list<string>,
+     *     modules: list<string>,
+     *     files: list<array{locale:string,namespace:null|string,path:string,keys:int,items:list<string>,duplicates:list<string>,malformed:list<array{line:int,text:string}>}>
+     * }
+     */
+    public function diagnostics(): array
+    {
+        return $this->scan(false);
     }
 
     /** @return list<string> */
@@ -73,41 +58,138 @@ final readonly class TextTranslationLoader
         return array_values(array_unique($locales));
     }
 
-    /** @return array<string, string> */
-    private function parseCore(string $contents): array
+    /** @return list<string> */
+    public function modules(): array
     {
-        $lines = [];
+        $modules = [];
 
-        foreach ($this->rawLines($contents) as $line) {
-            [$key, $value] = $this->split($line);
+        foreach (glob(base_path('modules/*/lang'), GLOB_ONLYDIR) ?: [] as $directory) {
+            $slug = basename(dirname($directory));
 
-            if ($key === null || $value === null) {
-                continue;
+            if (preg_match('/^[a-z0-9_\-]+$/', $slug) === 1) {
+                $modules[] = $slug;
             }
-
-            if (! str_starts_with($key, '.')) {
-                continue;
-            }
-
-            $lines['core.'.ltrim($key, '.')] = $value;
         }
 
-        return $lines;
+        sort($modules);
+
+        return $modules;
     }
 
-    /** @return array<string, string> */
-    private function parseModule(string $contents): array
+    /**
+     * @return array{
+     *     locales: list<string>,
+     *     modules: list<string>,
+     *     files: list<array{locale:string,namespace:null|string,path:string,keys:int,items:list<string>,duplicates:list<string>,malformed:list<array{line:int,text:string}>}>
+     * }
+     */
+    private function scan(bool $register): array
     {
-        $lines = [];
+        $translator = $register ? $this->app['translator'] : null;
+        $locales = $this->locales();
+        $modules = $this->modules();
+        $files = [];
 
-        foreach ($this->rawLines($contents) as $line) {
-            [$key, $value] = $this->split($line);
+        foreach ($locales as $locale) {
+            $path = lang_path($locale.'/core.txt');
 
-            if ($key === null || $value === null) {
+            if (! is_file($path)) {
                 continue;
             }
 
-            $lines[ltrim($key, '.')] = $value;
+            $stats = ['duplicates' => [], 'malformed' => []];
+            $lines = $this->parse((string) file_get_contents($path), true, $stats);
+
+            if ($register && $lines !== []) {
+                $translator->addLines($lines, $locale);
+            }
+
+            $files[] = [
+                'locale' => $locale,
+                'namespace' => null,
+                'path' => $path,
+                'keys' => count($lines),
+                'items' => array_keys($lines),
+                'duplicates' => $stats['duplicates'],
+                'malformed' => $stats['malformed'],
+            ];
+        }
+
+        foreach ($modules as $module) {
+            foreach ($locales as $locale) {
+                $path = base_path('modules/'.$module.'/lang/'.$locale.'/core.txt');
+
+                if (! is_file($path)) {
+                    continue;
+                }
+
+                $stats = ['duplicates' => [], 'malformed' => []];
+                $lines = $this->parse((string) file_get_contents($path), false, $stats);
+
+                if ($register && $lines !== []) {
+                    $translator->addLines($lines, $locale, $module);
+                }
+
+                $files[] = [
+                    'locale' => $locale,
+                    'namespace' => $module,
+                    'path' => $path,
+                    'keys' => count($lines),
+                    'items' => array_keys($lines),
+                    'duplicates' => $stats['duplicates'],
+                    'malformed' => $stats['malformed'],
+                ];
+            }
+        }
+
+        return ['locales' => $locales, 'modules' => $modules, 'files' => $files];
+    }
+
+    /**
+     * @param  array{duplicates:list<string>,malformed:list<array{line:int,text:string}>}  $stats
+     * @return array<string, string>
+     */
+    private function parse(string $contents, bool $core, array &$stats): array
+    {
+        $lines = [];
+        $number = 0;
+
+        foreach ($this->rawLines($contents) as $line) {
+            $number++;
+
+            [$key, $value] = $this->split($line);
+
+            if ($key === null) {
+                continue;
+            }
+
+            if ($core && ! str_starts_with($key, '.')) {
+                $stats['malformed'][] = ['line' => $number, 'text' => 'key must start with a dot: '.$key];
+
+                continue;
+            }
+
+            $item = ltrim($key, '.');
+
+            if ($item === '' || preg_match('/^[A-Za-z0-9_\-]+(?:\.[A-Za-z0-9_\-]+)*$/', $item) !== 1) {
+                $stats['malformed'][] = ['line' => $number, 'text' => 'invalid key: '.$key];
+
+                continue;
+            }
+
+            if ($value === '') {
+                $stats['malformed'][] = ['line' => $number, 'text' => 'empty value: '.$key];
+
+                continue;
+            }
+
+            $resolved = $core ? 'core.'.$item : $item;
+
+            if (array_key_exists($resolved, $lines)) {
+                $stats['duplicates'][] = $resolved;
+            }
+
+            $lines[$resolved] = $value;
         }
 
         return $lines;

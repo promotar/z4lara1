@@ -103,7 +103,7 @@ class PluginController extends Controller
 
                     return redirect()
                         ->route('admin.plugins.index')
-                        ->with('status', 'Plugin installed successfully through PluginManager.');
+                        ->with('status', __('core.plugins.flash.installed'));
                 }
 
                 $this->assertSamePluginIdentity($existing, $manifest);
@@ -147,7 +147,7 @@ class PluginController extends Controller
             $uploads->discardFile($zipPath);
         }
 
-        return redirect()->route('admin.plugins.index')->with('status', 'Plugin installed successfully through PluginManager.');
+        return redirect()->route('admin.plugins.index')->with('status', __('core.plugins.flash.installed'));
     }
 
     public function reviewUpdate(string $token): View|RedirectResponse
@@ -157,7 +157,7 @@ class PluginController extends Controller
         if (! $pending) {
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin update expired. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_expired')]);
         }
 
         return view('admin.plugins.update', [
@@ -177,7 +177,7 @@ class PluginController extends Controller
         if (! $pending) {
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin update expired. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_expired')]);
         }
 
         $zipPath = (string) ($pending['zip_path'] ?? '');
@@ -187,7 +187,7 @@ class PluginController extends Controller
 
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin ZIP was not found. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_missing')]);
         }
 
         $extractDirectory = null;
@@ -226,7 +226,7 @@ class PluginController extends Controller
 
         return redirect()
             ->route('admin.plugins.index')
-            ->with('status', "Plugin [{$plugin->slug}] updated from version {$pending['old']['version']} to {$plugin->version}.");
+            ->with('status', __('core.plugins.flash.updated', ['slug' => $plugin->slug, 'from' => $pending['old']['version'], 'to' => $plugin->version]));
     }
 
     public function activate(string $slug, PluginManager $plugins): RedirectResponse
@@ -238,7 +238,7 @@ class PluginController extends Controller
             return back()->withErrors(['plugin' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Plugin activated successfully.');
+        return back()->with('status', __('core.plugins.flash.activated'));
     }
 
     public function deactivate(string $slug, PluginManager $plugins): RedirectResponse
@@ -250,7 +250,7 @@ class PluginController extends Controller
             return back()->withErrors(['plugin' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Plugin deactivated successfully and remains installed.');
+        return back()->with('status', __('core.plugins.flash.deactivated'));
     }
 
     /**

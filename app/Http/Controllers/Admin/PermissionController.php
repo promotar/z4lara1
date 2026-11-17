@@ -33,13 +33,13 @@ class PermissionController extends Controller
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return back()->with('status', 'تم إنشاء الصلاحية.');
+        return back()->with('status', __('core.permissions.flash.created'));
     }
 
     public function syncDefaults(PermissionManager $permissionManager): RedirectResponse
     {
         $permissionManager->syncDefaults();
 
-        return back()->with('status', 'تمت مزامنة الصلاحيات والأدوار الافتراضية.');
+        return back()->with('status', __('core.permissions.flash.synced'));
     }
 }

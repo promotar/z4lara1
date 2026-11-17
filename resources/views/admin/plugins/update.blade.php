@@ -5,7 +5,7 @@
                 <h2 class="ainpa-page-title" data-i18n="core.plugins.review_title">{{ __('core.plugins.review_title') }}</h2>
                 <p class="text-sm text-gray-600" data-i18n="core.plugins.review_hint">{{ __('core.plugins.review_hint') }}</p>
             </div>
-            <a href="{{ route('admin.plugins.create') }}" class="ainpa-button">Cancel</a>
+            <a href="{{ route('admin.plugins.create') }}" class="ainpa-button">{{ __('core.common.cancel') }}</a>
         </div>
     </x-slot>
 
@@ -95,7 +95,7 @@
                 <form method="POST" action="{{ route('admin.plugins.update.confirm', $token) }}" class="flex items-center gap-3">
                     @csrf
                     <x-primary-button data-i18n="core.plugins.confirm_update">{{ __('core.plugins.confirm_update') }}</x-primary-button>
-                    <a href="{{ route('admin.plugins.create') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancel</a>
+                    <a href="{{ route('admin.plugins.create') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('core.common.cancel') }}</a>
                 </form>
             </div>
         </div>

@@ -102,7 +102,7 @@ class MenuSettingsController extends Controller
             && ! (bool) ($data['is_active'] ?? false)
             && $menu->is_active
             && ! Menu::query()->where('location', 'admin')->where('is_active', true)->where('id', '!=', $menu->id)->exists()) {
-            throw ValidationException::withMessages(['is_active' => 'At least one admin section must remain active.']);
+            throw ValidationException::withMessages(['is_active' => __('core.menus.validation.last_section_active')]);
         }
 
         $menu->update([
@@ -131,11 +131,11 @@ class MenuSettingsController extends Controller
         abort_unless(in_array($menu->location, ['frontend', 'admin'], true), 404);
 
         if ($menu->location === 'admin' && $menu->items()->exists()) {
-            throw ValidationException::withMessages(['menu' => 'Move or delete every item before deleting an admin section.']);
+            throw ValidationException::withMessages(['menu' => __('core.menus.validation.section_not_empty')]);
         }
 
         if ($menu->location === 'admin' && Menu::query()->where('location', 'admin')->where('id', '!=', $menu->id)->doesntExist()) {
-            throw ValidationException::withMessages(['menu' => 'The final admin section cannot be deleted.']);
+            throw ValidationException::withMessages(['menu' => __('core.menus.validation.last_section_delete')]);
         }
 
         $operation = app(OperationLogger::class)->start('admin.menus.delete', 'menu', (string) $menu->id, [
@@ -168,7 +168,7 @@ class MenuSettingsController extends Controller
 
         return redirect()
             ->route('admin.menus.index', ['location' => $menu->location, 'menu' => $menu->id])
-            ->with('status', 'Menu item created.');
+            ->with('status', __('core.menus.flash.item_created'));
     }
 
     public function update(Request $request, MenuItem $item): RedirectResponse
@@ -192,7 +192,7 @@ class MenuSettingsController extends Controller
 
         return redirect()
             ->route('admin.menus.index', ['location' => $item->menu->location, 'menu' => $item->menu_id])
-            ->with('status', 'Menu item updated.');
+            ->with('status', __('core.menus.flash.item_updated'));
     }
 
     public function destroy(MenuItem $item): RedirectResponse
@@ -211,7 +211,7 @@ class MenuSettingsController extends Controller
 
         return redirect()
             ->route('admin.menus.index', ['location' => $location, 'menu' => $menuId])
-            ->with('status', 'Menu item removed.');
+            ->with('status', __('core.menus.flash.item_removed'));
     }
 
     /**
@@ -352,7 +352,7 @@ class MenuSettingsController extends Controller
         $routeName = (string) ($data['route_name'] ?? '');
 
         if (! in_array($routeName, ['dashboard', 'front.account'], true) && ! str_starts_with($routeName, 'admin.')) {
-            throw ValidationException::withMessages(['route_name' => 'Admin sections accept dashboard, front.account, or admin.* routes only.']);
+            throw ValidationException::withMessages(['route_name' => __('core.menus.validation.admin_route_only')]);
         }
 
         $duplicate = MenuItem::query()
@@ -362,7 +362,7 @@ class MenuSettingsController extends Controller
             ->exists();
 
         if ($duplicate) {
-            throw ValidationException::withMessages(['route_name' => 'This admin route is already registered in another menu section.']);
+            throw ValidationException::withMessages(['route_name' => __('core.menus.validation.admin_route_taken')]);
         }
     }
 
@@ -376,7 +376,7 @@ class MenuSettingsController extends Controller
         $destination = Menu::query()->where('location', 'admin')->find($data['destination_menu_id']);
 
         if (! $destination) {
-            throw ValidationException::withMessages(['destination_menu_id' => 'Choose a registered admin section.']);
+            throw ValidationException::withMessages(['destination_menu_id' => __('core.menus.validation.choose_section')]);
         }
 
         return $destination;
@@ -487,19 +487,19 @@ class MenuSettingsController extends Controller
 
         if ($parent === null) {
             throw ValidationException::withMessages([
-                'parent_id' => 'Choose a parent item from the same menu.',
+                'parent_id' => __('core.menus.validation.choose_parent'),
             ]);
         }
 
         if ($item !== null && $parent->id === $item->id) {
             throw ValidationException::withMessages([
-                'parent_id' => 'A menu item cannot be its own parent.',
+                'parent_id' => __('core.menus.validation.self_parent'),
             ]);
         }
 
         if ($item !== null && $this->isDescendantOf($parent, $item)) {
             throw ValidationException::withMessages([
-                'parent_id' => 'A menu item cannot be moved under one of its children.',
+                'parent_id' => __('core.menus.validation.child_parent'),
             ]);
         }
 

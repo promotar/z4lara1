@@ -99,7 +99,7 @@
         <div style="display:flex;align-items:center;gap:6px">
             <span class="z4-icon-preview" aria-hidden="true"></span>
             <input type="hidden" name="icon" value="{{ old('icon', $item->icon ?? '') }}" data-icon-input>
-            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
         </div>
     </label>
 

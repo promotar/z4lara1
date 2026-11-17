@@ -24,7 +24,7 @@ final class TranslationFileEditor
     public const DEFAULT = 'en';
 
     /**
-     * @return array{key:string,namespace:?string,group:string,item:string,locale:string,path:string}|null
+     * @return array{key:string,namespace:?string,group:string,item:string,locale:string,path:string,text:bool}|null
      */
     public function resolve(string $key, string $locale): ?array
     {
@@ -54,12 +54,14 @@ final class TranslationFileEditor
                 ? $moduleRoot.'/lang'
                 : $moduleRoot.'/resources/lang';
 
-            $path = $base.'/'.$locale.'/'.$group.'.php';
+            $path = $base.'/'.$locale.'/'.($group === 'core' ? 'core.txt' : $group.'.php');
         } else {
             $segments = explode('.', $key);
             $group = (string) array_shift($segments);
             $item = implode('.', $segments);
-            $path = lang_path($locale.'/'.$group.'.php');
+            $path = $group === 'core'
+                ? lang_path($locale.'/core.txt')
+                : lang_path($locale.'/'.$group.'.php');
         }
 
         if ($group === '' || $item === '') {
@@ -73,6 +75,7 @@ final class TranslationFileEditor
             'item' => $item,
             'locale' => $locale,
             'path' => $path,
+            'text' => $group === 'core',
         ];
     }
 
@@ -82,6 +85,12 @@ final class TranslationFileEditor
 
         if ($target === null) {
             return null;
+        }
+
+        if ($target['text']) {
+            $data = $this->readText($target['path']);
+
+            return $data['.'.$target['item']] ?? $data[$target['item']] ?? null;
         }
 
         $value = Arr::get($this->read($target['path']), $target['item']);
@@ -119,11 +128,19 @@ final class TranslationFileEditor
         }
 
         try {
-            $data = $this->read($target['path']);
-            Arr::set($data, $target['item'], $value);
+            if ($target['text']) {
+                $data = $this->readText($target['path']);
+                $data['.'.$target['item']] = $value;
 
-            $this->backup($target['path']);
-            $this->write($target['path'], $data);
+                $this->backup($target['path']);
+                $this->writeText($target['path'], $data);
+            } else {
+                $data = $this->read($target['path']);
+                Arr::set($data, $target['item'], $value);
+
+                $this->backup($target['path']);
+                $this->write($target['path'], $data);
+            }
 
             Log::info('platform.translation.saved', [
                 'key' => $key,
@@ -424,6 +441,10 @@ final class TranslationFileEditor
 
     public function pathFor(string $locale, string $group, ?string $module = null): ?string
     {
+        if ($group === 'core') {
+            $group = 'text';
+        }
+
         if (! $this->isAvailableLocale($locale) || ! $this->isValidGroup($group)) {
             return null;
         }
@@ -461,6 +482,10 @@ final class TranslationFileEditor
     /** @return array<string, mixed> */
     public function readGroup(string $locale, string $group, ?string $module = null): array
     {
+        if ($group === 'core') {
+            $group = 'text';
+        }
+
         if ($group === 'json' && $module === null) {
             return $this->readJson($locale);
         }
@@ -517,6 +542,10 @@ final class TranslationFileEditor
 
             if (is_file(lang_path($locale.'/core.txt'))) {
                 $groups[] = 'text';
+                // core.txt is the live source for the `core` group; a legacy
+                // core.php would be shadowed by it, so never expose it as a
+                // second editing target.
+                $groups = array_values(array_diff($groups, ['core']));
             }
 
             sort($groups);
@@ -651,6 +680,10 @@ final class TranslationFileEditor
      */
     public function saveGroup(string $locale, string $group, array $values, ?string $module = null): int
     {
+        if ($group === 'core') {
+            $group = 'text';
+        }
+
         $path = $this->pathFor($locale, $group, $module);
 
         if ($path === null) {

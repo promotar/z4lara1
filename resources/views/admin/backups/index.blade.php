@@ -79,13 +79,13 @@
                                                 <a href="{{ route('admin.backups.location', $backup['id']) }}" target="_blank" class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50" data-i18n="core.backups.location">
                                                     {{ __('core.backups.location') }}
                                                 </a>
-                                                <form method="POST" action="{{ route('admin.backups.restore', $backup['id']) }}" onsubmit="return confirm('Record restore confirmation for this backup?');">
+                                                <form method="POST" action="{{ route('admin.backups.restore', $backup['id']) }}" onsubmit="return confirm(@js(__('core.backups.confirm.restore')));">
                                                     @csrf
                                                     <button class="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50" data-i18n="core.backups.restore">
                                                         {{ __('core.backups.restore') }}
                                                     </button>
                                                 </form>
-                                                <form method="POST" action="{{ route('admin.backups.destroy', $backup['id']) }}" onsubmit="return confirm('Remove this backup checkpoint?');">
+                                                <form method="POST" action="{{ route('admin.backups.destroy', $backup['id']) }}" onsubmit="return confirm(@js(__('core.backups.confirm.remove')));">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50" data-i18n="core.backups.remove">

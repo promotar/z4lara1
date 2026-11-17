@@ -107,13 +107,13 @@ final class CoreUpdateService
                 'sha256' => hash_file('sha256', $zipPath) ?: '',
                 'files' => count($files),
                 'status' => 'success',
-                'message' => 'تم التحديث بنجاح.',
+                'message' => __('core.updates.flash.applied'),
                 'at' => now()->toIso8601String(),
             ]);
 
             File::deleteDirectory($tmp);
 
-            return ['ok' => true, 'message' => 'تم تحديث الكور بنجاح ('.count($files).' ملفاً).', 'id' => $id];
+            return ['ok' => true, 'message' => __('core.updates.flash.applied_with_backup').count($files).' ملفاً).', 'id' => $id];
         } catch (Throwable $exception) {
             if ($written) {
                 // restore() already ran inside the inner catch; keep the guard for early failures.
@@ -136,7 +136,7 @@ final class CoreUpdateService
             $reason = trim(strtok($exception->getMessage(), "\n") ?: $exception->getMessage());
             $reason = \Illuminate\Support\Str::limit($reason, 180);
 
-            return ['ok' => false, 'message' => 'فشل التحديث وتم استرجاع النسخة السابقة. السبب: '.$reason, 'id' => $id];
+            return ['ok' => false, 'message' => __('core.updates.flash.apply_failed').$reason, 'id' => $id];
         }
     }
 
@@ -153,14 +153,14 @@ final class CoreUpdateService
         }
 
         if ($last === null) {
-            return ['ok' => false, 'message' => 'لا توجد نسخة سابقة صالحة للاسترجاع.'];
+            return ['ok' => false, 'message' => __('core.updates.rollback.none')];
         }
 
         $snapshot = $this->workDir.'/snapshots/'.$last['id'];
         $stateFile = $snapshot.'/state.json';
 
         if (! is_file($stateFile)) {
-            return ['ok' => false, 'message' => 'ملف حالة النسخة السابقة غير موجود.'];
+            return ['ok' => false, 'message' => __('core.updates.rollback.state_missing')];
         }
 
         try {
@@ -174,13 +174,13 @@ final class CoreUpdateService
                 'sha256' => '',
                 'files' => count($state['existing'] ?? []),
                 'status' => 'rolled-back',
-                'message' => 'تم الاسترجاع يدوياً.',
+                'message' => __('core.updates.rollback.manual'),
                 'at' => now()->toIso8601String(),
             ]);
 
-            return ['ok' => true, 'message' => 'تم استرجاع النسخة السابقة.'];
+            return ['ok' => true, 'message' => __('core.updates.rollback.done')];
         } catch (Throwable $exception) {
-            return ['ok' => false, 'message' => 'تعذّر الاسترجاع: '.$exception->getMessage()];
+            return ['ok' => false, 'message' => __('core.updates.rollback.failed').$exception->getMessage()];
         }
     }
 

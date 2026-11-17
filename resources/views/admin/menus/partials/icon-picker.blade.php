@@ -7,12 +7,12 @@
 
 <div id="z4-icon-picker" class="z4-icon-picker-modal" hidden>
     <div class="z4-icon-picker-backdrop" data-icon-close></div>
-    <div class="z4-icon-picker-dialog" role="dialog" aria-modal="true" aria-label="Choose icon">
+    <div class="z4-icon-picker-dialog" role="dialog" aria-modal="true" aria-label="{{ __('core.icon_picker.title') }}">
         <div class="z4-icon-picker-head">
-            <strong>Choose icon</strong>
-            <button type="button" class="z4-icon-picker-close" data-icon-close aria-label="Close">×</button>
+            <strong>{{ __('core.icon_picker.title') }}</strong>
+            <button type="button" class="z4-icon-picker-close" data-icon-close aria-label="{{ __('core.common.close') }}">×</button>
         </div>
-        <input type="search" id="z4-icon-picker-search" class="admin-input" placeholder="Search icons…" autocomplete="off">
+        <input type="search" id="z4-icon-picker-search" class="admin-input" placeholder="{{ __('core.icon_picker.search') }}" autocomplete="off">
         <div class="z4-icon-picker-grid" id="z4-icon-picker-grid">
             @foreach ($iconPaths as $iconName => $iconPath)
                 <button
@@ -31,8 +31,8 @@
             @endforeach
         </div>
         <div class="z4-icon-picker-actions">
-            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-clear>Clear</button>
-            <button type="button" class="ainpa-button ainpa-button-compact ainpa-button-primary" data-icon-close>Done</button>
+            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-clear>{{ __('core.common.clear') }}</button>
+            <button type="button" class="ainpa-button ainpa-button-compact ainpa-button-primary" data-icon-close>{{ __('core.common.done') }}</button>
         </div>
     </div>
 </div>

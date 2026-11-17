@@ -99,10 +99,10 @@
                                 <div class="admin-menu-form-grid admin-menu-form-grid-six">
                                     <label class="admin-field admin-menu-span-two">
                                         <span class="admin-field-label" data-i18n="core.menus.name">{{ __('core.menus.name') }}</span>
-                                        <input name="name" required placeholder="Main Menu" class="admin-input">
+                                        <input name="name" required placeholder="{{ __('core.menus.placeholder_main_menu') }}" class="admin-input">
                                     </label>
                                     <label class="admin-field admin-menu-span-two">
-                                        <span class="admin-field-label">Key</span>
+                                        <span class="admin-field-label">{{ __('core.menus.key') }}</span>
                                         <input name="key" placeholder="main" class="admin-input">
                                     </label>
                                     <label class="admin-field">
@@ -110,7 +110,7 @@
                                         <div style="display:flex;align-items:center;gap:6px">
                                             <span class="z4-icon-preview" aria-hidden="true"></span>
                                             <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
-                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
                                         </div>
                                     </label>
                                     <label class="admin-field">
@@ -155,7 +155,7 @@
                                         <div class="admin-menu-source-actions">
                                             <a href="{{ route('admin.menus.index', ['location' => 'frontend', 'menu' => $menu->id]) }}" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.manage_items">{{ __('core.menus.manage_items') }}</a>
                                             <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.settings">{{ __('core.menus.settings') }}</button>
-                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Remove this frontend menu and all of its items?');">
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu_with_items')));">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
@@ -172,7 +172,7 @@
                                                         <input name="name" value="{{ $menu->name }}" required class="admin-input">
                                                     </label>
                                                     <label class="admin-field">
-                                                        <span class="admin-field-label">Key</span>
+                                                        <span class="admin-field-label">{{ __('core.menus.key') }}</span>
                                                         <input name="key" value="{{ preg_replace('/^platform\./', '', $menu->key) }}" class="admin-input">
                                                     </label>
                                                     <label class="admin-field">
@@ -180,7 +180,7 @@
                                                         <div style="display:flex;align-items:center;gap:6px">
                                                             <span class="z4-icon-preview" aria-hidden="true"></span>
                                                             <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
-                                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -205,7 +205,7 @@
                                                 </div>
                                             </form>
 
-                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Remove this frontend menu and its items?');" class="admin-menu-danger-form">
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu')));" class="admin-menu-danger-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="ainpa-button ainpa-button-danger" data-i18n="core.menus.remove_menu">{{ __('core.menus.remove_menu') }}</button>
@@ -230,7 +230,7 @@
                                     <div style="display:flex;align-items:center;gap:6px">
                                         <span class="z4-icon-preview" aria-hidden="true"></span>
                                         <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
-                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
                                     </div>
                                 </label>
                                 <label class="admin-field admin-menu-sort-field">
@@ -258,7 +258,7 @@
                                         <div class="admin-menu-compact-actions">
                                             <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.edit">{{ __('core.menus.edit') }}</button>
                                             @if ($menu->items->isEmpty())
-                                                <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Delete this empty admin section?');">
+                                                <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.delete_empty_section')));">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
@@ -279,7 +279,7 @@
                                                     <div style="display:flex;align-items:center;gap:6px">
                                                         <span class="z4-icon-preview" aria-hidden="true"></span>
                                                         <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
-                                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
                                                     </div>
                                                 </label>
                                                 <label class="admin-field admin-menu-sort-field">
@@ -384,7 +384,7 @@
                                             </span>
                                         </button>
 
-                                        <form method="POST" action="{{ route('admin.menus.items.destroy', $item) }}" onsubmit="return confirm('Remove this menu item?');" class="admin-menu-row-delete-form flex items-center pr-3">
+                                        <form method="POST" action="{{ route('admin.menus.items.destroy', $item) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_item')));" class="admin-menu-row-delete-form flex items-center pr-3">
                                             @csrf
                                             @method('DELETE')
                                             <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>

@@ -68,7 +68,7 @@ class UserController extends Controller
 
         $user->syncRoles($roles);
 
-        return back()->with('status', 'تم إنشاء المستخدم.');
+        return back()->with('status', __('core.users.flash.created'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -94,33 +94,33 @@ class UserController extends Controller
         $user->save();
         $user->syncRoles($roles);
 
-        return back()->with('status', 'تم تحديث المستخدم وأدواره.');
+        return back()->with('status', __('core.users.flash.updated'));
     }
 
     public function verifyEmail(User $user): RedirectResponse
     {
         if ($user->email_verified_at !== null) {
-            return back()->with('status', 'البريد الإلكتروني لهذا المستخدم مفعّل بالفعل.');
+            return back()->with('status', __('core.users.flash.email_verified'));
         }
 
         $user->forceFill([
             'email_verified_at' => now(),
         ])->save();
 
-        return back()->with('status', 'تم تفعيل البريد الإلكتروني للمستخدم بواسطة الإدارة.');
+        return back()->with('status', __('core.users.flash.email_verified_by_admin'));
     }
 
     public function destroy(Request $request, User $user, UserDeletionCoordinator $deletions): RedirectResponse
     {
         if ($request->user()?->is($user)) {
             throw ValidationException::withMessages([
-                'user' => 'You cannot delete the account currently in use.',
+                'user' => __('core.users.validation.cannot_delete_self'),
             ]);
         }
 
         if ($user->hasRole('super-admin') && ! User::role('super-admin')->whereKeyNot($user->getKey())->exists()) {
             throw ValidationException::withMessages([
-                'user' => 'The final super administrator cannot be deleted.',
+                'user' => __('core.users.validation.last_super_admin'),
             ]);
         }
 
@@ -136,7 +136,7 @@ class UserController extends Controller
             $user->delete();
         }, 3);
 
-        return redirect()->route('admin.users.index')->with('status', 'User deleted.');
+        return redirect()->route('admin.users.index')->with('status', __('core.users.flash.deleted'));
     }
 
     /** @param list<string> $roles */
@@ -156,7 +156,7 @@ class UserController extends Controller
             && ! $willBeSuperAdmin
             && ! User::role('super-admin')->whereKeyNot($target->getKey())->exists()
         ) {
-            abort(422, 'The final super-admin assignment cannot be removed.');
+            abort(422, __('core.users.validation.last_super_admin_assignment'));
         }
     }
 }

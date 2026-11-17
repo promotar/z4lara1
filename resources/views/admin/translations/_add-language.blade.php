@@ -23,7 +23,7 @@
 
         <label class="block text-sm">
             <span class="mb-1 block font-semibold text-gray-700">{{ __('core.translations.label') }}</span>
-            <input name="label" required maxlength="64" placeholder="Español" class="block w-full rounded-md border-gray-300 text-sm">
+            <input name="label" required maxlength="64" placeholder="{{ __('core.translations.language_example') }}" class="block w-full rounded-md border-gray-300 text-sm">
         </label>
 
         <label class="block text-sm">

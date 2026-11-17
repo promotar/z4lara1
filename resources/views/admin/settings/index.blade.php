@@ -282,7 +282,7 @@
                                                                 <button
                                                                     type="button"
                                                                     class="media-remove"
-                                                                    title="Remove"
+                                                                    title="{{ __('core.common.remove') }}"
                                                                     aria-label="Remove {{ $translate($field['label']) }}"
                                                                     data-remove-media="{{ $groupKey }}.{{ $fieldKey }}"
                                                                 >x</button>
@@ -444,7 +444,7 @@
                 <div class="media-modal-panel">
                     <div class="media-modal-header">
                         <h3 data-media-modal-title>{{ $translate('Add Media') }}</h3>
-                        <button type="button" class="media-close" data-close-media aria-label="Close">x</button>
+                        <button type="button" class="media-close" data-close-media aria-label="{{ __('core.common.close') }}">x</button>
                     </div>
 
                     <div class="media-modal-tabs">

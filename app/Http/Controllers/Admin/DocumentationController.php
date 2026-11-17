@@ -56,7 +56,7 @@ class DocumentationController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('status', 'Documentation task created successfully.');
+        return back()->with('status', __('core.docs.flash.created'));
     }
 
     public function update(Request $request, int $task): RedirectResponse
@@ -76,7 +76,7 @@ class DocumentationController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('status', 'Documentation task updated successfully.');
+        return back()->with('status', __('core.docs.flash.updated'));
     }
 
     public function toggle(int $task): RedirectResponse
@@ -98,7 +98,7 @@ class DocumentationController extends Controller
 
         DB::table('documentation_tasks')->where('id', $task)->delete();
 
-        return back()->with('status', 'Documentation task deleted successfully.');
+        return back()->with('status', __('core.docs.flash.deleted'));
     }
 
     public function viewReport(string $report)

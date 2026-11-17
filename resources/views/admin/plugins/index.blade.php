@@ -154,7 +154,7 @@
                                             <button class="ainpa-button ainpa-button-success ainpa-button-compact" data-i18n="core.plugins.activate">{{ __('core.plugins.activate') }}</button>
                                         </form>
                                         @unless ($plugin->isCore())
-                                            <form method="POST" action="{{ route('admin.plugins.destroy', $plugin->slug) }}" class="ainpa-action-form" onsubmit="if (this.dataset.submitted === 'true') return false; if (!confirm('Permanently delete {{ $plugin->slug }}? All plugin data, database tables, settings, permissions, assets, source files, and package archives will be deleted. This cannot be undone.')) return false; this.dataset.submitted = 'true'; const button = this.querySelector('button[type=submit]'); button.disabled = true; button.textContent = 'Deleting...';">
+                                            <form method="POST" action="{{ route('admin.plugins.destroy', $plugin->slug) }}" class="ainpa-action-form" onsubmit="if (this.dataset.submitted === 'true') return false; if (!confirm(@js(__('core.plugins.confirm.purge', ['slug' => $plugin->slug])))) return false; this.dataset.submitted = 'true'; const button = this.querySelector('button[type=submit]'); button.disabled = true; button.textContent = @js(__('core.plugins.deleting'));">
                                                 @csrf @method('DELETE')
                                                 <input type="hidden" name="purge_confirmation" value="{{ $plugin->slug }}">
                                                 <button type="submit" class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.plugins.purge">{{ __('core.plugins.purge') }}</button>
@@ -223,13 +223,13 @@
                     }
 
                     var ok = window.confirm(
-                        'Permanently delete ' + picked.length + ' plugin(s)?\n\n' + names +
-                        '\n\nAll plugin data, database tables, settings, permissions, assets, source files and package archives will be deleted. This cannot be undone.'
+                        @js(__('core.plugins.confirm.bulk_purge_prefix')) + picked.length + @js(__('core.plugins.confirm.bulk_purge_suffix')) + '\n\n' + names +
+                        @js(__('core.plugins.confirm.bulk_purge_detail'))
                     );
                     if (!ok) { event.preventDefault(); return; }
                     if (confirmation) { confirmation.value = 'PURGE'; }
                 } else {
-                    if (!window.confirm('Deactivate ' + picked.length + ' plugin(s)?\n\n' + names)) {
+                    if (!window.confirm(@js(__('core.plugins.confirm.bulk_deactivate_prefix')) + picked.length + @js(__('core.plugins.confirm.bulk_purge_suffix')) + '\n\n' + names)) {
                         event.preventDefault();
                         return;
                     }

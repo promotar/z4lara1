@@ -70,7 +70,7 @@ class SettingsController extends Controller
         ]);
         $values = $settings->values();
         if (! filter_var($values['mail.smtp_enabled'] ?? false, FILTER_VALIDATE_BOOL)) {
-            return back()->withErrors(['test_email' => 'Enable and save SMTP before sending a test message.'])->withFragment('settings-mail');
+            return back()->withErrors(['test_email' => __('core.settings.validation.smtp_not_ready')])->withFragment('settings-mail');
         }
 
         try {
@@ -81,10 +81,10 @@ class SettingsController extends Controller
         } catch (Throwable $exception) {
             report($exception);
 
-            return back()->withErrors(['test_email' => 'SMTP test failed: '.$exception->getMessage()])->withFragment('settings-mail');
+            return back()->withErrors(['test_email' => __('core.settings.validation.smtp_test_failed').$exception->getMessage()])->withFragment('settings-mail');
         }
 
-        return back()->with('status', 'SMTP test email sent successfully.')->withFragment('settings-mail');
+        return back()->with('status', __('core.settings.flash.test_sent'))->withFragment('settings-mail');
     }
 
     public function updateMedia(Request $request, SettingsRepository $settings): RedirectResponse
