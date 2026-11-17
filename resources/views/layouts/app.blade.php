@@ -49,6 +49,53 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @include('platform.plugin-assets', ['scope' => 'admin', 'kind' => 'styles'])
         @stack('styles')
+        @if (str_starts_with(strtolower((string) ($platformDirection ?? 'ltr')), 'rtl'))
+            {{-- RTL: mirror the fixed admin sidebar and its offsets (core default). --}}
+            <style>
+                [dir="rtl"] .z4-admin-sidebar,
+                html[dir="rtl"] body nav.z4-admin-nav > aside.z4-admin-sidebar {
+                    direction: rtl !important;
+                    /* Logical offsets resolve against rtl: inline-start = right. */
+                    inset-inline-start: 0 !important;
+                    inset-inline-end: auto !important;
+                    left: auto !important;
+                    right: 0 !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    border-right: 0 !important;
+                    border-left: 1px solid var(--ainpa-admin-sidebar-line, var(--ainpa-admin-border, #e5e7eb)) !important;
+                    box-shadow: -18px 0 42px rgba(1, 8, 20, 0.28) !important;
+                }
+
+                @media (min-width: 769px) {
+                    [dir="rtl"] body .min-h-screen.bg-gray-100 {
+                        padding-left: 0 !important;
+                        padding-right: var(--ainpa-admin-sidebar-width, 224px) !important;
+                    }
+                }
+
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-menu-group:not(.is-open):hover > .z4-admin-submenu,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-section.is-open .z4-admin-menu-group:not(.is-open):hover > .z4-admin-submenu {
+                    left: auto !important;
+                    right: calc(100% + 10px) !important;
+                    border-left: 0 !important;
+                    border-right: 2px solid rgba(74, 144, 226, 0.45) !important;
+                    box-shadow: -20px 22px 48px rgba(1, 8, 20, 0.35) !important;
+                }
+
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-section:not(.is-open):hover > .z4-admin-section-body::before {
+                    left: auto !important;
+                    right: -8px !important;
+                    border-right: 0 !important;
+                    border-left: 8px solid rgba(7, 17, 31, 0.98) !important;
+                }
+
+                [dir="rtl"] .z4-mobile-drawer {
+                    left: auto !important;
+                    right: 0 !important;
+                }
+            </style>
+        @endif
     </head>
     <body class="font-sans antialiased">
         <div class="z4-admin-shell min-h-screen bg-gray-100">
