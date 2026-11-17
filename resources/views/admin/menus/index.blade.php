@@ -274,6 +274,14 @@
                                                     <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
                                                     <input name="name" value="{{ $menu->name }}" required class="admin-input">
                                                 </label>
+                                                <label class="admin-field">
+                                                    <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                                    <div style="display:flex;align-items:center;gap:6px">
+                                                        <span class="z4-icon-preview" aria-hidden="true"></span>
+                                                        <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
+                                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+                                                    </div>
+                                                </label>
                                                 <label class="admin-field admin-menu-sort-field">
                                                     <span class="admin-field-label" data-i18n="core.menus.order">{{ __('core.menus.order') }}</span>
                                                     <input type="number" name="sort_order" value="{{ $menu->sort_order }}" class="admin-input">
