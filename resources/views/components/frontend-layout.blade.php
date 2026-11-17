@@ -209,6 +209,8 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         <style>
             .z4-menu-icon { display: inline-flex; align-items: center; margin-inline-end: 6px; vertical-align: -2px; }
             .z4-menu-icon .z4-icon-svg { width: 15px; height: 15px; display: block; }
+            .platform-menu-item-icon { display: inline-flex; align-items: center; margin-inline-end: 6px; vertical-align: -2px; }
+            .platform-menu-item-icon .z4-icon-svg { width: 14px; height: 14px; display: block; }
         </style>
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">

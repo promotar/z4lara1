@@ -10,6 +10,7 @@ use App\Platform\Core\Models\Menu;
 use App\Platform\Core\Services\PluginOwnedPageGuard;
 use App\Platform\Core\Services\PluginRuntimeGate;
 use App\Platform\Core\Services\SettingsRepository;
+use App\Platform\Core\UI\IconSet;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -337,10 +338,14 @@ CSS;
      */
     private function menuPreviewItem(array $item): array
     {
+        $icon = (string) ($item['icon'] ?? '');
+
         return [
             'label' => (string) ($item['label'] ?: $item['title']),
             'href' => $this->menuItemHref($item),
             'target' => (string) ($item['target'] ?? '_self'),
+            'icon' => $icon,
+            'icon_html' => $icon !== '' && IconSet::has($icon) ? IconSet::render($icon) : '',
             'children' => collect($item['children'] ?? [])
                 ->map(fn (array $child): array => $this->menuPreviewItem($child))
                 ->values()
@@ -774,9 +779,13 @@ CSS;
         $label = (string) ($item['label'] ?: $item['title']);
         $target = ($item['target'] ?? '_self') === '_blank' ? ' target="_blank" rel="noopener"' : '';
         $linkAttributes = $this->linkAttributesForIndex($linkTemplates, $index);
+        $iconName = (string) ($item['icon'] ?? '');
+        $iconHtml = $iconName !== '' && IconSet::has($iconName)
+            ? '<span class="platform-menu-item-icon" aria-hidden="true">'.IconSet::render($iconName).'</span>'
+            : '';
         $link = $href !== null
-            ? '<a href="'.e($href).'"'.$target.$linkAttributes.'>'.e($label).'</a>'
-            : '<span class="platform-menu-link"'.$linkAttributes.'>'.e($label).'</span>';
+            ? '<a href="'.e($href).'"'.$target.$linkAttributes.'>'.$iconHtml.e($label).'</a>'
+            : '<span class="platform-menu-link"'.$linkAttributes.'>'.$iconHtml.e($label).'</span>';
 
         if ($children === '') {
             return $link;
