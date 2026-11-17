@@ -299,7 +299,7 @@
 .menus.section_name = "اسم القسم"
 .menus.settings = "الإعدادات"
 .menus.signed_in = "المسجلون"
-.menus.sort = "الترتيب"
+.menus.sort = "الترتيب :value"
 .menus.submenu_label = "تسمية القائمة الفرعية"
 .menus.target = "الهدف"
 .menus.text = "النص"
@@ -881,3 +881,10 @@
 .registry.entries_count = ":count سجل"
 .registry.no_success_entries = "لا توجد سجلات نجاح."
 .registry.no_error_entries = "لا توجد سجلات أخطاء."
+
+# menus: source labels + default names (2026-11-18)
+.menus.source_platform = "المنصة"
+.menus.source_plugin = "إضافة"
+.menus.source_core = "النواة"
+.menus.default_frontend_name = "قائمة الواجهة"
+.menus.default_frontend_description = "قائمة تنقل قابلة للتعديل للواجهة."

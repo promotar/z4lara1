@@ -534,8 +534,8 @@ class MenuSettingsController extends Controller
             'key' => 'platform.frontend',
             'location' => 'frontend',
         ], [
-            'name' => 'Frontend Menu',
-            'description' => 'Editable frontend navigation menu.',
+            'name' => __('core.menus.default_frontend_name'),
+            'description' => __('core.menus.default_frontend_description'),
             'source' => 'platform',
             'is_active' => true,
             'sort_order' => 0,

@@ -145,7 +145,7 @@
                                         <div class="admin-menu-source-main">
                                             <div>
                                                 <h4 class="admin-menu-source-title">{{ $menu->name }}</h4>
-                                                <p class="admin-menu-source-meta">{{ $menu->key }} · {{ __('core.menus.items_count', ['count' => $menu->items->count()]) }} · {{ __('core.menus.sort', ['value' => $menu->sort_order]) }}</p>
+                                                <p class="admin-menu-source-meta" title="{{ $menu->key }}">{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }} · {{ __('core.menus.sort', ['value' => $menu->sort_order]) }}</p>
                                             </div>
                                             <span class="ainpa-status-badge {{ $menu->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
                                                 {{ $menu->is_active ? __('core.common.active') : __('core.common.inactive') }}
@@ -308,9 +308,9 @@
                         <div>
                             <h3 class="admin-menu-card-title">{{ $activeMenu->name }}</h3>
                             <p class="admin-menu-card-subtitle">
-                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ $activeMenu->key }} · {{ __('core.menus.source', ['source' => ucfirst($activeMenu->source)]) }}
+                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ __('core.menus.source', ['source' => \App\Platform\Core\Localization\Translation::label('core.menus.source_'.$activeMenu->source, ucfirst($activeMenu->source))]) }}
                                 @if ($activeLocation === 'frontend')
-                                    · {{ __('core.menus.vvveb_hook') }} <code>data-platform-menu-key="{{ $activeMenu->key }}"</code>
+                                    · <span title="data-platform-menu-key=&quot;{{ $activeMenu->key }}&quot;">{{ __('core.menus.vvveb_hook') }}</span>
                                 @endif
                             </p>
                         </div>
