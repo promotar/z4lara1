@@ -877,8 +877,8 @@
 .registry.no_error_entries = "No error log entries."
 
 # menus: source labels + default names (2026-11-18)
-.menus.source_platform = "Platform"
-.menus.source_plugin = "Plugin"
-.menus.source_core = "Core"
+.menus.source.platform = "Platform"
+.menus.source.plugin = "Plugin"
+.menus.source.core = "Core"
 .menus.default_frontend_name = "Frontend Menu"
 .menus.default_frontend_description = "Editable frontend navigation menu."

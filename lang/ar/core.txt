@@ -883,8 +883,8 @@
 .registry.no_error_entries = "لا توجد سجلات أخطاء."
 
 # menus: source labels + default names (2026-11-18)
-.menus.source_platform = "المنصة"
-.menus.source_plugin = "إضافة"
-.menus.source_core = "النواة"
+.menus.source.platform = "المنصة"
+.menus.source.plugin = "إضافة"
+.menus.source.core = "النواة"
 .menus.default_frontend_name = "قائمة الواجهة"
 .menus.default_frontend_description = "قائمة تنقل قابلة للتعديل للواجهة."

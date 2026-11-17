@@ -308,7 +308,7 @@
                         <div>
                             <h3 class="admin-menu-card-title">{{ $activeMenu->name }}</h3>
                             <p class="admin-menu-card-subtitle">
-                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ __('core.menus.source', ['source' => \App\Platform\Core\Localization\Translation::label('core.menus.source_'.$activeMenu->source, ucfirst($activeMenu->source))]) }}
+                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ __('core.menus.source', ['source' => \App\Platform\Core\Localization\Translation::label('core.menus.source.'.$activeMenu->source, ucfirst($activeMenu->source))]) }}
                                 @if ($activeLocation === 'frontend')
                                     · <span title="data-platform-menu-key=&quot;{{ $activeMenu->key }}&quot;">{{ __('core.menus.vvveb_hook') }}</span>
                                 @endif
