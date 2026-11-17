@@ -96,7 +96,11 @@
 
     <label class="admin-field frontend-menu-icon-field">
         <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
-        <input name="icon" value="{{ old('icon', $item->icon ?? '') }}" maxlength="24" class="admin-input">
+        <div style="display:flex;align-items:center;gap:6px">
+            <span class="z4-icon-preview" aria-hidden="true"></span>
+            <input name="icon" value="{{ old('icon', $item->icon ?? '') }}" maxlength="24" class="admin-input" data-icon-input>
+            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>Choose</button>
+        </div>
     </label>
 
     <label class="admin-field frontend-menu-sort-field">

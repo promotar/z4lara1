@@ -329,7 +329,7 @@
                                             :aria-expanded="open === '{{ $panelId }}'"
                                         >
                                             <span class="admin-menu-level admin-menu-level-{{ min($depth, 4) }}"></span>
-                                            <span class="admin-menu-item-icon">{{ $item->icon ?: strtoupper(substr($item->title, 0, 1)) }}</span>
+                                            <span class="admin-menu-item-icon">{!! \App\Platform\Core\UI\IconSet::render($item->icon, $item->title) !!}</span>
                                             <span class="admin-menu-item-main">
                                                 <span class="admin-menu-item-title">{{ $item->title }}</span>
                                                 <span class="admin-menu-item-target">{{ $targetLabel }}</span>
@@ -380,4 +380,6 @@
 
         </div>
     </div>
+
+    @include('admin.menus.partials.icon-picker')
 </x-app-layout>

@@ -49,6 +49,13 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @include('platform.plugin-assets', ['scope' => 'admin', 'kind' => 'styles'])
         @stack('styles')
+        <style>
+            /* Platform icon set (inline SVG) sizing inside the admin chrome. */
+            .z4-admin-icon { display: inline-flex; align-items: center; justify-content: center; }
+            .z4-admin-icon .z4-icon-svg { width: 16px; height: 16px; display: block; }
+            .z4-admin-icon .z4-icon-text { font-size: 12px; font-weight: 800; line-height: 1; }
+            .admin-menu-item-icon .z4-icon-svg { width: 16px; height: 16px; }
+        </style>
         @if (str_starts_with(strtolower((string) ($platformDirection ?? 'ltr')), 'rtl'))
             {{-- RTL: mirror the fixed admin sidebar and its offsets (core default). --}}
             <style>
@@ -94,6 +101,18 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
                 [dir="rtl"] .z4-mobile-drawer {
                     left: auto !important;
                     right: 0 !important;
+                }
+
+                /* Keep the sidebar rows RTL so the icon sits on the right of the label. */
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-link,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-section-toggle,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-parent-row,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-submenu-link,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-section-label,
+                [dir="rtl"] .z4-admin-sidebar .z4-admin-link-label,
+                [dir="rtl"] .z4-admin-bar .z4-admin-profile-link {
+                    direction: rtl !important;
+                    text-align: right !important;
                 }
             </style>
         @endif
