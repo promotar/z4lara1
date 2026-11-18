@@ -67,11 +67,14 @@ class MenuSettingsController extends Controller
         abort_unless(in_array($location, ['frontend', 'admin'], true), 404);
 
         $data = $this->validatedMenu($request);
-        $key = $this->uniqueMenuKey(($data['key'] ?? null) ?: $data['name'], $location);
+        $translations = $this->normalizedTitleTranslations($data);
+        $baseName = $translations[app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()] ?? $data['name'];
+        $key = $this->uniqueMenuKey(($data['key'] ?? null) ?: $baseName, $location);
 
         $menu = Menu::query()->create([
             'key' => $key,
-            'name' => $data['name'],
+            'name' => $baseName,
+            'name_translations' => $translations === [] ? null : $translations,
             'icon' => $data['icon'] ?? null,
             'location' => $location,
             'description' => $data['description'] ?? null,
@@ -105,9 +108,13 @@ class MenuSettingsController extends Controller
             throw ValidationException::withMessages(['is_active' => __('core.menus.validation.last_section_active')]);
         }
 
+        $translations = $this->normalizedTitleTranslations($data);
+        $baseName = $translations[app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()] ?? $data['name'];
+
         $menu->update([
-            'key' => $this->uniqueMenuKey(($data['key'] ?? null) ?: $data['name'], $menu->location, $menu->id),
-            'name' => $data['name'],
+            'key' => $this->uniqueMenuKey(($data['key'] ?? null) ?: $baseName, $menu->location, $menu->id),
+            'name' => $baseName,
+            'name_translations' => $translations === [] ? null : $translations,
             'icon' => $data['icon'] ?? null,
             'description' => $data['description'] ?? null,
             'is_active' => (bool) ($data['is_active'] ?? false),
@@ -222,6 +229,9 @@ class MenuSettingsController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:64'],
+            'translations' => ['nullable', 'array'],
+            'translations.*' => ['nullable', 'string', 'max:255'],
+            'translation_locale' => ['nullable', 'string', 'max:16'],
             'key' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z0-9_.:-]+$/'],
             'description' => ['nullable', 'string', 'max:500'],
             'sort_order' => ['nullable', 'integer', 'min:-10000', 'max:10000'],

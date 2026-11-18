@@ -12,6 +12,7 @@ class Menu extends Model
     protected $fillable = [
         'key',
         'name',
+        'name_translations',
         'icon',
         'location',
         'description',
@@ -25,6 +26,7 @@ class Menu extends Model
     {
         return [
             'is_active' => 'boolean',
+            'name_translations' => 'array',
             'sort_order' => 'integer',
         ];
     }

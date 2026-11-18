@@ -221,10 +221,10 @@
                         <div x-show="createOpen" x-cloak class="admin-menu-compact-editor">
                             <form method="POST" action="{{ route('admin.menus.store', 'admin') }}" class="admin-menu-compact-form">
                                 @csrf
-                                <label class="admin-field">
-                                    <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
-                                    <input name="name" required placeholder="{{ __('core.menus.new_admin_section') }}" class="admin-input">
-                                </label>
+                                <div class="admin-field">
+                <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
+                @include('admin.menus.partials.title-i18n', ['item' => null, 'baseField' => 'name', 'placeholder' => __('core.menus.new_admin_section')])
+            </div>
                                 <label class="admin-field">
                                     <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
                                     <div style="display:flex;align-items:center;gap:6px">
@@ -270,10 +270,10 @@
                                             <form method="POST" action="{{ route('admin.menus.update', $menu) }}" class="admin-menu-compact-form">
                                                 @csrf
                                                 @method('PATCH')
-                                                <label class="admin-field">
+                                                <div class="admin-field">
                                                     <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
-                                                    <input name="name" value="{{ $menu->name }}" required class="admin-input">
-                                                </label>
+                                                    @include('admin.menus.partials.title-i18n', ['item' => $menu, 'baseField' => 'name', 'placeholder' => __('core.menus.section_name')])
+                                                </div>
                                                 <label class="admin-field">
                                                     <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
                                                     <div style="display:flex;align-items:center;gap:6px">

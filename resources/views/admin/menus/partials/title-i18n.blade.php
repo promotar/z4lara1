@@ -1,18 +1,19 @@
 {{--
-    Display name with a per-language selector.
-    $item may be null (create form). Values are submitted as:
-      translations[locale] => name  +  title (default language, kept for lists)
+    Per-language name field (shared by menu items and menu sections).
+    Values are submitted as:
+      translations[locale] => name  +  <baseField> (default language, kept for lists)
 --}}
 @php
     $i18nLanguages = $platformLanguages ?? ['en' => 'English'];
     $i18nDefault = app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
-    $i18nValues = old('translations', ($item->title_translations ?? []) ?: []);
+    $i18nBaseField = $baseField ?? 'title';
+    $i18nValues = old('translations', $values ?? (($item->title_translations ?? []) ?: []));
 
     if (! is_array($i18nValues)) {
         $i18nValues = [];
     }
 
-    $i18nBase = (string) old('title', $item->title ?? '');
+    $i18nBase = (string) old($i18nBaseField, $baseValue ?? ($item->{$i18nBaseField} ?? ''));
 
     if (trim((string) ($i18nValues[$i18nDefault] ?? '')) === '' && $i18nBase !== '') {
         $i18nValues[$i18nDefault] = $i18nBase;
@@ -23,6 +24,8 @@
     if (! isset($i18nLanguages[$i18nSelected])) {
         $i18nSelected = $i18nDefault;
     }
+
+    $i18nPlaceholder = $placeholder ?? __('core.menus.display_name');
 @endphp
 
 <div class="z4-i18n-field" data-i18n-field data-default="{{ $i18nDefault }}">
@@ -40,7 +43,7 @@
             class="admin-input z4-i18n-text"
             data-i18n-text
             value="{{ $i18nValues[$i18nSelected] ?? '' }}"
-            placeholder="{{ __('core.menus.display_name') }}"
+            placeholder="{{ $i18nPlaceholder }}"
             autocomplete="off"
         >
     </div>
@@ -52,7 +55,7 @@
     </div>
 
     <input type="hidden" name="translation_locale" value="{{ $i18nSelected }}" data-i18n-selected>
-    <input type="hidden" name="title" value="{{ $i18nValues[$i18nDefault] ?? '' }}" data-i18n-base>
+    <input type="hidden" name="{{ $i18nBaseField }}" value="{{ $i18nValues[$i18nDefault] ?? '' }}" data-i18n-base>
 
     <p class="z4-i18n-hint">{{ __('core.menus.languages_hint') }}</p>
 </div>

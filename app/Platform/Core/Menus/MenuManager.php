@@ -53,8 +53,8 @@ class MenuManager
 
                 return [
                     'id' => 'admin-menu-'.$menu->id,
-                    'title' => $menu->name,
-                    'label' => $menu->name,
+                    'title' => $this->localizedMenuName($menu),
+                    'label' => $this->localizedMenuName($menu),
                     'type' => 'group',
                     'url' => null,
                     'route_name' => null,
@@ -82,6 +82,26 @@ class MenuManager
     public function getFrontendMenu(?User $user = null): array
     {
         return $this->getMenu('frontend', $user);
+    }
+
+    /**
+     * Per-language menu section name with fallback to the stored name.
+     */
+    private function localizedMenuName(Menu $menu): string
+    {
+        $translations = $menu->name_translations;
+
+        if (is_string($translations)) {
+            $translations = json_decode($translations, true) ?: [];
+        }
+
+        $value = is_array($translations) ? ($translations[app()->getLocale()] ?? null) : null;
+
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+
+        return (string) $menu->name;
     }
 
     /**
