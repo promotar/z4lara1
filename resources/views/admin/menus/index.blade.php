@@ -1,5 +1,142 @@
 <x-app-layout>
-    <x-slot name="header">
+<style>
+    /* ===== Admin sections: readable cards + editor ===== */
+    .admin-menu-compact-sections {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    .admin-menu-compact-section {
+        padding: 12px 14px 14px !important;
+        border-radius: 14px !important;
+        background: #fff !important;
+        border: 1px solid #e4e9f0 !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .04) !important;
+    }
+
+    .admin-menu-compact-section-link strong {
+        font-size: 15px !important;
+        color: #0f172a !important;
+    }
+
+    .admin-menu-compact-section-link small {
+        font-size: 11.5px !important;
+        color: #64748b !important;
+    }
+
+    /* the edited card takes the full row so fields have room */
+    .admin-menu-compact-section.is-editing {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-compact-section.is-editing .admin-menu-compact-editor-inline {
+        width: 100% !important;
+        max-width: none !important;
+        margin-top: 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px auto auto !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    /* name field spans the full width */
+    .admin-menu-compact-section .admin-menu-compact-form > .admin-field:has([data-i18n-field]) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-field-label {
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-row {
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-lang {
+        flex: 0 0 150px !important;
+        min-width: 150px !important;
+        height: 42px !important;
+        font-size: 13px !important;
+        padding: 0 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-text {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 0 12px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-hint {
+        font-size: 11px !important;
+        color: #94a3b8 !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-icon-preview {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-menu-check-option {
+        font-size: 13px !important;
+        padding-bottom: 10px;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form > button {
+        height: 42px !important;
+        padding: 0 22px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+    }
+
+    /* the create panel uses the same generous sizing */
+    .admin-menu-compact-editor .admin-menu-compact-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+    }
+
+    .admin-menu-compact-editor .admin-menu-compact-form .z4-i18n-text {
+        height: 42px !important;
+        font-size: 13.5px !important;
+    }
+
+    @media (max-width: 900px) {
+        .admin-menu-compact-section .admin-menu-compact-form {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form > .admin-field:has([data-i18n-field]) {
+            grid-column: 1 / -1 !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-row {
+            flex-wrap: wrap !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-lang {
+            flex: 0 0 130px !important;
+            min-width: 130px !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-text {
+            flex: 1 1 170px !important;
+            min-width: 150px !important;
+        }
+    }
+</style>
+<x-slot name="header">
         <h2 class="ainpa-page-title" data-i18n="core.menus.title">{{ __('core.menus.title') }}</h2>
     </x-slot>
 
@@ -247,7 +384,7 @@
                         @else
                             <div class="admin-menu-compact-sections">
                                 @foreach ($activeMenus as $menu)
-                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}">
+                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}" :class="{ 'is-editing': editMenu === {{ $menu->id }} }">
                                         <a href="{{ route('admin.menus.index', ['location' => 'admin', 'menu' => $menu->id]) }}" class="admin-menu-compact-section-link">
                                             <span class="admin-menu-compact-order">{{ $menu->sort_order }}</span>
                                             <span>
