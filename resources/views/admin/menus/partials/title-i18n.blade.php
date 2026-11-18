@@ -7,7 +7,16 @@
     $i18nLanguages = $platformLanguages ?? ['en' => 'English'];
     $i18nDefault = app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
     $i18nBaseField = $baseField ?? 'title';
-    $i18nValues = old('translations', $values ?? (($item->title_translations ?? []) ?: []));
+    // Stored translations live in `<baseField>_translations` (title_translations
+    // for menu items, name_translations for menu sections). An explicit
+    // `$translations` array wins when provided.
+    $i18nStored = $translations ?? ($item?->{$i18nBaseField.'_translations'} ?? []);
+
+    if (is_string($i18nStored)) {
+        $i18nStored = json_decode($i18nStored, true) ?: [];
+    }
+
+    $i18nValues = old('translations', $values ?? (is_array($i18nStored) ? $i18nStored : []));
 
     if (! is_array($i18nValues)) {
         $i18nValues = [];
