@@ -901,3 +901,6 @@
 .hero.prev = "Previous slide"
 .hero.next = "Next slide"
 .hero.go_to = "Go to slide"
+
+# top bar (2026-11-18)
+.header.topbar = "Contact and account"

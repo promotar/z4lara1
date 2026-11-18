@@ -30,6 +30,17 @@ class MenuVisibilityResolver
             return false;
         }
 
+        // Audience from the menu item settings (all / guest / authenticated).
+        $audience = strtolower((string) ($item->metadata['audience'] ?? 'all'));
+
+        if ($audience === 'guest' && $user !== null) {
+            return false;
+        }
+
+        if ($audience === 'authenticated' && $user === null) {
+            return false;
+        }
+
         if (
             $item->plugin_id !== null
             && (
@@ -79,6 +90,11 @@ class MenuVisibilityResolver
         }
 
         if (preg_match('~^(https?:)?//~i', $url) === 1) {
+            return true;
+        }
+
+        // Contact links are always valid navigation targets.
+        if (preg_match('~^(tel|mailto|sms|whatsapp):~i', $url) === 1) {
             return true;
         }
 
