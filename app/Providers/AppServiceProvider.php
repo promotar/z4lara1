@@ -13,8 +13,10 @@ use App\Platform\Core\Localization\ModuleTranslationLoader;
 use App\Platform\Core\Localization\PlatformLocale;
 use App\Platform\Core\Localization\TextTranslationLoader;
 use App\Platform\Core\Localization\TranslationFileEditor;
+use App\Platform\Core\Registry\PlatformRegistry;
 use App\Platform\Core\Rendering\NullEditorialContentProvider;
 use App\Platform\Core\Rendering\NullLatestContentProvider;
+use App\Platform\Core\Services\PluginOwnedPageGuard;
 use App\Platform\Core\Services\ActivePluginStylesheets;
 use App\Platform\Core\Services\PlatformMailConfigurator;
 use App\Platform\Core\Services\PlatformVersion;
@@ -55,6 +57,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(RouteAccessGate::class);
         $this->app->scoped(UnauthorizedRouteElementFilter::class);
         $this->app->singleton(TranslationFileEditor::class);
+        $this->app->singleton(PlatformRegistry::class);
+        $this->app->singleton(PluginOwnedPageGuard::class);
     }
 
     /**

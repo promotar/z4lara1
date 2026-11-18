@@ -116,11 +116,13 @@ class PluginRouteLoader
                     require $routeFile;
                 });
 
-            $this->platformLogs->success('Loaded registered plugin route file.', [
-                'plugin' => $plugin->slug,
-                'route_type' => $type,
-                'route_file' => $routeFile,
-            ]);
+            if ($this->logRouteLoads()) {
+                $this->platformLogs->success('Loaded registered plugin route file.', [
+                    'plugin' => $plugin->slug,
+                    'route_type' => $type,
+                    'route_file' => $routeFile,
+                ]);
+            }
         } catch (Throwable $exception) {
             Log::warning('Plugin route loading failed while loading route file.', [
                 'plugin' => $plugin->slug,
@@ -132,8 +134,17 @@ class PluginRouteLoader
         }
     }
 
-    private function routeFileHasValidSyntax(Plugin $plugin, string $routeFile, string $type): bool
+    /**
+     * Route files are reloaded on every request, so a success line per plugin
+     * per request is noise (and a 1+ GB log). Opt in only for troubleshooting.
+     */
+    private function logRouteLoads(): bool
     {
+        return (bool) config('platform.log_plugin_route_files', false)
+            || config('app.debug') === true;
+    }
+
+    private function routeFileHasValidSyntax(Plugin $plugin, string $routeFile, string $type): bool    {
         $source = file_get_contents($routeFile);
 
         if ($source === false) {

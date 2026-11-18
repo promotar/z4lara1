@@ -34,6 +34,8 @@ class PlatformLogManager
 
     private function write(string $path, string $level, string $message, array $context): void
     {
+        $this->rotateWhenOversized($path);
+
         $entry = sprintf('[%s] %s: %s %s', now()->toDateTimeString(), $level, $message, $context === [] ? '' : json_encode($context, JSON_UNESCAPED_SLASHES));
 
         try {
@@ -46,6 +48,27 @@ class PlatformLogManager
                 'exception' => $exception::class,
             ]);
         }
+    }
+
+    /**
+     * Keep the platform logs bounded: rotate once the file passes the limit.
+     * The previous file is kept as "<name>.1" (replaced on the next rotation).
+     */
+    private function rotateWhenOversized(string $path): void
+    {
+        $limit = (int) config('platform.log_max_bytes', 20 * 1024 * 1024);
+
+        if ($limit <= 0 || ! is_file($path)) {
+            return;
+        }
+
+        clearstatcache(true, $path);
+
+        if ((int) @filesize($path) < $limit) {
+            return;
+        }
+
+        @rename($path, $path.'.1');
     }
 
     /**
