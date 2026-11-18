@@ -656,7 +656,21 @@ CSS;
 
         $stylesheet = '';
         if (! $this->menuStylesRendered) {
-            $stylesheet = '<link rel="stylesheet" href="'.e(url('/page-builder-assets/v5/integration/css/frontend-menu.css')).'" data-platform-menu-styles="1">';
+            // The menu stylesheet is owned by the Page Builder plugin; resolve it
+            // from plugin metadata so core never links a missing plugin asset.
+            $menuStylesheet = null;
+
+            try {
+                $menuStylesheet = app(\App\Platform\Core\Services\PluginAssetRegistry::class)
+                    ->runtimeStyleUrl('frontend-menu');
+            } catch (\Throwable) {
+                $menuStylesheet = null;
+            }
+
+            if (is_string($menuStylesheet) && $menuStylesheet !== '') {
+                $stylesheet = '<link rel="stylesheet" href="'.e($menuStylesheet).'" data-platform-menu-styles="1">';
+            }
+
             $this->menuStylesRendered = true;
         }
 
