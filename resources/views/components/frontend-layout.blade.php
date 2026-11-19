@@ -318,7 +318,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
          block elements keep the page direction; only bidi runs are recomputed.
          app.js adds dir="auto" to blocks, so this repairs it after load and
          keeps repairing it when dynamic content appears. --}}
-    <style>.platform-plaintext{unicode-bidi:plaintext;direction:inherit;text-align:inherit}</style>
+    <style>.platform-plaintext{unicode-bidi:plaintext;direction:inherit;text-align:inherit}[data-auto-direction="true"]:not(input):not(textarea){direction:inherit!important;unicode-bidi:plaintext;text-align:inherit}</style>
     <script>
         (function () {
             var blocks = {H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,P:1,LI:1,DT:1,DD:1,DIV:1,BLOCKQUOTE:1,FIGCAPTION:1,SUMMARY:1,TD:1,TH:1};
