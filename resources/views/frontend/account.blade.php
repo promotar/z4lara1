@@ -59,7 +59,7 @@
 
                     <div class="ainpa-account-language" title="{{ __('core.common.language') }}">
                         <span>{{ __('core.common.language') }}</span>
-                        @include('platform.panel-language-switcher')
+                        @include('platform.language-switcher')
                     </div>
 
                     <div class="ainpa-account-sidebar__actions">

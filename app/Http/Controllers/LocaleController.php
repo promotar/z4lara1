@@ -24,6 +24,15 @@ final class LocaleController extends Controller
 
         $locale->setSite($target);
 
+        // Unified switch: a signed-in visitor's stored language follows the
+        // page language so dashboards and panels change together.
+        $user = $request->user();
+
+        if ($user !== null) {
+            $user->forceFill(['locale' => $target])->save();
+            $locale->set($target);
+        }
+
         // Explicit destination (used by "View public post" in the admin editor so
         // the preview opens in the tab's language). Only same-site relative
         // paths are accepted to avoid open redirects.
