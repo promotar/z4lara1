@@ -135,6 +135,143 @@
             min-width: 150px !important;
         }
     }
+    /* ===== Frontend menus: match the admin section cards ===== */
+    .admin-menu-source-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    .admin-menu-source-card {
+        padding: 12px 14px 14px !important;
+        border-radius: 14px !important;
+        background: #fff !important;
+        border: 1px solid #e4e9f0 !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .04) !important;
+    }
+
+    .admin-menu-source-card .admin-menu-source-title {
+        font-size: 15px !important;
+        color: #0f172a !important;
+    }
+
+    .admin-menu-source-card .admin-menu-source-meta {
+        font-size: 11.5px !important;
+        color: #64748b !important;
+    }
+
+    .admin-menu-card-edit {
+        margin-top: 10px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #eef2f7 !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form {
+        display: grid !important;
+        gap: 12px 14px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-two {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-two > .admin-field:has([data-i18n-field]) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-settings {
+        grid-template-columns: 120px auto minmax(0, 1fr) !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    .admin-menu-card-edit .admin-field-label,
+    .admin-menu-source-card .admin-menu-form .admin-field-label {
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .admin-menu-card-edit .admin-input,
+    .admin-menu-source-card .admin-menu-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-row {
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-lang {
+        flex: 0 0 150px !important;
+        min-width: 150px !important;
+        height: 42px !important;
+        font-size: 13px !important;
+        padding: 0 10px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-text {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 0 12px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-hint {
+        font-size: 11px !important;
+        color: #94a3b8 !important;
+    }
+
+    .admin-menu-card-edit .z4-icon-preview {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-actions {
+        justify-content: flex-end !important;
+        gap: 8px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-actions .ainpa-button {
+        height: 42px !important;
+        padding: 0 18px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-source-actions .ainpa-button {
+        height: 36px !important;
+        padding: 0 14px !important;
+        font-size: 12.5px !important;
+        border-radius: 9px !important;
+    }
+
+    /* create form (new frontend menu) matches the section create panel */
+    .admin-menu-form-grid-six .admin-input,
+    .admin-menu-form-grid-six .z4-i18n-text,
+    .admin-menu-form-grid-six .z4-i18n-lang {
+        height: 42px !important;
+        font-size: 13.5px !important;
+    }
+
+    @media (max-width: 900px) {
+        .admin-menu-card-edit .admin-menu-form-grid-two,
+        .admin-menu-card-edit .admin-menu-form-grid-settings {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        .admin-menu-card-edit .admin-menu-form-grid-two > .admin-field:has([data-i18n-field]) {
+            grid-column: 1 / -1 !important;
+        }
+        .admin-menu-card-edit .z4-i18n-row { flex-wrap: wrap !important; }
+        .admin-menu-card-edit .z4-i18n-lang { flex: 0 0 130px !important; min-width: 130px !important; }
+        .admin-menu-card-edit .z4-i18n-text { flex: 1 1 170px !important; min-width: 150px !important; }
+    }
 </style>
 <x-slot name="header">
         <h2 class="ainpa-page-title" data-i18n="core.menus.title">{{ __('core.menus.title') }}</h2>
