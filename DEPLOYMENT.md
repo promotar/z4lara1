@@ -45,11 +45,12 @@ test -s public/build/manifest.json
 
 `package.json` pins Node `22.x` for the image build.
 
-For this release, set:
+Platform releases are declared in code, never in the environment:
 
-```text
-PLATFORM_VERSION=2.5.2
-```
+- `config/platform.php` → `release` is the human-facing platform release shown in the dashboard and update screens. Bump it for every release.
+- `config/platform.php` → `version` is the plugin compatibility contract compared against every module's `platform_version` constraint. Raise it only when the shipped modules declare a matching range, otherwise the runtime gate disables those modules.
+
+Do not set `PLATFORM_VERSION` in the deployment environment. It is no longer read, so a value left behind by an older installation cannot make an upgraded platform report a stale version.
 
 Do not add `public/build` to Git and do not add custom Coolify build commands.
 The Compose file is the deployment source of truth.

@@ -48,7 +48,7 @@ final class CoreUpdateService
         }
 
         return [
-            'version' => (string) config('platform.version', '—'),
+            'version' => (string) config('platform.release', config('platform.version')),
             'last' => $last,
             'history' => array_slice($history, 0, 5),
             'can_rollback' => $rollbackTarget !== null,
