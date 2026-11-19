@@ -29,7 +29,12 @@
         grid-column: 1 / -1 !important;
     }
 
+    .admin-menu-compact-section .admin-menu-compact-editor-inline {
+        display: none !important;
+    }
+
     .admin-menu-compact-section.is-editing .admin-menu-compact-editor-inline {
+        display: block !important;
         width: 100% !important;
         max-width: none !important;
         margin-top: 10px !important;
@@ -539,7 +544,7 @@
                                             </form>
                                         </div>
 
-                                        <div x-show="editMenu === {{ $menu->id }}" x-cloak class="admin-menu-compact-editor admin-menu-compact-editor-inline">
+                                        <div class="admin-menu-compact-editor admin-menu-compact-editor-inline">
                                             <form method="POST" action="{{ route('admin.menus.update', $menu) }}" class="admin-menu-compact-form">
                                                 @csrf
                                                 @method('PATCH')
