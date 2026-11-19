@@ -8,7 +8,7 @@
 
     .admin-menu-compact-section {
         padding: 12px 14px 14px !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         background: #fff !important;
         border: 1px solid #e4e9f0 !important;
         box-shadow: 0 1px 2px rgba(16, 24, 40, .04) !important;
