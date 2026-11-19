@@ -1,0 +1,57 @@
+#vvveb-builder #logo {
+    width: auto;
+    max-width: 190px;
+    object-fit: contain;
+}
+
+#vvveb-builder .art-inpa-vvveb-brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 14px;
+    color: var(--bs-body-color);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+#vvveb-builder .art-inpa-vvveb-brand small {
+    margin-inline-start: 7px;
+    color: var(--bs-secondary-color);
+    font-weight: 500;
+}
+
+#vvveb-builder #new-file-btn,
+#vvveb-builder #delete-file-btn {
+    display: none !important;
+}
+
+.art-inpa-vvveb-settings .modal-dialog {
+    max-width: 760px;
+}
+
+.art-inpa-vvveb-settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.art-inpa-vvveb-settings-grid label {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.art-inpa-vvveb-settings-grid .wide {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+    .art-inpa-vvveb-settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .art-inpa-vvveb-settings-grid .wide {
+        grid-column: auto;
+    }
+}
