@@ -139,13 +139,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">
         <div class="min-h-screen">
-            @if ($showTopLanguageSwitcher)
-                <div class="border-b border-slate-200 bg-white">
-                    <div class="mx-auto flex max-w-7xl justify-end px-4 py-1.5 sm:px-6 lg:px-8">
-                        @include('platform.language-switcher')
-                    </div>
-                </div>
-            @endif
+            {{-- The platform top bar / header menu owns the language switcher; the legacy top strip was removed. --}}
 
             <header class="border-b border-slate-200 bg-white">
                 <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
