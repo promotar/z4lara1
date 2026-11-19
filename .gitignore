@@ -45,19 +45,11 @@ secrets/
 /public/storage
 /modules/*
 !/modules/.gitkeep
-!/modules/admin-theme/
-!/modules/admin-theme/**
-!/modules/page-builder/
-!/modules/page-builder/**
 /modules/**/*.zip
-/public/platform/plugins/*
-!/public/platform/plugins/art-inpa-admin-pro-theme/
-!/public/platform/plugins/art-inpa-admin-pro-theme/**
-!/public/platform/plugins/page-builder/
-!/public/platform/plugins/page-builder/**
-/public/platform/plugins/**/*.bak
-/public/platform/plugins/**/*.bak-*
-/public/platform/plugins/**/*.backup-*
+
+# Plugin source and published plugin assets are distributed separately from
+# the core platform. A deployment installs them into these runtime paths.
+/public/platform/
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
