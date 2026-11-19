@@ -207,6 +207,10 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
             .z4-menu-icon .z4-icon-svg { width: 15px; height: 15px; display: block; }
             .platform-menu-item-icon { display: inline-flex; align-items: center; margin-inline-end: 6px; vertical-align: -2px; }
             .platform-menu-item-icon .z4-icon-svg { width: 14px; height: 14px; display: block; }
+            /* Header overlay contract: while a header menu is open the header owns
+               the top layer, so its off-canvas panel is never covered by page
+               widgets (dashboards, sticky actions, plugin rails...). */
+            .art-hdr:has([data-platform-menu-layout="offcanvas"] .platform-menu-toggle-control:checked) { z-index: 1200; }
         </style>
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">
