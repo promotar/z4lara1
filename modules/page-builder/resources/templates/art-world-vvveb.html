@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/page-builder-assets/v3/demo/landing/">
+    <title>عالم الفن التشكيلي</title>
+    <link href="css/style.bundle.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+    <style>
+        .art-world-vvveb { --art-red:#b40000; --art-wine:#5b1111; --art-ink:#211919; --art-muted:#766664; --art-warm:#fff1f0; font-family:Tahoma,Arial,sans-serif; color:var(--art-ink); background:#fff; }
+        .art-world-vvveb .aw-section { padding:6rem 0; }
+        .art-world-vvveb .aw-hero { position:relative; overflow:hidden; padding:7rem 0; color:#fff; background:#1c1010; }
+        .art-world-vvveb .aw-hero::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(28,16,16,.25),rgba(28,16,16,.92)); pointer-events:none; }
+        .art-world-vvveb .aw-hero .container { position:relative; z-index:1; }
+        .art-world-vvveb .aw-kicker { display:inline-flex; padding:.45rem .85rem; border:1px solid rgba(255,255,255,.2); border-radius:999px; color:#f5b6ad; font-size:.85rem; font-weight:700; }
+        .art-world-vvveb .aw-title { max-width:760px; font-size:clamp(2.8rem,7vw,5.25rem); font-weight:800; line-height:1.08; }
+        .art-world-vvveb .aw-lead { max-width:720px; color:#eadfdd; font-size:1.2rem; line-height:2; }
+        .art-world-vvveb .aw-image { width:100%; height:560px; object-fit:cover; border-radius:1.75rem; box-shadow:0 1.5rem 3.5rem rgba(15,23,42,.25); }
+        .art-world-vvveb .aw-stat { height:100%; padding:1.5rem; border:1px solid #ead8d4; border-radius:1.25rem; background:#fff; box-shadow:0 .75rem 1.75rem rgba(15,23,42,.08); }
+        .art-world-vvveb .aw-stat strong { display:block; color:var(--art-wine); font-size:1.6rem; }
+        .art-world-vvveb .aw-card { height:100%; padding:2rem; border:1px solid #ead8d4; border-top:5px solid var(--art-red); border-radius:1.4rem; background:#fff; box-shadow:0 .8rem 2rem rgba(15,23,42,.08); }
+        .art-world-vvveb .aw-number { display:inline-flex; padding:.3rem .65rem; border-radius:999px; background:var(--art-warm); color:var(--art-red); font-weight:800; }
+        .art-world-vvveb .aw-muted { color:var(--art-muted); line-height:1.9; }
+        .art-world-vvveb .aw-warm { background:var(--art-warm); }
+        .art-world-vvveb .aw-dark { color:#fff; background:var(--art-ink); }
+        .art-world-vvveb .aw-dark .aw-muted { color:#ddd1cf; }
+        .art-world-vvveb .aw-list { display:grid; gap:.8rem; margin:1.5rem 0; padding:0; list-style:none; }
+        .art-world-vvveb .aw-list li { padding:1rem 1.1rem; border:1px solid #ead8d4; border-radius:.9rem; background:#fff; }
+        .art-world-vvveb .aw-tags { display:flex; flex-wrap:wrap; gap:.7rem; }
+        .art-world-vvveb .aw-tags span { padding:.6rem .9rem; border:1px solid rgba(255,255,255,.18); border-radius:999px; color:#f7e9e6; }
+        .art-world-vvveb .btn-art { padding:.85rem 1.4rem; border-color:var(--art-red); border-radius:999px; background:var(--art-red); color:#fff; font-weight:700; }
+        .art-world-vvveb .btn-art:hover { border-color:#8f0000; background:#8f0000; color:#fff; }
+        .art-world-vvveb .btn-art-light { padding:.85rem 1.4rem; border:1px solid #d8b8b3; border-radius:999px; background:#fff; color:var(--art-wine); font-weight:700; }
+        @media (max-width:991.98px) { .art-world-vvveb .aw-section,.art-world-vvveb .aw-hero { padding:4rem 0; } .art-world-vvveb .aw-image { height:420px; } }
+    </style>
+</head>
+<body class="page">
+<main class="art-world-vvveb">
+    <section class="aw-hero" title="Hero">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <span class="aw-kicker mb-4">ART Z · منصة الفن التشكيلي</span>
+                    <h1 class="aw-title mb-4">الفن مساحة نعيشها، لا صورة نمرّ بها</h1>
+                    <p class="aw-lead mb-4">منصة عربية تضع المشهد التشكيلي بين يديك: أخبار موثوقة، أعمال أصلية للاقتناء، معارض افتراضية غامرة، ومجتمع حيّ يجمع الفنانين ومحبي الفن.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a class="btn btn-art" href="#discover" role="button">اكتشف المنصة</a>
+                        <a class="btn btn-art-light" href="#community" role="button">انضم إلى المجتمع</a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <img class="aw-image" src="/storage/media/2026/08/art-general/art-world-hero.webp" alt="عالم الفن التشكيلي" loading="eager">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aw-warm py-5" title="Statistics">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-3"><div class="aw-stat"><strong>كل يوم</strong><span>أخبار وقراءات من قلب المشهد</span></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="aw-stat"><strong>مختارة</strong><span>لوحات أصلية لهواة الاقتناء</span></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="aw-stat"><strong>بلا حدود</strong><span>معارض افتراضية من أي مكان</span></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="aw-stat"><strong>معًا</strong><span>مجتمع يصنع الحوار والإلهام</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="discover" class="aw-section" title="Features">
+        <div class="container">
+            <div class="row justify-content-center text-center mb-5">
+                <div class="col-lg-9">
+                    <span class="text-danger fw-bold">من الاكتشاف إلى الاقتناء</span>
+                    <h2 class="display-4 fw-bold mt-2">أربع مساحات، وتجربة فنية واحدة</h2>
+                    <p class="aw-muted fs-5">صممنا المنصة لترافق علاقتك بالفن في كل مرحلة؛ من الخبر الأول، إلى لحظة الوقوف أمام العمل، ثم اقتنائه ومشاركة قصته مع الآخرين.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-3"><article class="aw-card"><span class="aw-number">01</span><p class="small text-uppercase text-muted mt-4 mb-2">أخبار الفن</p><h3>نبض المشهد</h3><p class="aw-muted">تغطيات وقراءات ومقابلات تضعك بالقرب من الفنانين والأعمال والفعاليات التي تصنع المشهد اليوم.</p></article></div>
+                <div class="col-md-6 col-xl-3"><article class="aw-card"><span class="aw-number">02</span><p class="small text-uppercase text-muted mt-4 mb-2">متجر اللوحات</p><h3>لوحتك القادمة</h3><p class="aw-muted">أعمال أصلية مختارة بعناية، ومعلومات واضحة تساعدك على الاقتناء بثقة ودعم الفنان مباشرة.</p></article></div>
+                <div class="col-md-6 col-xl-3"><article class="aw-card"><span class="aw-number">03</span><p class="small text-uppercase text-muted mt-4 mb-2">معارض افتراضية</p><h3>المعرض أقرب</h3><p class="aw-muted">جولات فنية رقمية تمنح العمل مساحة للتأمل، وتفتح أبواب المعارض أمام الزوار أينما كانوا.</p></article></div>
+                <div class="col-md-6 col-xl-3"><article class="aw-card"><span class="aw-number">04</span><p class="small text-uppercase text-muted mt-4 mb-2">المجتمع</p><h3>الفن حوار</h3><p class="aw-muted">مساحة اجتماعية لعرض التجارب، متابعة الفنانين، تبادل الآراء، وبناء علاقات إبداعية حقيقية.</p></article></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aw-section aw-warm" title="Art Market">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6"><img class="aw-image" src="/storage/media/2026/08/art-general/art-market.webp" alt="متجر اللوحات" loading="lazy"></div>
+                <div class="col-lg-6">
+                    <span class="text-danger fw-bold">متجر اللوحات</span>
+                    <h2 class="display-5 fw-bold mt-2">اقتَنِ عملًا يحمل قصة، وادعم الفنان مباشرة</h2>
+                    <p class="aw-muted fs-5">المتجر ليس رفًا رقميًا؛ إنه لقاء بين ذائقتك ورؤية الفنان. اكتشف الأعمال عبر تفاصيلها وتقنياتها وأبعادها وقصصها قبل أن تختار ما يشبه مساحتك.</p>
+                    <ul class="aw-list">
+                        <li><strong>اختيارات منسّقة</strong><br><span class="aw-muted">أعمال منتقاة لتمنحك تجربة اكتشاف واضحة وغير مزدحمة.</span></li>
+                        <li><strong>قصة كل عمل</strong><br><span class="aw-muted">معلومات مفهومة عن الفنان والخامة والمقاس والفكرة وراء اللوحة.</span></li>
+                        <li><strong>صلة مباشرة</strong><br><span class="aw-muted">اقتناء يدعم الفنان ويقرب العمل الأصلي من جمهوره الحقيقي.</span></li>
+                    </ul>
+                    <a class="btn btn-art" href="#discover" role="button">ابدأ رحلة الاقتناء</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="virtual" class="aw-section aw-dark" title="Virtual Galleries">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="aw-kicker mb-4">معارض افتراضية ومجتمع حي</span>
+                    <h2 class="display-5 fw-bold">ادخل المعرض، قابل الفكرة، وشارك ما ألهمك</h2>
+                    <p class="aw-muted fs-5">تمنحك المعارض الافتراضية وقتًا ومساحة للتأمل، بينما يحوّل المجتمع هذه التجربة إلى حوار مستمر بين الفنان والناقد والمقتني والزائر.</p>
+                    <div class="aw-tags my-4"><span>ملفات فنانين</span><span>نقاشات فنية</span><span>جولات رقمية</span><span>مجموعات اهتمام</span></div>
+                    <a class="btn btn-art" href="#community" role="button">اكتشف التجربة</a>
+                </div>
+                <div class="col-lg-6"><img class="aw-image" src="/storage/media/2026/08/art-general/virtual-gallery.webp" alt="معرض فني افتراضي" loading="lazy"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="community" class="aw-section text-center" title="Call to Action">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <span class="text-danger fw-bold">مساحتك تبدأ هنا</span>
+                    <h2 class="display-4 fw-bold mt-2">شاهد أكثر. افهم أعمق. وكن جزءًا من الحكاية.</h2>
+                    <p class="aw-muted fs-5">سواء كنت فنانًا تبحث عن جمهور، أو مقتنيًا يبحث عن عمله القادم، أو محبًا للفن يريد أن يبقى قريبًا من المشهد؛ ستجد هنا مساحة صممت لك.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                        <a class="btn btn-art" href="#discover" role="button">ابدأ الاستكشاف</a>
+                        <a class="btn btn-art-light" href="#virtual" role="button">تواصل مع المجتمع</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

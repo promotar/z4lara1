@@ -99,23 +99,24 @@ Inside a running Laravel container, this must resolve within the source root:
 php artisan tinker --execute="echo public_path('build/manifest.json');"
 ```
 
-## Plugins and runtime media
+## Bundled modules, runtime plugins and media
 
-This repository ships the **core platform only**. Plugin source, published
-plugin assets and every piece of per-installation media are distributed
-separately and are never committed:
+The repository ships the core platform **and the default modules that the
+platform cannot run without**: `modules/admin-theme` and `modules/page-builder`,
+together with their published assets under `public/platform/plugins`.
+
+Everything else is per-deployment runtime content and is never committed:
 
 | Path | Content | Ignored by |
 |---|---|---|
-| `modules/*` (except `.gitkeep`) | plugin source | `/modules/*` |
-| `public/platform/**` | published plugin assets and themes | `/public/platform/` |
+| `modules/*` other than the two defaults | plugins installed per installation | `/modules/*` |
 | `storage/app/**` | installation state, uploads, backups, `installation.env` | `/storage/app/` |
 | `public/blog`, `public/lms`, `public/store`, `public/media`, `public/hero`, `public/settings` | content uploads per deployment | see `.gitignore` |
 
 A deployment mounts `modules`, `public/platform` and `storage` as persistent
-volumes, so restoring or upgrading never touches plugin code or client data.
-`docker/php/entrypoint.sh` seeds a new volume from the image only for entries
-that do not exist yet, and never overwrites an existing plugin or media file.
+volumes. `docker/php/entrypoint.sh` seeds a new volume from the image only for
+entries that do not exist yet, never overwrites an existing plugin or media
+file, and keeps `admin-theme` and `page-builder` in sync with the release.
 
 ## Rollback
 
