@@ -192,7 +192,7 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         @endif
         @include('platform.plugin-assets', ['scope' => 'frontend', 'kind' => 'styles'])
         @stack('styles')
-        @if ($usesVvvebLayout)
+        @if ($usesVvvebLayout && (request()->routeIs('pages.show') || request()->routeIs('front.home')))
             <link rel="stylesheet" href="{{ url('/page-builder-assets/v3/demo/landing/css/style.bundle.css') }}">
             <link rel="stylesheet" href="{{ url('/page-builder-assets/v3/demo/landing/css/custom.css') }}">
         @endif
