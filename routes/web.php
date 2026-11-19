@@ -69,7 +69,7 @@ Route::get('/', function (SettingsRepository $settings) {
             ) {
                 return response()
                     ->view('page-builder::public.show', [
-                        'page' => $page,
+                        'page' => app(\App\Platform\Core\Localization\PageTranslator::class)->localize($page),
                         'isPreview' => false,
                     ])
                     ->withHeaders($cacheBypassHeaders);
@@ -88,7 +88,7 @@ Route::get('/', function (SettingsRepository $settings) {
         if ($coreHome) {
             return response()
                 ->view('page-builder::public.show', [
-                    'page' => $coreHome,
+                    'page' => app(\App\Platform\Core\Localization\PageTranslator::class)->localize($coreHome),
                     'isPreview' => false,
                 ])
                 ->withHeaders($cacheBypassHeaders);

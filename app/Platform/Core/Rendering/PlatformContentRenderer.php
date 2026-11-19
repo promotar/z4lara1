@@ -54,10 +54,57 @@ class PlatformContentRenderer
             ->get(['id', 'html', 'content', 'css'])
             ->map(function (object $section) use ($type): object {
                 $section->content_type = $type;
-                $section->rendered_html = $this->renderHtml((string) ($section->html ?: $section->content));
+
+                $source = (string) ($section->html ?: $section->content);
+                $translated = $this->localizedSectionHtml((int) $section->id);
+
+                if ($translated !== null) {
+                    $source = $translated;
+                }
+
+                $section->rendered_html = $this->renderHtml($source);
 
                 return $section;
             });
+    }
+
+    /**
+     * Published translation of a layout section (header/footer) for the active
+     * locale. Layout sections are content too, so they follow the same
+     * per-locale rule as pages instead of always rendering the default language.
+     */
+    private function localizedSectionHtml(int $sectionId): ?string
+    {
+        try {
+            if (! Schema::hasTable('platform_page_translations')) {
+                return null;
+            }
+
+            $platform = app(\App\Platform\Core\Localization\PlatformLocale::class);
+            $locale = app()->getLocale();
+
+            if (! $platform->isAvailable($locale) || $locale === $platform->defaultCode()) {
+                return null;
+            }
+
+            $translation = DB::table('platform_page_translations')
+                ->where('page_id', $sectionId)
+                ->where('locale', $locale)
+                ->where('status', 'published')
+                ->first(['html', 'vvvebjs_html']);
+
+            if ($translation === null) {
+                return null;
+            }
+
+            $html = trim((string) ($translation->html ?? '')) !== ''
+                ? (string) $translation->html
+                : (string) ($translation->vvvebjs_html ?? '');
+
+            return trim($html) === '' ? null : $html;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public function layoutCss(): string
