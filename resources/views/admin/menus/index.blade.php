@@ -304,10 +304,10 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <div class="admin-menu-form-grid admin-menu-form-grid-two">
-                                                    <label class="admin-field">
+                                                    <div class="admin-field">
                                                         <span class="admin-field-label" data-i18n="core.menus.name">{{ __('core.menus.name') }}</span>
-                                                        <input name="name" value="{{ $menu->name }}" required class="admin-input">
-                                                    </label>
+                                                        @include('admin.menus.partials.title-i18n', ['item' => $menu, 'baseField' => 'name', 'placeholder' => __('core.menus.name')])
+                                                    </div>
                                                     <label class="admin-field">
                                                         <span class="admin-field-label">{{ __('core.menus.key') }}</span>
                                                         <input name="key" value="{{ preg_replace('/^platform\./', '', $menu->key) }}" class="admin-input">
