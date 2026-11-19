@@ -160,9 +160,14 @@
     }
 
     .admin-menu-card-edit {
+        display: none !important;
         margin-top: 10px !important;
         padding-top: 10px !important;
         border-top: 1px solid #eef2f7 !important;
+    }
+
+    .admin-menu-compact-section.is-editing .admin-menu-card-edit {
+        display: block !important;
     }
 
     .admin-menu-card-edit .admin-menu-form {
@@ -413,21 +418,17 @@
                         @if ($activeMenus->isEmpty())
                             <div class="admin-menu-empty" data-i18n="core.menus.empty">{{ __('core.menus.empty') }}</div>
                         @else
-                            <div class="admin-menu-source-grid">
+                            <div class="admin-menu-compact-sections">
                                 @foreach ($activeMenus as $menu)
-                                    <article class="admin-menu-source-card {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}">
-                                        <div class="admin-menu-source-main">
-                                            <div>
-                                                <h4 class="admin-menu-source-title">{{ $menu->name }}</h4>
-                                                <p class="admin-menu-source-meta" title="{{ $menu->key }}">{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }} · {{ __('core.menus.sort', ['value' => $menu->sort_order]) }}</p>
-                                            </div>
-                                            <span class="ainpa-status-badge {{ $menu->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
-                                                {{ $menu->is_active ? __('core.common.active') : __('core.common.inactive') }}
+                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}" :class="{ 'is-editing': editMenu === {{ $menu->id }} }">
+                                        <a href="{{ route('admin.menus.index', ['location' => 'frontend', 'menu' => $menu->id]) }}" class="admin-menu-compact-section-link" title="{{ $menu->key }}">
+                                            <span class="admin-menu-compact-order">{{ $menu->sort_order }}</span>
+                                            <span>
+                                                <strong>{{ $menu->name }}</strong>
+                                                <small>{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }}{{ $menu->is_active ? '' : ' · '.__('core.common.inactive') }}</small>
                                             </span>
-                                        </div>
-
-                                        <div class="admin-menu-source-actions">
-                                            <a href="{{ route('admin.menus.index', ['location' => 'frontend', 'menu' => $menu->id]) }}" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.manage_items">{{ __('core.menus.manage_items') }}</a>
+                                        </a>
+                                        <div class="admin-menu-compact-actions">
                                             <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.settings">{{ __('core.menus.settings') }}</button>
                                             <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu_with_items')));">
                                                 @csrf
@@ -436,7 +437,7 @@
                                             </form>
                                         </div>
 
-                                        <div x-show="editMenu === {{ $menu->id }}" x-cloak class="admin-menu-card-edit">
+                                        <div class="admin-menu-card-edit admin-menu-compact-editor-inline">
                                             <form method="POST" action="{{ route('admin.menus.update', $menu) }}" class="admin-menu-form">
                                                 @csrf
                                                 @method('PATCH')
@@ -531,13 +532,11 @@
                                         </a>
                                         <div class="admin-menu-compact-actions">
                                             <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.edit">{{ __('core.menus.edit') }}</button>
-                                            @if ($menu->items->isEmpty())
-                                                <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.delete_empty_section')));">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
-                                                </form>
-                                            @endif
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu_with_items')));">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
+                                            </form>
                                         </div>
 
                                         <div x-show="editMenu === {{ $menu->id }}" x-cloak class="admin-menu-compact-editor admin-menu-compact-editor-inline">
