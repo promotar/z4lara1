@@ -9,6 +9,7 @@ use App\Platform\Core\Models\Menu;
 use App\Platform\Core\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -165,6 +166,10 @@ class MenuSettingsController extends Controller
 
         $item = $menu->items()->create($this->itemPayload($data, $menu));
 
+        if ($item->route_name === 'locale.switch') {
+            $this->clearLanguageSwitcherFlag();
+        }
+
         $operation = app(OperationLogger::class)->start('admin.menus.items.create', 'menu-item', (string) $item->id, [
             'menu_id' => $menu->id,
             'menu_key' => $menu->key,
@@ -213,12 +218,42 @@ class MenuSettingsController extends Controller
             'location' => $location,
             'title' => $title,
         ], request()->user()?->id);
+        $removedLanguageLink = $item->route_name === 'locale.switch';
         $item->delete();
+
+        if ($removedLanguageLink) {
+            $this->flagLanguageSwitcherRemoved();
+        }
+
         app(OperationLogger::class)->success($operation, 'Menu item removed from menu settings.');
 
         return redirect()
             ->route('admin.menus.index', ['location' => $location, 'menu' => $menuId])
             ->with('status', __('core.menus.flash.item_removed'));
+    }
+
+    private function flagLanguageSwitcherRemoved(): void
+    {
+        try {
+            DB::table('platform_registry_entries')->updateOrInsert(
+                ['registry_type' => 'menus', 'registry_key' => 'language_switcher_removed'],
+                ['payload' => json_encode(['value' => true]), 'status' => 'active', 'updated_at' => now(), 'created_at' => now()],
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    private function clearLanguageSwitcherFlag(): void
+    {
+        try {
+            DB::table('platform_registry_entries')
+                ->where('registry_type', 'menus')
+                ->where('registry_key', 'language_switcher_removed')
+                ->delete();
+        } catch (\Throwable) {
+            //
+        }
     }
 
     /**

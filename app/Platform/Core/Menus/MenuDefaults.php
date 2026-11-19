@@ -62,6 +62,19 @@ final class MenuDefaults
             return 0;
         }
 
+        // Once an administrator removes the default language links, do not
+        // recreate them on every settings page load.
+        try {
+            if (\Illuminate\Support\Facades\DB::table('platform_registry_entries')
+                ->where('registry_type', 'menus')
+                ->where('registry_key', 'language_switcher_removed')
+                ->exists()) {
+                return 0;
+            }
+        } catch (Throwable) {
+            // Registry table not ready yet.
+        }
+
         try {
             $already = MenuItem::query()
                 ->where('menu_id', $menu->id)
