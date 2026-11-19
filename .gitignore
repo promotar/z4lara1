@@ -64,6 +64,17 @@ secrets/
 /storage/logs/*
 /storage/app/
 /storage/pail
+
+# Per-installation media content. These directories hold artist uploads,
+# lesson attachments, product images and identity documents that belong to a
+# single deployment. They live on the runtime volume and must never be part of
+# the distributable code that is published to GitHub.
+/public/blog/
+/public/lms/
+/public/store/
+/public/media/
+/public/hero/
+/public/settings/
 /vendor
 Homestead.json
 Homestead.yaml
