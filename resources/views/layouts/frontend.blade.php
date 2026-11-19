@@ -200,7 +200,54 @@ html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not
         </div>
         @include('platform.plugin-assets', ['scope' => 'frontend', 'kind' => 'scripts'])
 
-    </body>
+    
+        {{-- Keep mixed-language text readable without flipping its alignment:
+         block elements keep the page direction; only bidi runs are recomputed.
+         app.js adds dir="auto" to blocks, so this repairs it after load and
+         keeps repairing it when dynamic content appears. --}}
+    <style>.platform-plaintext{unicode-bidi:plaintext;direction:inherit;text-align:inherit}</style>
+    <script>
+        (function () {
+            var blocks = {H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,P:1,LI:1,DT:1,DD:1,DIV:1,BLOCKQUOTE:1,FIGCAPTION:1,SUMMARY:1,TD:1,TH:1};
+
+            function fix(element) {
+                if (element && blocks[element.tagName] && element.getAttribute('dir') === 'auto') {
+                    element.removeAttribute('dir');
+                    element.classList.add('platform-plaintext');
+                }
+            }
+
+            function scan(root) {
+                if (!root.querySelectorAll) { return; }
+                root.querySelectorAll('[data-auto-direction="true"]').forEach(fix);
+            }
+
+            scan(document);
+
+            new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes') {
+                        fix(mutation.target);
+                        return;
+                    }
+                    mutation.addedNodes.forEach(function (node) {
+                        if (node.nodeType === 1) {
+                            fix(node);
+                            scan(node);
+                        }
+                    });
+                });
+            }).observe(document.documentElement, {
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['dir'],
+                childList: true,
+            });
+
+            window.addEventListener('load', function () { scan(document); });
+        })();
+    </script>
+</body>
 </html>
 
 
