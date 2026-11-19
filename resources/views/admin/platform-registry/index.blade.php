@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Admin</h2>
-            <span class="text-sm text-gray-500">Super Admin</span>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight" data-i18n="core.registry.title">{{ __('core.registry.title') }}</h2>
+            <span class="text-sm text-gray-500" data-i18n="core.registry.super_admin">{{ __('core.registry.super_admin') }}</span>
         </div>
     </x-slot>
 
@@ -18,13 +18,13 @@
             @if ($unregisteredRoutes !== [])
                 <section class="bg-yellow-50 border border-yellow-200 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="font-semibold text-yellow-900">Unregistered Routes Detected</h3>
+                        <h3 class="font-semibold text-yellow-900" data-i18n="core.registry.unregistered">{{ __('core.registry.unregistered') }}</h3>
                         <div class="mt-3 overflow-x-auto">
                             <table class="min-w-full text-sm">
                                 <thead class="text-left text-yellow-900">
                                     <tr>
-                                        <th class="py-2 pr-4">Name</th>
-                                        <th class="py-2 pr-4">Method</th>
+                                        <th class="py-2 pr-4" data-i18n="core.registry.name">{{ __('core.registry.name') }}</th>
+                                        <th class="py-2 pr-4" data-i18n="core.registry.method">{{ __('core.registry.method') }}</th>
                                         <th class="py-2 pr-4">URI</th>
                                     </tr>
                                 </thead>
@@ -45,30 +45,30 @@
 
             <section class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ activeTab: @js($activeTab) }">
                 <div class="border-b border-gray-200 px-6 pt-6">
-                    <nav class="flex flex-wrap gap-2" aria-label="Admin tabs">
-                        <button type="button" @click="activeTab = 'functions'" :class="activeTab === 'functions' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Functions
+                    <nav class="flex flex-wrap gap-2" aria-label="{{ __('core.registry.tabs') }}">
+                        <button type="button" @click="activeTab = 'functions'" :class="activeTab === 'functions' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.functions">
+                            {{ __('core.registry.functions') }}
                         </button>
-                        <button type="button" @click="activeTab = 'hooks'" :class="activeTab === 'hooks' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Hooks
+                        <button type="button" @click="activeTab = 'hooks'" :class="activeTab === 'hooks' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.hooks">
+                            {{ __('core.registry.hooks') }}
                         </button>
-                        <button type="button" @click="activeTab = 'routes'" :class="activeTab === 'routes' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Routes
+                        <button type="button" @click="activeTab = 'routes'" :class="activeTab === 'routes' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.routes">
+                            {{ __('core.registry.routes') }}
                         </button>
-                        <a href="{{ route('admin.documentation.index') }}" class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200">
-                            Docs
+                        <a href="{{ route('admin.documentation.index') }}" class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200" data-i18n="core.registry.docs">
+                            {{ __('core.registry.docs') }}
                         </a>
-                        <button type="button" @click="activeTab = 'reports'" :class="activeTab === 'reports' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Reports
+                        <button type="button" @click="activeTab = 'reports'" :class="activeTab === 'reports' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.reports">
+                            {{ __('core.registry.reports') }}
                         </button>
-                        <button type="button" @click="activeTab = 'success'" :class="activeTab === 'success' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Success Log
+                        <button type="button" @click="activeTab = 'success'" :class="activeTab === 'success' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.success_log">
+                            {{ __('core.registry.success_log') }}
                         </button>
-                        <button type="button" @click="activeTab = 'errors'" :class="activeTab === 'errors' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Error Log
+                        <button type="button" @click="activeTab = 'errors'" :class="activeTab === 'errors' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.error_log">
+                            {{ __('core.registry.error_log') }}
                         </button>
-                        <button type="button" @click="activeTab = 'live-log'" :class="activeTab === 'live-log' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold">
-                            Live Log
+                        <button type="button" @click="activeTab = 'live-log'" :class="activeTab === 'live-log' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="rounded-md px-4 py-2 text-sm font-semibold" data-i18n="core.registry.live_log">
+                            {{ __('core.registry.live_log') }}
                         </button>
                     </nav>
                 </div>
@@ -76,7 +76,7 @@
                 <div class="p-6">
                     <div x-show="activeTab === 'functions'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Registered Functions</h3>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.registered_functions">{{ __('core.registry.registered_functions') }}</h3>
                             <span class="text-sm text-gray-500">{{ count($functions) }} items</span>
                         </div>
                         <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -92,14 +92,14 @@
 
                     <div x-show="activeTab === 'hooks'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Registered Hooks</h3>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.registered_hooks">{{ __('core.registry.registered_hooks') }}</h3>
                             <span class="text-sm text-gray-500">{{ count($hooks) }} items</span>
                         </div>
                         <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($hooks as $name => $definition)
                                 <div class="border rounded-md p-3">
                                     <div class="font-mono text-sm text-gray-900">{{ $name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $definition['description'] ?? 'Registered hook' }}</div>
+                                    <div class="text-xs text-gray-500">{{ $definition['description'] ?? __('core.registry.registered_hook') }}</div>
                                     <div class="mt-1 text-xs text-gray-600">{{ $definition['type'] ?? 'hook' }} / {{ $definition['status'] ?? 'active' }}</div>
                                 </div>
                             @endforeach
@@ -108,7 +108,7 @@
 
                     <div x-show="activeTab === 'routes'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Registered Routes</h3>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.registered_routes">{{ __('core.registry.registered_routes') }}</h3>
                             <span class="text-sm text-gray-500">{{ count($routes) }} items</span>
                         </div>
                         <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -124,11 +124,11 @@
 
                     <div x-show="activeTab === 'reports'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Implementation Reports</h3>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.implementation_reports">{{ __('core.registry.implementation_reports') }}</h3>
                             <span class="text-sm text-gray-500">{{ count($reports) }} reports</span>
                         </div>
                         @if ($reports === [])
-                            <p class="text-sm text-gray-500">No implementation reports found.</p>
+                            <p class="text-sm text-gray-500" data-i18n="core.registry.no_reports">{{ __('core.registry.no_reports') }}</p>
                         @else
                             <div class="space-y-2 rounded-md border border-gray-200 bg-gray-100 p-2">
                                 @foreach ($reports as $report)
@@ -183,7 +183,7 @@
                                     });
 
                                     if (! response.ok) {
-                                        throw new Error('Live log request failed with status ' + response.status);
+                                        throw new Error(@js(__('core.registry.live_log_failed')) + ' ' + response.status);
                                     }
 
                                     const payload = await response.json();
@@ -197,7 +197,7 @@
                                         }
                                     });
                                 } catch (exception) {
-                                    this.error = exception.message || 'Live log could not be loaded.';
+                                    this.error = exception.message || @js(__('core.registry.live_log_unavailable'));
                                 } finally {
                                     this.loading = false;
                                 }
@@ -228,14 +228,14 @@
                     >
                         <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
                             <div>
-                                <h3 class="font-semibold text-gray-900">Live Log</h3>
-                                <p class="mt-1 text-sm text-gray-500">Last 500 log lines from Laravel and active plugin log folders. Auto-refreshes every 2 seconds.</p>
+                                <h3 class="font-semibold text-gray-900" data-i18n="core.registry.live_log">{{ __('core.registry.live_log') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500" data-i18n="core.registry.live_hint">{{ __('core.registry.live_hint') }}</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="rounded-md bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600" x-text="generatedAt ? 'Updated ' + generatedAt : 'Waiting for first load'"></span>
+                                <span class="rounded-md bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600" data-updated-label="{{ __('core.registry.updated_at') }}" data-waiting-label="{{ __('core.registry.waiting') }}" x-text="generatedAt ? $el.dataset.updatedLabel + ' ' + generatedAt : $el.dataset.waitingLabel"></span>
                                 <button type="button" @click="togglePause()" class="rounded-md border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50" x-text="paused ? 'Resume' : 'Pause'"></button>
                                 <button type="button" @click="load()" :disabled="loading" class="rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">
-                                    <span x-text="loading ? 'Refreshing...' : 'Refresh now'"></span>
+                                    <span data-refreshing-label="{{ __('core.registry.refreshing') }}" data-refresh-label="{{ __('core.registry.refresh_now') }}" x-text="loading ? $el.dataset.refreshingLabel : $el.dataset.refreshLabel"></span>
                                 </button>
                             </div>
                         </div>
@@ -246,25 +246,25 @@
 
                         <div class="mb-4 grid gap-3 md:grid-cols-4">
                             <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
-                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Lines</div>
+                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500" data-i18n="core.registry.lines">{{ __('core.registry.lines') }}</div>
                                 <div class="mt-1 text-2xl font-semibold text-gray-900" x-text="logs.length"></div>
                             </div>
                             <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
-                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Sources</div>
+                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500" data-i18n="core.registry.sources">{{ __('core.registry.sources') }}</div>
                                 <div class="mt-1 text-2xl font-semibold text-gray-900" x-text="sources.length"></div>
                             </div>
                             <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
-                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Status</div>
+                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500" data-i18n="core.registry.status">{{ __('core.registry.status') }}</div>
                                 <div class="mt-2 inline-flex rounded-md px-2 py-1 text-xs font-semibold" :class="paused ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'" x-text="paused ? 'Paused' : 'Live'"></div>
                             </div>
                             <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
-                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Limit</div>
+                                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500" data-i18n="core.registry.limit">{{ __('core.registry.limit') }}</div>
                                 <div class="mt-1 text-2xl font-semibold text-gray-900">500</div>
                             </div>
                         </div>
 
                         <div class="mb-4 rounded-md border border-gray-200 bg-white p-3">
-                            <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Detected Log Sources</div>
+                            <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500" data-i18n="core.registry.sources_title">{{ __('core.registry.sources_title') }}</div>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="source in sources" :key="source.source + source.file + source.path">
                                     <span class="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700" :title="source.path">
@@ -274,14 +274,14 @@
                                     </span>
                                 </template>
                                 <template x-if="sources.length === 0">
-                                    <span class="text-sm text-gray-500">No readable log sources found yet.</span>
+                                    <span class="text-sm text-gray-500" data-i18n="core.registry.no_sources">{{ __('core.registry.no_sources') }}</span>
                                 </template>
                             </div>
                         </div>
 
                         <div x-ref="panel" class="max-h-[42rem] overflow-auto rounded-md bg-gray-950 p-4 font-mono text-xs leading-6 text-gray-100">
                             <template x-if="logs.length === 0">
-                                <div class="text-gray-400">No log entries found.</div>
+                                <div class="text-gray-400" data-i18n="core.registry.no_entries">{{ __('core.registry.no_entries') }}</div>
                             </template>
                             <template x-for="(entry, index) in logs" :key="index + entry.source + entry.file + entry.line">
                                 <div class="grid gap-2 border-b border-white/5 py-1 md:grid-cols-[9rem_8rem_6rem_minmax(0,1fr)]">
@@ -301,18 +301,18 @@
 
                     <div x-show="activeTab === 'success'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Success Log</h3>
-                            <span class="text-sm text-gray-500">{{ count($successLogs) }} entries</span>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.success_log">{{ __('core.registry.success_log') }}</h3>
+                            <span class="text-sm text-gray-500">{{ __('core.registry.entries_count', ['count' => count($successLogs)]) }}</span>
                         </div>
-                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-green-200">{{ $successLogs === [] ? 'No success log entries.' : implode(PHP_EOL, $successLogs) }}</pre>
+                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-green-200">{{ $successLogs === [] ? __('core.registry.no_success_entries') : implode(PHP_EOL, $successLogs) }}</pre>
                     </div>
 
                     <div x-show="activeTab === 'errors'" x-cloak>
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Error Log</h3>
-                            <span class="text-sm text-gray-500">{{ count($errorLogs) }} entries</span>
+                            <h3 class="font-semibold text-gray-900" data-i18n="core.registry.error_log">{{ __('core.registry.error_log') }}</h3>
+                            <span class="text-sm text-gray-500">{{ __('core.registry.entries_count', ['count' => count($errorLogs)]) }}</span>
                         </div>
-                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-red-200">{{ $errorLogs === [] ? 'No error log entries.' : implode(PHP_EOL, $errorLogs) }}</pre>
+                        <pre class="max-h-[32rem] overflow-auto rounded bg-gray-950 p-4 text-xs text-red-200">{{ $errorLogs === [] ? __('core.registry.no_error_entries') : implode(PHP_EOL, $errorLogs) }}</pre>
                     </div>
                 </div>
             </section>

@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="ainpa-page-toolbar">
             <div>
-                <h2 class="ainpa-page-title">Review Plugin Update</h2>
-                <p class="text-sm text-gray-600">Confirm the package before replacing the installed plugin files.</p>
+                <h2 class="ainpa-page-title" data-i18n="core.plugins.review_title">{{ __('core.plugins.review_title') }}</h2>
+                <p class="text-sm text-gray-600" data-i18n="core.plugins.review_hint">{{ __('core.plugins.review_hint') }}</p>
             </div>
-            <a href="{{ route('admin.plugins.create') }}" class="ainpa-button">Cancel</a>
+            <a href="{{ route('admin.plugins.create') }}" class="ainpa-button">{{ __('core.common.cancel') }}</a>
         </div>
     </x-slot>
 
@@ -26,41 +26,41 @@
             @endif
 
             <div class="ainpa-card p-6 space-y-6">
-                <div class="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                    This is an update, not an uninstall. The platform will disable the old runtime, move old module files out of
+                <div class="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" data-i18n="core.plugins.update_note">
+                    {{ __('core.plugins.update_note') }}
                     <span class="ainpa-code">modules/{{ $old['slug'] }}</span>, install the new package, run only pending/new migrations,
                     and preserve existing plugin database data.
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <section class="rounded-md border border-gray-200 p-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Installed Plugin</h3>
+                        <h3 class="text-lg font-semibold text-gray-900" data-i18n="core.plugins.installed_plugin">{{ __('core.plugins.installed_plugin') }}</h3>
                         <dl class="mt-4 space-y-2 text-sm">
-                            <div><dt class="font-semibold">Name</dt><dd>{{ $old['name'] }}</dd></div>
-                            <div><dt class="font-semibold">Slug</dt><dd><span class="ainpa-code">{{ $old['slug'] }}</span></dd></div>
-                            <div><dt class="font-semibold">Version</dt><dd>{{ $old['version'] }}</dd></div>
-                            <div><dt class="font-semibold">Owner / Author</dt><dd>{{ $old['author'] ?: 'Not provided' }}</dd></div>
-                            <div><dt class="font-semibold">Provider</dt><dd><span class="ainpa-code">{{ $old['provider'] }}</span></dd></div>
-                            <div><dt class="font-semibold">Status</dt><dd>{{ $old['status'] }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.name">{{ __('core.plugins.name') }}</dt><dd>{{ $old['name'] }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.slug">{{ __('core.plugins.slug') }}</dt><dd><span class="ainpa-code">{{ $old['slug'] }}</span></dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.version">{{ __('core.plugins.version') }}</dt><dd>{{ $old['version'] }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.owner">{{ __('core.plugins.owner') }}</dt><dd>{{ $old['author'] ?: 'Not provided' }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.provider">{{ __('core.plugins.provider') }}</dt><dd><span class="ainpa-code">{{ $old['provider'] }}</span></dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.status">{{ __('core.plugins.status') }}</dt><dd>{{ $old['status'] }}</dd></div>
                         </dl>
                     </section>
 
                     <section class="rounded-md border border-gray-200 p-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Uploaded Package</h3>
+                        <h3 class="text-lg font-semibold text-gray-900" data-i18n="core.plugins.uploaded_package">{{ __('core.plugins.uploaded_package') }}</h3>
                         <dl class="mt-4 space-y-2 text-sm">
-                            <div><dt class="font-semibold">Name</dt><dd>{{ $new['name'] }}</dd></div>
-                            <div><dt class="font-semibold">Slug</dt><dd><span class="ainpa-code">{{ $new['slug'] }}</span></dd></div>
-                            <div><dt class="font-semibold">Version</dt><dd>{{ $new['version'] }}</dd></div>
-                            <div><dt class="font-semibold">Owner / Author</dt><dd>{{ $new['author'] ?: 'Not provided' }}</dd></div>
-                            <div><dt class="font-semibold">Provider</dt><dd><span class="ainpa-code">{{ $new['provider'] }}</span></dd></div>
-                            <div><dt class="font-semibold">Version Check</dt><dd><span class="ainpa-status-badge {{ $versionClass }}">{{ $versionLabel }}</span></dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.name">{{ __('core.plugins.name') }}</dt><dd>{{ $new['name'] }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.slug">{{ __('core.plugins.slug') }}</dt><dd><span class="ainpa-code">{{ $new['slug'] }}</span></dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.version">{{ __('core.plugins.version') }}</dt><dd>{{ $new['version'] }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.owner">{{ __('core.plugins.owner') }}</dt><dd>{{ $new['author'] ?: 'Not provided' }}</dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.provider">{{ __('core.plugins.provider') }}</dt><dd><span class="ainpa-code">{{ $new['provider'] }}</span></dd></div>
+                            <div><dt class="font-semibold" data-i18n="core.plugins.version_check">{{ __('core.plugins.version_check') }}</dt><dd><span class="ainpa-status-badge {{ $versionClass }}">{{ $versionLabel }}</span></dd></div>
                         </dl>
                     </section>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <section class="rounded-md border border-gray-200 p-4">
-                        <h3 class="font-semibold text-gray-900">Installed Migrations</h3>
+                        <h3 class="font-semibold text-gray-900" data-i18n="core.plugins.installed_migrations">{{ __('core.plugins.installed_migrations') }}</h3>
                         @if ($old['migrations'])
                             <ul class="mt-3 space-y-1 text-xs text-gray-700">
                                 @foreach ($old['migrations'] as $migration)
@@ -68,12 +68,12 @@
                                 @endforeach
                             </ul>
                         @else
-                            <p class="mt-3 text-sm text-gray-500">No migration files found.</p>
+                            <p class="mt-3 text-sm text-gray-500" data-i18n="core.plugins.no_migrations">{{ __('core.plugins.no_migrations') }}</p>
                         @endif
                     </section>
 
                     <section class="rounded-md border border-gray-200 p-4">
-                        <h3 class="font-semibold text-gray-900">Uploaded Migrations</h3>
+                        <h3 class="font-semibold text-gray-900" data-i18n="core.plugins.uploaded_migrations">{{ __('core.plugins.uploaded_migrations') }}</h3>
                         @if ($new['migrations'])
                             <ul class="mt-3 space-y-1 text-xs text-gray-700">
                                 @foreach ($new['migrations'] as $migration)
@@ -81,7 +81,7 @@
                                 @endforeach
                             </ul>
                         @else
-                            <p class="mt-3 text-sm text-gray-500">No migration files found.</p>
+                            <p class="mt-3 text-sm text-gray-500" data-i18n="core.plugins.no_migrations">{{ __('core.plugins.no_migrations') }}</p>
                         @endif
                     </section>
                 </div>
@@ -94,8 +94,8 @@
 
                 <form method="POST" action="{{ route('admin.plugins.update.confirm', $token) }}" class="flex items-center gap-3">
                     @csrf
-                    <x-primary-button>Confirm Update</x-primary-button>
-                    <a href="{{ route('admin.plugins.create') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancel</a>
+                    <x-primary-button data-i18n="core.plugins.confirm_update">{{ __('core.plugins.confirm_update') }}</x-primary-button>
+                    <a href="{{ route('admin.plugins.create') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('core.common.cancel') }}</a>
                 </form>
             </div>
         </div>

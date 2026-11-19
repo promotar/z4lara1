@@ -14,13 +14,30 @@ final readonly class ApplyPlatformLocale
 
     public function handle(Request $request, Closure $next): Response
     {
+        $queryLocale = $request->query('lang');
+
+        if (is_string($queryLocale) && trim($queryLocale) !== '') {
+            $normalized = str_replace('_', '-', trim($queryLocale));
+
+            if ($this->locale->isAvailable($normalized)) {
+                // Visitor page language: persist in the site session so the
+                // choice survives navigation (?lang= links generated when
+                // SEO_LOCALE_MODE=query).
+                $this->locale->setSite($normalized);
+            }
+        }
+
         $current = $this->locale->apply();
         $direction = $this->locale->direction($current);
 
         View::share('platformLocale', $current);
         View::share('platformDirection', $direction);
+        View::share('platformLanguages', $this->locale->languages());
 
         $response = $next($request);
+
+        app(ReplaceTranslationTokens::class)->process($response);
+
         $response->headers->set('Content-Language', $current);
 
         return $response;

@@ -9,9 +9,14 @@ use App\Platform\Core\Contracts\EditorialContentProvider;
 use App\Platform\Core\Contracts\LatestContentProvider;
 use App\Platform\Core\Hooks\HookLoader;
 use App\Platform\Core\Hooks\HookManager;
+use App\Platform\Core\Localization\ModuleTranslationLoader;
 use App\Platform\Core\Localization\PlatformLocale;
+use App\Platform\Core\Localization\TextTranslationLoader;
+use App\Platform\Core\Localization\TranslationFileEditor;
+use App\Platform\Core\Registry\PlatformRegistry;
 use App\Platform\Core\Rendering\NullEditorialContentProvider;
 use App\Platform\Core\Rendering\NullLatestContentProvider;
+use App\Platform\Core\Services\PluginOwnedPageGuard;
 use App\Platform\Core\Services\ActivePluginStylesheets;
 use App\Platform\Core\Services\PlatformMailConfigurator;
 use App\Platform\Core\Services\PlatformVersion;
@@ -21,9 +26,13 @@ use App\Platform\Core\Services\PluginRuntimeGate;
 use App\Platform\Core\Services\PluginServiceProviderLoader;
 use App\Platform\Core\Services\SettingsRepository;
 use App\Platform\Core\Views\ViewNamespaceRegistrar;
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
+use RuntimeException;
 use Throwable;
 
 class AppServiceProvider extends ServiceProvider
@@ -47,6 +56,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RoutePermissionCatalog::class);
         $this->app->scoped(RouteAccessGate::class);
         $this->app->scoped(UnauthorizedRouteElementFilter::class);
+        $this->app->singleton(TranslationFileEditor::class);
+        $this->app->singleton(PlatformRegistry::class);
+        $this->app->singleton(PluginOwnedPageGuard::class);
     }
 
     /**
@@ -54,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->guardRouteCaching();
+
         try {
             $this->app->make(PlatformMailConfigurator::class)->apply();
         } catch (Throwable) {
@@ -78,8 +92,42 @@ class AppServiceProvider extends ServiceProvider
         $this->app->make(PluginServiceProviderLoader::class)
             ->registerActiveProviders($this->app);
 
+        $this->app->make(ModuleTranslationLoader::class)->register();
+        $this->app->make(TextTranslationLoader::class)->register();
+
         $this->app->make(ViewNamespaceRegistrar::class)->register();
 
         $this->app->make(HookLoader::class)->load();
+    }
+
+    /**
+     * Plugin routes are registered per request from modules/<slug>/routes/*.php.
+     * A route cache would freeze them, so caching is blocked and surfaced.
+     */
+    private function guardRouteCaching(): void
+    {
+        if ($this->app->routesAreCached()) {
+            Log::warning(
+                'Route cache is active: plugin routes are frozen and disabled plugins keep their routes. Run `php artisan route:clear`.'
+            );
+        }
+
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
+        Event::listen(CommandStarting::class, function (CommandStarting $event): void {
+            if (! in_array($event->command, ['route:cache', 'optimize'], true)) {
+                return;
+            }
+
+            $event->output->writeln(
+                '<error>[platform] Route caching is disabled: plugin routes are registered at runtime from modules/*/routes.</error>'
+            );
+
+            throw new RuntimeException(
+                '[platform] route:cache is blocked: plugin routes are registered at runtime from modules/*/routes. Run `php artisan route:clear` instead.'
+            );
+        });
     }
 }

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Install Plugin</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight" data-i18n="core.plugins.install">{{ __('core.plugins.install') }}</h2>
     </x-slot>
 
     <div class="py-8">
@@ -18,7 +18,7 @@
                     If the slug is already installed and the name/owner match, the platform will show a review page before updating.
                 </div>
 
-                <x-primary-button>Upload and Install</x-primary-button>
+                <x-primary-button data-i18n="core.plugins.upload_and_install">{{ __('core.plugins.upload_and_install') }}</x-primary-button>
             </form>
         </div>
     </div>

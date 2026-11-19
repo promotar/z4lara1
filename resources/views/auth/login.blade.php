@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="ainpa-auth-heading">
-        <p class="ainpa-auth-kicker">Welcome back</p>
-        <h1>Sign In</h1>
-        <p>Access your INPA account and continue managing your artistic profile.</p>
+        <p class="ainpa-auth-kicker">{.auth.welcome_back}</p>
+        <h1>{.auth.sign_in}</h1>
+        <p>{.auth.login_subtitle}</p>
     </div>
 
     <x-auth-session-status class="ainpa-auth-status ainpa-auth-status--success" :status="session('status')" />
@@ -14,7 +14,7 @@
         @endif
 
         <label class="ainpa-auth-field" for="email">
-            <span>Email Address</span>
+            <span data-i18n="core.auth.email">{{ __('core.auth.email') }}</span>
             <input
                 id="email"
                 type="email"
@@ -23,13 +23,13 @@
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="Enter your email address"
+                placeholder="{{ __('core.auth.email_placeholder') }}"
             >
             <x-input-error :messages="$errors->get('email')" class="ainpa-auth-error" />
         </label>
 
         <label class="ainpa-auth-field" for="password">
-            <span>Password</span>
+            <span data-i18n="core.auth.password">{{ __('core.auth.password') }}</span>
             <span class="ainpa-auth-password">
                 <input
                     id="password"
@@ -37,9 +37,9 @@
                     name="password"
                     required
                     autocomplete="current-password"
-                    placeholder="Enter your password"
+                    placeholder="{{ __('core.auth.password_placeholder') }}"
                 >
-                <button type="button" data-auth-toggle-password aria-label="Show password" aria-controls="password">Show</button>
+                <button type="button" data-auth-toggle-password aria-label="{{ __('core.auth.show_password') }}" aria-controls="password">{{ __('core.auth.show') }}</button>
             </span>
             <x-input-error :messages="$errors->get('password')" class="ainpa-auth-error" />
         </label>
@@ -47,21 +47,21 @@
         <div class="ainpa-auth-row">
             <label class="ainpa-auth-check" for="remember_me">
                 <input id="remember_me" type="checkbox" name="remember">
-                <span>Remember me</span>
+                <span data-i18n="core.auth.remember_me">{{ __('core.auth.remember_me') }}</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}">Forgot password?</a>
+                <a href="{{ route('password.request') }}" data-i18n="core.auth.forgot_password">{{ __('core.auth.forgot_password') }}</a>
             @endif
         </div>
 
-        <button type="submit" class="ainpa-auth-submit">Sign In</button>
+        <button type="submit" class="ainpa-auth-submit">{.auth.sign_in}</button>
 
-        <div class="ainpa-auth-divider"><span>or</span></div>
+        <div class="ainpa-auth-divider"><span data-i18n="core.common.or">{{ __('core.common.or') }}</span></div>
 
         <p class="ainpa-auth-switch">
-            Don’t have an account?
-            <a href="{{ route('register') }}">Create Account</a>
+            <span>{.auth.no_account}</span>
+            <a href="{{ route('register') }}">{.auth.create_account}</a>
         </p>
     </form>
 </x-guest-layout>

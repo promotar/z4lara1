@@ -40,14 +40,14 @@ class RoleController extends Controller
             'guard_name' => 'web',
         ])->syncPermissions($data['permissions'] ?? []);
 
-        return back()->with('status', 'تم إنشاء الدور.');
+        return back()->with('status', __('core.roles.flash.created'));
     }
 
     public function update(Request $request, Role $role): RedirectResponse
     {
         if ($role->name === 'super-admin' && $request->string('name')->toString() !== 'super-admin') {
             return back()->withErrors([
-                'role' => 'The super-admin role name is protected and cannot be changed.',
+                'role' => __('core.roles.validation.super_admin_name_locked'),
             ]);
         }
 
@@ -71,20 +71,20 @@ class RoleController extends Controller
         $role->syncPermissions($data['permissions'] ?? []);
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return back()->with('status', 'تم تحديث الدور.');
+        return back()->with('status', __('core.roles.flash.updated'));
     }
 
     public function destroy(Role $role): RedirectResponse
     {
         if ($role->name === 'super-admin') {
             return back()->withErrors([
-                'role' => 'The super-admin role is protected and cannot be deleted.',
+                'role' => __('core.roles.validation.super_admin_delete_locked'),
             ]);
         }
 
         if ($role->users()->exists()) {
             return back()->withErrors([
-                'role' => 'This role is assigned to users. Remove the role from users before deleting it.',
+                'role' => __('core.roles.validation.role_in_use'),
             ]);
         }
 
@@ -92,6 +92,6 @@ class RoleController extends Controller
         $role->delete();
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return back()->with('status', 'Role deleted successfully.');
+        return back()->with('status', __('core.roles.flash.deleted'));
     }
 }

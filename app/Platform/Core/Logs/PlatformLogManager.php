@@ -34,6 +34,8 @@ class PlatformLogManager
 
     private function write(string $path, string $level, string $message, array $context): void
     {
+        $this->rotateWhenOversized($path);
+
         $entry = sprintf('[%s] %s: %s %s', now()->toDateTimeString(), $level, $message, $context === [] ? '' : json_encode($context, JSON_UNESCAPED_SLASHES));
 
         try {
@@ -49,6 +51,27 @@ class PlatformLogManager
     }
 
     /**
+     * Keep the platform logs bounded: rotate once the file passes the limit.
+     * The previous file is kept as "<name>.1" (replaced on the next rotation).
+     */
+    private function rotateWhenOversized(string $path): void
+    {
+        $limit = (int) config('platform.log_max_bytes', 20 * 1024 * 1024);
+
+        if ($limit <= 0 || ! is_file($path)) {
+            return;
+        }
+
+        clearstatcache(true, $path);
+
+        if ((int) @filesize($path) < $limit) {
+            return;
+        }
+
+        @rename($path, $path.'.1');
+    }
+
+    /**
      * @return array<int, string>
      */
     private function tail(string $path, int $lines): array
@@ -57,12 +80,39 @@ class PlatformLogManager
             return [];
         }
 
-        $content = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        // Read only the end of the file: platform logs can grow to gigabytes and
+        // file()/file_get_contents() would exhaust the PHP memory limit.
+        $handle = @fopen($path, 'rb');
 
-        if (! is_array($content)) {
+        if ($handle === false) {
             return [];
         }
 
-        return array_slice($content, -max(1, $lines));
+        try {
+            $window = 512 * 1024;
+            $stats = fstat($handle);
+            $size = (int) ($stats['size'] ?? 0);
+            $offset = max(0, $size - $window);
+
+            fseek($handle, $offset);
+            $chunk = (string) fread($handle, $window);
+        } finally {
+            fclose($handle);
+        }
+
+        if ($offset > 0) {
+            $firstBreak = strpos($chunk, "\n");
+
+            if ($firstBreak === false) {
+                return [];
+            }
+
+            $chunk = substr($chunk, $firstBreak + 1);
+        }
+
+        $content = preg_split('/\r\n|\r|\n/', $chunk, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $content = array_map(fn (string $line): string => mb_substr($line, 0, 4000), $content);
+
+        return array_slice($content, -max(1, min($lines, 500)));
     }
 }

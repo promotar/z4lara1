@@ -5,6 +5,7 @@ namespace App\Platform\Core\Services;
 use App\Platform\Core\DTOs\PluginManifest;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class PluginMigrationRunner
@@ -64,11 +65,37 @@ class PluginMigrationRunner
             return;
         }
 
-        $missingOwnedTable = collect($tables)
+        $declared = collect($tables)
             ->filter(fn (mixed $table): bool => is_string($table) && $table !== '')
-            ->contains(fn (string $table): bool => ! Schema::hasTable($table));
+            ->unique()
+            ->values();
 
-        if (! $missingOwnedTable) {
+        if ($declared->isEmpty()) {
+            return;
+        }
+
+        $missing = $declared->reject(fn (string $table): bool => Schema::hasTable($table));
+
+        if ($missing->isEmpty()) {
+            return;
+        }
+
+        // A release may declare a table that is created by one of its own pending
+        // migrations (for example: a new table added to `uninstall.tables` while
+        // the matching migration has not run yet). Treating that single missing
+        // table as "plugin was never installed" used to purge every migration
+        // record for the plugin, so the runner replayed the whole migration
+        // history and failed with "table already exists".
+        //
+        // The migration bookkeeping is only discarded when none of the owned
+        // tables exist, which is the only state that proves the tables are gone.
+        if ($missing->count() < $declared->count()) {
+            Log::warning('Plugin migration history kept despite missing owned tables.', [
+                'plugin' => $manifest->slug,
+                'missing' => $missing->values()->all(),
+                'declared_tables' => $declared->count(),
+            ]);
+
             return;
         }
 

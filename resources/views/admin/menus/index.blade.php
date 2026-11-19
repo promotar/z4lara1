@@ -1,12 +1,296 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="ainpa-page-title">Menu Settings</h2>
+<style>
+    /* ===== Admin sections: readable cards + editor ===== */
+    .admin-menu-compact-sections {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    .admin-menu-compact-section {
+        padding: 12px 14px 14px !important;
+        border-radius: 12px !important;
+        background: #fff !important;
+        border: 1px solid #e4e9f0 !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .04) !important;
+    }
+
+    .admin-menu-compact-section-link strong {
+        font-size: 15px !important;
+        color: #0f172a !important;
+    }
+
+    .admin-menu-compact-section-link small {
+        font-size: 11.5px !important;
+        color: #64748b !important;
+    }
+
+    /* the edited card takes the full row so fields have room */
+    .admin-menu-compact-section.is-editing {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-editor-inline {
+        display: none !important;
+    }
+
+    .admin-menu-compact-section.is-editing .admin-menu-compact-editor-inline {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin-top: 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px auto auto !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    /* name field spans the full width */
+    .admin-menu-compact-section .admin-menu-compact-form > .admin-field:has([data-i18n-field]) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-field-label {
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-row {
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-lang {
+        flex: 0 0 150px !important;
+        min-width: 150px !important;
+        height: 42px !important;
+        font-size: 13px !important;
+        padding: 0 10px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-text {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 0 12px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-hint {
+        font-size: 11px !important;
+        color: #94a3b8 !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .z4-icon-preview {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form .admin-menu-check-option {
+        font-size: 13px !important;
+        padding-bottom: 10px;
+    }
+
+    .admin-menu-compact-section .admin-menu-compact-form > button {
+        height: 42px !important;
+        padding: 0 22px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+    }
+
+    /* the create panel uses the same generous sizing */
+    .admin-menu-compact-editor .admin-menu-compact-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+    }
+
+    .admin-menu-compact-editor .admin-menu-compact-form .z4-i18n-text {
+        height: 42px !important;
+        font-size: 13.5px !important;
+    }
+
+    @media (max-width: 900px) {
+        .admin-menu-compact-section .admin-menu-compact-form {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form > .admin-field:has([data-i18n-field]) {
+            grid-column: 1 / -1 !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-row {
+            flex-wrap: wrap !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-lang {
+            flex: 0 0 130px !important;
+            min-width: 130px !important;
+        }
+        .admin-menu-compact-section .admin-menu-compact-form .z4-i18n-text {
+            flex: 1 1 170px !important;
+            min-width: 150px !important;
+        }
+    }
+    /* ===== Frontend menus: match the admin section cards ===== */
+    .admin-menu-source-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    .admin-menu-source-card {
+        padding: 12px 14px 14px !important;
+        border-radius: 14px !important;
+        background: #fff !important;
+        border: 1px solid #e4e9f0 !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .04) !important;
+    }
+
+    .admin-menu-source-card .admin-menu-source-title {
+        font-size: 15px !important;
+        color: #0f172a !important;
+    }
+
+    .admin-menu-source-card .admin-menu-source-meta {
+        font-size: 11.5px !important;
+        color: #64748b !important;
+    }
+
+    .admin-menu-card-edit {
+        display: none !important;
+        margin-top: 10px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #eef2f7 !important;
+    }
+
+    .admin-menu-compact-section.is-editing .admin-menu-card-edit {
+        display: block !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form {
+        display: grid !important;
+        gap: 12px 14px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-two {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-two > .admin-field:has([data-i18n-field]) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-form-grid-settings {
+        grid-template-columns: 120px auto minmax(0, 1fr) !important;
+        gap: 12px 14px !important;
+        align-items: end !important;
+    }
+
+    .admin-menu-card-edit .admin-field-label,
+    .admin-menu-source-card .admin-menu-form .admin-field-label {
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .admin-menu-card-edit .admin-input,
+    .admin-menu-source-card .admin-menu-form .admin-input {
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-row {
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-lang {
+        flex: 0 0 150px !important;
+        min-width: 150px !important;
+        height: 42px !important;
+        font-size: 13px !important;
+        padding: 0 10px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-text {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 0 12px !important;
+    }
+
+    .admin-menu-card-edit .z4-i18n-hint {
+        font-size: 11px !important;
+        color: #94a3b8 !important;
+    }
+
+    .admin-menu-card-edit .z4-icon-preview {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-actions {
+        justify-content: flex-end !important;
+        gap: 8px !important;
+    }
+
+    .admin-menu-card-edit .admin-menu-actions .ainpa-button {
+        height: 42px !important;
+        padding: 0 18px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+    }
+
+    .admin-menu-source-actions .ainpa-button {
+        height: 36px !important;
+        padding: 0 14px !important;
+        font-size: 12.5px !important;
+        border-radius: 9px !important;
+    }
+
+    /* create form (new frontend menu) matches the section create panel */
+    .admin-menu-form-grid-six .admin-input,
+    .admin-menu-form-grid-six .z4-i18n-text,
+    .admin-menu-form-grid-six .z4-i18n-lang {
+        height: 42px !important;
+        font-size: 13.5px !important;
+    }
+
+    @media (max-width: 900px) {
+        .admin-menu-card-edit .admin-menu-form-grid-two,
+        .admin-menu-card-edit .admin-menu-form-grid-settings {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        .admin-menu-card-edit .admin-menu-form-grid-two > .admin-field:has([data-i18n-field]) {
+            grid-column: 1 / -1 !important;
+        }
+        .admin-menu-card-edit .z4-i18n-row { flex-wrap: wrap !important; }
+        .admin-menu-card-edit .z4-i18n-lang { flex: 0 0 130px !important; min-width: 130px !important; }
+        .admin-menu-card-edit .z4-i18n-text { flex: 1 1 170px !important; min-width: 150px !important; }
+    }
+</style>
+<x-slot name="header">
+        <h2 class="ainpa-page-title" data-i18n="core.menus.title">{{ __('core.menus.title') }}</h2>
     </x-slot>
 
     @php
         $locations = [
-            'admin' => 'Admin Menu',
-            'frontend' => 'Frontend Menus',
+            'admin' => __('core.menus.tab_admin'),
+            'frontend' => __('core.menus.tab_frontend'),
         ];
 
         $activeMenus = $menus->get($activeLocation, collect());
@@ -48,7 +332,7 @@
                 <div class="ainpa-alert ainpa-alert-danger">{{ $errors->first() }}</div>
             @endif
 
-            <nav class="admin-menu-tabs" aria-label="Menu locations">
+            <nav class="admin-menu-tabs" aria-label="{{ __('core.menus.locations') }}">
                 @foreach ($locations as $location => $label)
                     <a
                         href="{{ route('admin.menus.index', ['location' => $location]) }}"
@@ -62,11 +346,11 @@
             <section class="admin-menu-card">
                 <div class="admin-menu-card-header">
                     <div>
-                        <h3 class="admin-menu-card-title">{{ $activeLocation === 'admin' ? 'Admin menu sections' : 'Frontend menus' }}</h3>
+                        <h3 class="admin-menu-card-title">{{ $activeLocation === 'admin' ? __('core.menus.heading_admin_sections') : __('core.menus.heading_frontend_menus') }}</h3>
                         <p class="admin-menu-card-subtitle">
                             {{ $activeLocation === 'admin'
-                                ? 'Each section and item below is a registered part of the admin sidebar.'
-                                : 'Frontend menus can be created, configured, and used by public layouts.' }}
+                                ? __('core.menus.hint_admin_sections')
+                                : __('core.menus.hint_frontend_menus') }}
                         </p>
                     </div>
 
@@ -76,8 +360,8 @@
                             class="ainpa-button ainpa-button-primary"
                             x-data
                             @click="$dispatch('open-menu-create')"
-                        >
-                            New Menu
+                         data-i18n="core.menus.new_menu">
+                            {{ __('core.menus.new_menu') }}
                         </button>
                     @else
                         <button
@@ -85,8 +369,8 @@
                             class="ainpa-button ainpa-button-primary ainpa-button-compact"
                             x-data
                             @click="$dispatch('open-admin-section-create')"
-                        >
-                            New Section
+                         data-i18n="core.menus.new_section">
+                            {{ __('core.menus.new_section') }}
                         </button>
                     @endif
                 </div>
@@ -98,101 +382,113 @@
                                 @csrf
                                 <div class="admin-menu-form-grid admin-menu-form-grid-six">
                                     <label class="admin-field admin-menu-span-two">
-                                        <span class="admin-field-label">Name</span>
-                                        <input name="name" required placeholder="Main Menu" class="admin-input">
+                                        <span class="admin-field-label" data-i18n="core.menus.name">{{ __('core.menus.name') }}</span>
+                                        <input name="name" required placeholder="{{ __('core.menus.placeholder_main_menu') }}" class="admin-input">
                                     </label>
                                     <label class="admin-field admin-menu-span-two">
-                                        <span class="admin-field-label">Key</span>
+                                        <span class="admin-field-label">{{ __('core.menus.key') }}</span>
                                         <input name="key" placeholder="main" class="admin-input">
                                     </label>
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Sort</span>
+                                        <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                        <div style="display:flex;align-items:center;gap:6px">
+                                            <span class="z4-icon-preview" aria-hidden="true"></span>
+                                            <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
+                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
+                                        </div>
+                                    </label>
+                                    <label class="admin-field">
+                                        <span class="admin-field-label" data-i18n="core.menus.sort">{{ __('core.menus.sort') }}</span>
                                         <input type="number" name="sort_order" value="0" class="admin-input">
                                     </label>
                                     <label class="admin-field admin-menu-check-field">
                                         <span class="admin-menu-check-option">
                                             <input type="checkbox" name="is_active" value="1" checked>
-                                            <span>Active</span>
+                                            <span data-i18n="core.menus.active">{{ __('core.menus.active') }}</span>
                                         </span>
                                     </label>
                                 </div>
                                 <div class="admin-menu-form-grid admin-menu-form-grid-action">
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Description</span>
+                                        <span class="admin-field-label" data-i18n="core.menus.description">{{ __('core.menus.description') }}</span>
                                         <input name="description" class="admin-input">
                                     </label>
                                     <div class="admin-menu-actions">
-                                        <button class="ainpa-button ainpa-button-primary">Create Menu</button>
+                                        <button class="ainpa-button ainpa-button-primary" data-i18n="core.menus.create_menu">{{ __('core.menus.create_menu') }}</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
 
                         @if ($activeMenus->isEmpty())
-                            <div class="admin-menu-empty">No frontend menus yet.</div>
+                            <div class="admin-menu-empty" data-i18n="core.menus.empty">{{ __('core.menus.empty') }}</div>
                         @else
-                            <div class="admin-menu-source-grid">
+                            <div class="admin-menu-compact-sections">
                                 @foreach ($activeMenus as $menu)
-                                    <article class="admin-menu-source-card {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}">
-                                        <div class="admin-menu-source-main">
-                                            <div>
-                                                <h4 class="admin-menu-source-title">{{ $menu->name }}</h4>
-                                                <p class="admin-menu-source-meta">{{ $menu->key }} · {{ $menu->items->count() }} items · Sort {{ $menu->sort_order }}</p>
-                                            </div>
-                                            <span class="ainpa-status-badge {{ $menu->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
-                                                {{ $menu->is_active ? 'Active' : 'Inactive' }}
+                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}" :class="{ 'is-editing': editMenu === {{ $menu->id }} }">
+                                        <a href="{{ route('admin.menus.index', ['location' => 'frontend', 'menu' => $menu->id]) }}" class="admin-menu-compact-section-link" title="{{ $menu->key }}">
+                                            <span class="admin-menu-compact-order">{{ $menu->sort_order }}</span>
+                                            <span>
+                                                <strong>{{ $menu->name }}</strong>
+                                                <small>{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }}{{ $menu->is_active ? '' : ' · '.__('core.common.inactive') }}</small>
                                             </span>
-                                        </div>
-
-                                        <div class="admin-menu-source-actions">
-                                            <a href="{{ route('admin.menus.index', ['location' => 'frontend', 'menu' => $menu->id]) }}" class="ainpa-button ainpa-button-compact">Manage Items</a>
-                                            <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact">Settings</button>
-                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Remove this frontend menu and all of its items?');">
+                                        </a>
+                                        <div class="admin-menu-compact-actions">
+                                            <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.settings">{{ __('core.menus.settings') }}</button>
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu_with_items')));">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="ainpa-button ainpa-button-danger ainpa-button-compact">Delete</button>
+                                                <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
                                             </form>
                                         </div>
 
-                                        <div x-show="editMenu === {{ $menu->id }}" x-cloak class="admin-menu-card-edit">
+                                        <div class="admin-menu-card-edit admin-menu-compact-editor-inline">
                                             <form method="POST" action="{{ route('admin.menus.update', $menu) }}" class="admin-menu-form">
                                                 @csrf
                                                 @method('PATCH')
                                                 <div class="admin-menu-form-grid admin-menu-form-grid-two">
+                                                    <div class="admin-field">
+                                                        <span class="admin-field-label" data-i18n="core.menus.name">{{ __('core.menus.name') }}</span>
+                                                        @include('admin.menus.partials.title-i18n', ['item' => $menu, 'baseField' => 'name', 'placeholder' => __('core.menus.name')])
+                                                    </div>
                                                     <label class="admin-field">
-                                                        <span class="admin-field-label">Name</span>
-                                                        <input name="name" value="{{ $menu->name }}" required class="admin-input">
+                                                        <span class="admin-field-label">{{ __('core.menus.key') }}</span>
+                                                        <input name="key" value="{{ preg_replace('/^platform\./', '', $menu->key) }}" class="admin-input">
                                                     </label>
                                                     <label class="admin-field">
-                                                        <span class="admin-field-label">Key</span>
-                                                        <input name="key" value="{{ preg_replace('/^platform\./', '', $menu->key) }}" class="admin-input">
+                                                        <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                                        <div style="display:flex;align-items:center;gap:6px">
+                                                            <span class="z4-icon-preview" aria-hidden="true"></span>
+                                                            <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
+                                                            <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
+                                                        </div>
                                                     </label>
                                                 </div>
                                                 <div class="admin-menu-form-grid admin-menu-form-grid-settings">
                                                     <label class="admin-field">
-                                                        <span class="admin-field-label">Sort</span>
+                                                        <span class="admin-field-label" data-i18n="core.menus.sort">{{ __('core.menus.sort') }}</span>
                                                         <input type="number" name="sort_order" value="{{ $menu->sort_order }}" class="admin-input">
                                                     </label>
                                                     <label class="admin-field admin-menu-check-field">
                                                         <span class="admin-menu-check-option">
                                                             <input type="checkbox" name="is_active" value="1" @checked($menu->is_active)>
-                                                            <span>Active</span>
+                                                            <span data-i18n="core.menus.active">{{ __('core.menus.active') }}</span>
                                                         </span>
                                                     </label>
                                                     <label class="admin-field admin-menu-description-field">
-                                                        <span class="admin-field-label">Description</span>
+                                                        <span class="admin-field-label" data-i18n="core.menus.description">{{ __('core.menus.description') }}</span>
                                                         <input name="description" value="{{ $menu->description }}" class="admin-input">
                                                     </label>
                                                 </div>
                                                 <div class="admin-menu-actions">
-                                                    <button class="ainpa-button">Save</button>
+                                                    <button class="ainpa-button" data-i18n="core.common.save">{{ __('core.common.save') }}</button>
                                                 </div>
                                             </form>
 
-                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Remove this frontend menu and its items?');" class="admin-menu-danger-form">
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu')));" class="admin-menu-danger-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="ainpa-button ainpa-button-danger">Remove Menu</button>
+                                                <button class="ainpa-button ainpa-button-danger" data-i18n="core.menus.remove_menu">{{ __('core.menus.remove_menu') }}</button>
                                             </form>
                                         </div>
                                     </article>
@@ -205,61 +501,75 @@
                         <div x-show="createOpen" x-cloak class="admin-menu-compact-editor">
                             <form method="POST" action="{{ route('admin.menus.store', 'admin') }}" class="admin-menu-compact-form">
                                 @csrf
+                                <div class="admin-field">
+                <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
+                @include('admin.menus.partials.title-i18n', ['item' => null, 'baseField' => 'name', 'placeholder' => __('core.menus.new_admin_section')])
+            </div>
                                 <label class="admin-field">
-                                    <span class="admin-field-label">Section name</span>
-                                    <input name="name" required placeholder="New admin section" class="admin-input">
+                                    <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                    <div style="display:flex;align-items:center;gap:6px">
+                                        <span class="z4-icon-preview" aria-hidden="true"></span>
+                                        <input type="hidden" name="icon" value="{{ old('icon') }}" data-icon-input>
+                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
+                                    </div>
                                 </label>
                                 <label class="admin-field admin-menu-sort-field">
-                                    <span class="admin-field-label">Order</span>
+                                    <span class="admin-field-label" data-i18n="core.menus.order">{{ __('core.menus.order') }}</span>
                                     <input type="number" name="sort_order" value="70" class="admin-input">
                                 </label>
                                 <input type="hidden" name="is_active" value="1">
-                                <button class="ainpa-button ainpa-button-primary ainpa-button-compact">Create</button>
+                                <button class="ainpa-button ainpa-button-primary ainpa-button-compact" data-i18n="core.menus.create">{{ __('core.menus.create') }}</button>
                             </form>
                         </div>
 
                         @if ($activeMenus->isEmpty())
-                            <div class="admin-menu-empty">No registered admin sections.</div>
+                            <div class="admin-menu-empty" data-i18n="core.menus.no_sections">{{ __('core.menus.no_sections') }}</div>
                         @else
                             <div class="admin-menu-compact-sections">
                                 @foreach ($activeMenus as $menu)
-                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}">
+                                    <article class="admin-menu-compact-section {{ $activeMenu?->id === $menu->id ? 'is-active' : '' }}" :class="{ 'is-editing': editMenu === {{ $menu->id }} }">
                                         <a href="{{ route('admin.menus.index', ['location' => 'admin', 'menu' => $menu->id]) }}" class="admin-menu-compact-section-link">
                                             <span class="admin-menu-compact-order">{{ $menu->sort_order }}</span>
                                             <span>
                                                 <strong>{{ $menu->name }}</strong>
-                                                <small>{{ $menu->items->count() }} items</small>
+                                                <small>{{ __('core.menus.items_count', ['count' => $menu->items->count()]) }}</small>
                                             </span>
                                         </a>
                                         <div class="admin-menu-compact-actions">
-                                            <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact">Edit</button>
-                                            @if ($menu->items->isEmpty())
-                                                <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('Delete this empty admin section?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="ainpa-button ainpa-button-danger ainpa-button-compact">Delete</button>
-                                                </form>
-                                            @endif
+                                            <button type="button" @click="editMenu = editMenu === {{ $menu->id }} ? null : {{ $menu->id }}; createOpen = false" class="ainpa-button ainpa-button-compact" data-i18n="core.menus.edit">{{ __('core.menus.edit') }}</button>
+                                            <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_menu_with_items')));">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
+                                            </form>
                                         </div>
 
-                                        <div x-show="editMenu === {{ $menu->id }}" x-cloak class="admin-menu-compact-editor admin-menu-compact-editor-inline">
+                                        <div class="admin-menu-compact-editor admin-menu-compact-editor-inline">
                                             <form method="POST" action="{{ route('admin.menus.update', $menu) }}" class="admin-menu-compact-form">
                                                 @csrf
                                                 @method('PATCH')
+                                                <div class="admin-field">
+                                                    <span class="admin-field-label" data-i18n="core.menus.section_name">{{ __('core.menus.section_name') }}</span>
+                                                    @include('admin.menus.partials.title-i18n', ['item' => $menu, 'baseField' => 'name', 'placeholder' => __('core.menus.section_name')])
+                                                </div>
                                                 <label class="admin-field">
-                                                    <span class="admin-field-label">Section name</span>
-                                                    <input name="name" value="{{ $menu->name }}" required class="admin-input">
+                                                    <span class="admin-field-label" data-i18n="core.menus.icon">{{ __('core.menus.icon') }}</span>
+                                                    <div style="display:flex;align-items:center;gap:6px">
+                                                        <span class="z4-icon-preview" aria-hidden="true"></span>
+                                                        <input type="hidden" name="icon" value="{{ old('icon', $menu->icon) }}" data-icon-input>
+                                                        <button type="button" class="ainpa-button ainpa-button-compact" data-icon-open>{{ __('core.common.choose') }}</button>
+                                                    </div>
                                                 </label>
                                                 <label class="admin-field admin-menu-sort-field">
-                                                    <span class="admin-field-label">Order</span>
+                                                    <span class="admin-field-label" data-i18n="core.menus.order">{{ __('core.menus.order') }}</span>
                                                     <input type="number" name="sort_order" value="{{ $menu->sort_order }}" class="admin-input">
                                                 </label>
                                                 <label class="admin-menu-check-option admin-menu-compact-check">
                                                     <input type="hidden" name="is_active" value="0">
                                                     <input type="checkbox" name="is_active" value="1" @checked($menu->is_active)>
-                                                    <span>Active</span>
+                                                    <span data-i18n="core.menus.active">{{ __('core.menus.active') }}</span>
                                                 </label>
-                                                <button class="ainpa-button ainpa-button-compact">Save</button>
+                                                <button class="ainpa-button ainpa-button-compact" data-i18n="core.common.save">{{ __('core.common.save') }}</button>
                                             </form>
                                         </div>
                                     </article>
@@ -276,9 +586,9 @@
                         <div>
                             <h3 class="admin-menu-card-title">{{ $activeMenu->name }}</h3>
                             <p class="admin-menu-card-subtitle">
-                                {{ $activeMenu->items->count() }} menu items · {{ $activeMenu->key }} · {{ ucfirst($activeMenu->source) }} source
+                                {{ __('core.menus.menu_items_count', ['count' => $activeMenu->items->count()]) }} · {{ __('core.menus.source_label', ['source' => \App\Platform\Core\Localization\Translation::label('core.menus.source.'.$activeMenu->source, ucfirst($activeMenu->source))]) }}
                                 @if ($activeLocation === 'frontend')
-                                    · VvvebJs hook <code>data-platform-menu-key="{{ $activeMenu->key }}"</code>
+                                    · <span title="data-platform-menu-key=&quot;{{ $activeMenu->key }}&quot;">{{ __('core.menus.vvveb_hook') }}</span>
                                 @endif
                             </p>
                         </div>
@@ -286,8 +596,8 @@
                             type="button"
                             @click="addOpen = ! addOpen; open = null"
                             class="ainpa-button ainpa-button-primary"
-                        >
-                            Add Item
+                         data-i18n="core.menus.add_item">
+                            {{ __('core.menus.add_item') }}
                         </button>
                     </div>
 
@@ -302,13 +612,13 @@
                                 'parentChoices' => $parentChoices,
                             ])
                             <div class="admin-menu-actions">
-                                <button class="ainpa-button ainpa-button-primary">Add Item</button>
+                                <button class="ainpa-button ainpa-button-primary" data-i18n="core.menus.add_item">{{ __('core.menus.add_item') }}</button>
                             </div>
                         </form>
                     </div>
 
                     @if ($orderedItems->isEmpty())
-                        <div class="admin-menu-empty">No menu items yet.</div>
+                        <div class="admin-menu-empty" data-i18n="core.menus.no_items">{{ __('core.menus.no_items') }}</div>
                     @else
                         <div class="admin-menu-accordion">
                             @foreach ($orderedItems as $entry)
@@ -316,8 +626,8 @@
                                     $item = $entry['item'];
                                     $depth = (int) $entry['depth'];
                                     $panelId = 'item-'.$item->id;
-                                    $targetLabel = $item->route_name ?: ($item->url ?: 'No target');
-                                    $badgeLabel = $depth > 0 ? 'Sub item' : 'Main item';
+                                    $targetLabel = $item->route_name ?: ($item->url ?: __('core.menus.no_target'));
+                                    $badgeLabel = $depth > 0 ? __('core.menus.badge_sub_item') : __('core.menus.badge_main_item');
                                 @endphp
 
                                 <article class="admin-menu-accordion-item {{ $depth > 0 ? 'is-child' : 'is-root' }}">
@@ -329,7 +639,13 @@
                                             :aria-expanded="open === '{{ $panelId }}'"
                                         >
                                             <span class="admin-menu-level admin-menu-level-{{ min($depth, 4) }}"></span>
-                                            <span class="admin-menu-item-icon">{{ $item->icon ?: strtoupper(substr($item->title, 0, 1)) }}</span>
+                                            <span class="admin-menu-item-icon">
+                                                @if (! empty($item->icon) && \App\Platform\Core\UI\IconSet::has((string) $item->icon))
+                                                    {!! \App\Platform\Core\UI\IconSet::render($item->icon) !!}
+                                                @else
+                                                    <span class="z4-icon-empty" aria-hidden="true">—</span>
+                                                @endif
+                                            </span>
                                             <span class="admin-menu-item-main">
                                                 <span class="admin-menu-item-title">{{ $item->title }}</span>
                                                 <span class="admin-menu-item-target">{{ $targetLabel }}</span>
@@ -338,18 +654,18 @@
                                                 <span class="admin-menu-badge">{{ $badgeLabel }}</span>
                                                 <span class="admin-menu-badge">{{ $item->type }}</span>
                                                 <span class="ainpa-status-badge {{ $item->is_active ? 'ainpa-status-active' : 'ainpa-status-inactive' }}">
-                                                    {{ $item->is_active ? 'Active' : 'Inactive' }}
+                                                    {{ $item->is_active ? __('core.common.active') : __('core.common.inactive') }}
                                                 </span>
-                                                <span class="admin-menu-sort">Sort {{ $item->sort_order }}</span>
-                                                <span class="admin-menu-toggle-text" x-show="open !== '{{ $panelId }}'">Open</span>
-                                                <span class="admin-menu-toggle-text" x-show="open === '{{ $panelId }}'" x-cloak>Close</span>
+                                                <span class="admin-menu-sort">{{ __('core.menus.sort', ['value' => $item->sort_order]) }}</span>
+                                                <span class="admin-menu-toggle-text" x-show="open !== '{{ $panelId }}'" data-i18n="core.menus.open">{{ __('core.menus.open') }}</span>
+                                                <span class="admin-menu-toggle-text" x-show="open === '{{ $panelId }}'" x-cloak data-i18n="core.common.close">{{ __('core.common.close') }}</span>
                                             </span>
                                         </button>
 
-                                        <form method="POST" action="{{ route('admin.menus.items.destroy', $item) }}" onsubmit="return confirm('Remove this menu item?');" class="admin-menu-row-delete-form flex items-center pr-3">
+                                        <form method="POST" action="{{ route('admin.menus.items.destroy', $item) }}" onsubmit="return confirm(@js(__('core.menus.confirm.remove_item')));" class="admin-menu-row-delete-form flex items-center pr-3">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="ainpa-button ainpa-button-danger ainpa-button-compact">Delete</button>
+                                            <button class="ainpa-button ainpa-button-danger ainpa-button-compact" data-i18n="core.common.delete">{{ __('core.common.delete') }}</button>
                                         </form>
                                     </div>
 
@@ -365,11 +681,11 @@
                                                 'parentChoices' => $parentChoices,
                                             ])
                                             <div class="admin-menu-actions">
-                                                <button class="ainpa-button">Save Item</button>
+                                                <button class="ainpa-button" data-i18n="core.menus.save_item">{{ __('core.menus.save_item') }}</button>
                                             </div>
                                         </form>
 
-                                        <p class="admin-menu-inline-help">Use the row Delete button to remove this menu item.</p>
+                                        <p class="admin-menu-inline-help" data-i18n="core.menus.item_delete_hint">{{ __('core.menus.item_delete_hint') }}</p>
                                     </div>
                                 </article>
                             @endforeach
@@ -380,4 +696,6 @@
 
         </div>
     </div>
+
+    @include('admin.menus.partials.icon-picker')
 </x-app-layout>

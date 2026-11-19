@@ -3,6 +3,7 @@
 namespace App\Platform\Core\Services;
 
 use App\Platform\Core\Backups\StepBackupper;
+use App\Platform\Core\Hooks\HookManager;
 use App\Platform\Core\Logs\FailedOperationLogger;
 use App\Platform\Core\Logs\OperationLogger;
 use App\Platform\Core\Models\Plugin;
@@ -21,6 +22,7 @@ class PluginDeactivator
         private readonly StepBackupper $stepBackups,
         private readonly ?AdminThemeManager $adminThemes = null,
         private readonly ?PluginLifecycleHookRunner $lifecycleHooks = null,
+        private readonly ?HookManager $hooks = null,
     ) {
         //
     }
@@ -40,6 +42,8 @@ class PluginDeactivator
         $operation = $this->operations->start('plugin.disable', 'plugin', $resolved->slug);
 
         try {
+            $this->hooks?->doAction('plugin.deactivating', $resolved);
+
             if ($this->lifecycleHooks !== null) {
                 $this->lifecycleHooks->run($this->manifestFromPlugin($resolved), 'deactivate');
                 $this->checkpointStep($resolved->slug, 'deactivate_hook_completed');
@@ -57,6 +61,7 @@ class PluginDeactivator
             }
             $this->cache->clear();
             $this->checkpointStep($plugin->slug, 'cache_cleared');
+            $this->hooks?->doAction('plugin.deactivated', $plugin);
 
             $this->operations->success($operation, 'Plugin disabled.');
 

@@ -1,89 +1,9 @@
-<x-app-layout>
+﻿<x-app-layout>
     @php
-        $siteLanguage = data_get($groups, 'general.fields.site_language.value', 'en');
-        $isArabicLanguage = false;
-        $translations = [
-            'Settings' => 'الإعدادات',
-            'General Settings' => 'الإعدادات العامة',
-            'SEO Settings' => 'إعدادات السيو',
-            'Front Page' => 'الصفحة الرئيسية',
-            'Theme Settings' => 'إعدادات الثيم',
-            'Site Title' => 'عنوان الموقع',
-            'Tagline' => 'وصف الموقع',
-            'Site Logo' => 'شعار الموقع',
-            'Site Icon' => 'أيقونة الموقع',
-            'Application Address URL' => 'رابط التطبيق',
-            'Site Address URL' => 'رابط الموقع',
-            'Administration Email Address' => 'بريد الإدارة',
-            'Membership' => 'العضوية',
-            'New User Default Role' => 'الدور الافتراضي للمستخدم الجديد',
-            'Site Language' => 'لغة الموقع',
-            'Timezone' => 'المنطقة الزمنية',
-            'Date Format' => 'تنسيق التاريخ',
-            'Custom Date Format' => 'تنسيق تاريخ مخصص',
-            'Time Format' => 'تنسيق الوقت',
-            'Custom Time Format' => 'تنسيق وقت مخصص',
-            'Week Starts On' => 'بداية الأسبوع',
-            'Default SEO Title' => 'عنوان السيو الافتراضي',
-            'Default Meta Description' => 'وصف الميتا الافتراضي',
-            'Default Meta Keywords' => 'كلمات الميتا الافتراضية',
-            'Allow Search Engines To Index' => 'السماح لمحركات البحث بالأرشفة',
-            'Allow Search Engines To Follow Links' => 'السماح لمحركات البحث بتتبع الروابط',
-            'Open Graph Title' => 'عنوان المشاركة',
-            'Open Graph Description' => 'وصف المشاركة',
-            'Open Graph Image' => 'صورة المشاركة',
-            'Homepage Displays' => 'عرض الصفحة الرئيسية',
-            'Enabled' => 'مفعل',
-            'Save Changes' => 'حفظ التغييرات',
-            'Add Media' => 'إضافة صورة',
-            'Change Site Logo' => 'تغيير شعار الموقع',
-            'Remove Site Logo' => 'حذف شعار الموقع',
-            'Change Site Icon' => 'تغيير أيقونة الموقع',
-            'Remove Site Icon' => 'حذف أيقونة الموقع',
-            'Choose a' => 'اختر',
-            'Set as' => 'تعيين كـ',
-            'Upload files' => 'رفع الملفات',
-            'Media Library' => 'مكتبة الميديا',
-            'Drop files to upload' => 'اسحب الملفات هنا للرفع',
-            'or' => 'أو',
-            'Select Files' => 'اختيار ملفات',
-            'Suggested image dimensions: 512 by 512 pixels.' => 'الأبعاد المقترحة للصورة: 512 × 512 بكسل.',
-            'Alternative Text' => 'النص البديل',
-            'Title' => 'العنوان',
-            'Caption' => 'التسمية التوضيحية',
-            'Description' => 'الوصف',
-            'Save SEO' => 'حفظ بيانات السيو',
-            'Set Image' => 'تعيين الصورة',
-            'No images are available in the media library yet.' => 'لا توجد صور متاحة في مكتبة الميديا حاليًا.',
-            'Upload a PNG, JPG, or WEBP logo image. Recommended width: 240 pixels or larger.' => 'ارفع صورة شعار بصيغة PNG أو JPG أو WEBP. العرض المقترح: 240 بكسل أو أكثر.',
-            'Upload a square PNG, JPG, WEBP, or ICO image. Recommended size: 512 x 512 pixels.' => 'ارفع صورة مربعة بصيغة PNG أو JPG أو WEBP أو ICO. المقاس المقترح: 512 × 512 بكسل.',
-            'Allow anyone to register.' => 'السماح لأي شخص بالتسجيل.',
-            'Default SEO metadata used by public pages when a page-specific value is not available.' => 'بيانات السيو الافتراضية المستخدمة في الصفحات العامة عند عدم وجود قيمة مخصصة للصفحة.',
-            'Controls which page is used as the public landing page.' => 'تحديد الصفحة المستخدمة كواجهة رئيسية عامة للموقع.',
-            'Recommended image size: 1200 x 630 pixels.' => 'مقاس الصورة المقترح: 1200 × 630 بكسل.',
-            'If Front Builder pages exist, published pages will appear here automatically.' => 'إذا كانت صفحات Front Builder موجودة، ستظهر الصفحات المنشورة هنا تلقائيًا.',
-            'Published platform pages appear here automatically.' => 'تظهر صفحات المنصة المنشورة هنا تلقائيًا.',
-            'Arabic' => 'العربية',
-            'English' => 'الإنجليزية',
-            'Saturday' => 'السبت',
-            'Sunday' => 'الأحد',
-            'Monday' => 'الاثنين',
-            'Default application home' => 'واجهة التطبيق الافتراضية',
-            'A selected page' => 'صفحة محددة',
-            'Default storefront home' => 'واجهة المتجر الافتراضية',
-            'Custom' => 'مخصص',
-            'Light Background' => 'خلفية الوضع النهاري',
-            'Light Surface' => 'سطح الوضع النهاري',
-            'Light Text' => 'نص الوضع النهاري',
-            'Light Muted Text' => 'النص الثانوي النهاري',
-            'Dark Background' => 'خلفية الوضع الليلي',
-            'Dark Surface' => 'سطح الوضع الليلي',
-            'Dark Text' => 'نص الوضع الليلي',
-            'Dark Muted Text' => 'النص الثانوي الليلي',
-            'Accent Color' => 'لون التمييز',
-            'Controls public theme colors for day and night mode.' => 'التحكم بألوان الثيم العامة للوضع النهاري والليلي.',
-        ];
-        $translate = fn ($text) => $isArabicLanguage ? ($translations[$text] ?? $text) : $text;
+                $translate = fn ($text) => \App\Platform\Core\Localization\Translation::label(
+            'core.settings.'.\Illuminate\Support\Str::slug((string) $text),
+            (string) $text
+        );
     @endphp
 
     <x-slot name="header">
@@ -101,7 +21,7 @@
                 <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ $errors->first() }}</div>
             @endif
 
-            <div class="settings-tab-bar flex flex-wrap gap-1">
+                        <div class="settings-tab-bar flex flex-wrap gap-1">
                 @foreach ($groups as $groupKey => $group)
                     <button
                         type="button"
@@ -111,6 +31,12 @@
                         {{ $translate($group['label']) }}
                     </button>
                 @endforeach
+                <button type="button" class="settings-tab" data-settings-tab="language-translations">
+                    {{ __('core.settings.translations') }}
+                </button>
+                <button type="button" class="settings-tab" data-settings-tab="core-updates">
+                    {{ __('core.updates.title') }}
+                </button>
             </div>
 
             <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-6">
@@ -148,6 +74,7 @@
                                                 name="settings[{{ $groupKey }}][{{ $fieldKey }}]"
                                                 rows="4"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                @disabled($groupKey === 'general' && $fieldKey === 'site_language' && ! ($isSuperAdmin ?? false))
                                             >{{ $field['value'] }}</textarea>
                                         @elseif ($field['type'] === 'boolean')
                                             <div class="flex items-center gap-3">
@@ -169,6 +96,7 @@
                                                 id="{{ $groupKey }}_{{ $fieldKey }}"
                                                 name="settings[{{ $groupKey }}][{{ $fieldKey }}]"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                @disabled($groupKey === 'general' && $fieldKey === 'site_language' && ! ($isSuperAdmin ?? false))
                                             >
                                                 @foreach ($field['options'] as $optionValue => $optionLabel)
                                                     <option value="{{ $optionValue }}" @selected((string) $field['value'] === (string) $optionValue)>
@@ -176,6 +104,9 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @if ($groupKey === 'general' && $fieldKey === 'site_language' && ! ($isSuperAdmin ?? false))
+                                                <p class="mt-1 text-xs text-amber-700">{{ $translate('Only a super admin can change the site language.') }}</p>
+                                            @endif
                                         @elseif ($field['type'] === 'password')
                                             <input
                                                 id="{{ $groupKey }}_{{ $fieldKey }}"
@@ -183,8 +114,9 @@
                                                 name="settings[{{ $groupKey }}][{{ $fieldKey }}]"
                                                 value=""
                                                 autocomplete="new-password"
-                                                placeholder="{{ ! empty($field['has_secret_value']) ? 'Encrypted password stored — leave blank to keep it' : 'Enter SMTP password' }}"
+                                                placeholder="{{ ! empty($field['has_secret_value']) ? 'Encrypted password stored â€” leave blank to keep it' : 'Enter SMTP password' }}"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                @disabled($groupKey === 'general' && $fieldKey === 'site_language' && ! ($isSuperAdmin ?? false))
                                             >
                                         @elseif ($field['type'] === 'number')
                                             <input
@@ -195,6 +127,7 @@
                                                 @if(isset($field['min_value']) && $field['min_value'] !== null) min="{{ $field['min_value'] }}" @endif
                                                 @if(isset($field['max_value']) && $field['max_value'] !== null) max="{{ $field['max_value'] }}" @endif
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                @disabled($groupKey === 'general' && $fieldKey === 'site_language' && ! ($isSuperAdmin ?? false))
                                             >
                                         @elseif ($field['type'] === 'color')
                                             <div class="color-field">
@@ -218,16 +151,16 @@
                                                 $isDateFormat = $fieldKey === 'date_format';
                                                 $formatOptions = $isDateFormat
                                                     ? [
-                                                        'F j, Y' => $now->format('F j, Y'),
-                                                        'Y-m-d' => $now->format('Y-m-d'),
-                                                        'm/d/Y' => $now->format('m/d/Y'),
-                                                        'd/m/Y' => $now->format('d/m/Y'),
-                                                        'd.m.Y' => $now->format('d.m.Y'),
+                                                        'F j, Y' => $now->translatedFormat('F j, Y'),
+                                                        'Y-m-d' => $now->translatedFormat('Y-m-d'),
+                                                        'm/d/Y' => $now->translatedFormat('m/d/Y'),
+                                                        'd/m/Y' => $now->translatedFormat('d/m/Y'),
+                                                        'd.m.Y' => $now->translatedFormat('d.m.Y'),
                                                     ]
                                                     : [
-                                                        'g:i a' => $now->format('g:i a'),
-                                                        'g:i A' => $now->format('g:i A'),
-                                                        'H:i' => $now->format('H:i'),
+                                                        'g:i a' => $now->translatedFormat('g:i a'),
+                                                        'g:i A' => $now->translatedFormat('g:i A'),
+                                                        'H:i' => $now->translatedFormat('H:i'),
                                                     ];
                                                 $currentFormat = (string) $field['value'];
                                                 $customFormat = $isDateFormat
@@ -276,7 +209,7 @@
                                                 </label>
 
                                                 <p class="format-preview">
-                                                    <strong>Preview:</strong>
+                                                    <strong data-i18n="core.settings.preview">{{ __('core.settings.preview') }}</strong>
                                                     <span data-format-preview-output="{{ $groupKey }}_{{ $fieldKey }}">
                                                         {{ $now->format($previewFormat ?: ($isDateFormat ? 'F j, Y' : 'g:i a')) }}
                                                     </span>
@@ -349,7 +282,7 @@
                                                                 <button
                                                                     type="button"
                                                                     class="media-remove"
-                                                                    title="Remove"
+                                                                    title="{{ __('core.common.remove') }}"
                                                                     aria-label="Remove {{ $translate($field['label']) }}"
                                                                     data-remove-media="{{ $groupKey }}.{{ $fieldKey }}"
                                                                 >x</button>
@@ -408,26 +341,110 @@
                     </section>
                 @endforeach
 
+<section class="overflow-hidden bg-white shadow-sm sm:rounded-lg" data-settings-panel="language-translations" hidden>
+                <div class="border-b border-gray-200 px-6 py-5">
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('core.settings.translations') }}</h3>
+                    <p class="mt-1 text-sm text-gray-600">{{ __('core.settings.translations_help') }}</p>
+                </div>
+                <div class="px-6 py-5">
+                    <a href="{{ route('admin.translations.index') }}" class="inline-flex rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700">{{ __('core.settings.open') }}</a>
+                </div>
+            </section>
+
                 <div class="flex justify-end">
                     <x-primary-button>{{ $translate('Save Changes') }}</x-primary-button>
                 </div>
             </form>
 
+            <section class="overflow-hidden bg-white shadow-sm sm:rounded-lg" data-settings-panel="core-updates" hidden>
+                <div class="border-b border-gray-200 px-6 py-5">
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('core.updates.title') }}</h3>
+                    <p class="mt-1 text-sm text-gray-600">{{ __('core.updates.help') }}</p>
+                </div>
+
+                <div class="space-y-5 px-6 py-5">
+                    <div class="flex flex-wrap items-center gap-3 text-sm">
+                        <span class="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">
+                            {{ __('core.updates.current_version') }}: {{ $coreUpdates['version'] ?? '—' }}
+                        </span>
+                        @if (! empty($coreUpdates['last']))
+                            <span class="text-gray-500">
+                                {{ __('core.updates.last_update') }}: {{ $coreUpdates['last']['at'] ?? '' }}
+                                · {{ $coreUpdates['last']['file'] ?? '' }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <form method="POST" action="{{ route('admin.settings.core-update') }}" enctype="multipart/form-data" class="space-y-4 rounded-lg border border-gray-200 p-4">
+                        @csrf
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold text-gray-900" for="core-update-package">{{ __('core.updates.choose_file') }}</label>
+                            <input id="core-update-package" type="file" name="package" accept=".zip" required class="block w-full rounded-md border border-gray-300 p-2 text-sm">
+                            <p class="mt-1 text-xs text-gray-500">{{ __('core.updates.file_help') }}</p>
+                        </div>
+
+                        <label class="flex items-start gap-2 text-sm text-gray-700">
+                            <input type="checkbox" name="confirm" value="1" required class="mt-1 rounded border-gray-300">
+                            <span>{{ __('core.updates.confirm') }}</span>
+                        </label>
+
+                        <button type="submit" class="inline-flex rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">
+                            {{ __('core.updates.apply') }}
+                        </button>
+                    </form>
+
+
+                    <div>
+                        <h4 class="mb-2 text-sm font-semibold text-gray-900">{{ __('core.updates.history') }}</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-start font-semibold text-gray-600">{{ __('core.updates.col_date') }}</th>
+                                        <th class="px-3 py-2 text-start font-semibold text-gray-600">{{ __('core.updates.col_file') }}</th>
+                                        <th class="px-3 py-2 text-start font-semibold text-gray-600">{{ __('core.updates.col_files') }}</th>
+                                        <th class="px-3 py-2 text-start font-semibold text-gray-600">{{ __('core.updates.col_status') }}</th>
+                                        <th class="px-3 py-2 text-start font-semibold text-gray-600">{{ __('core.updates.col_message') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white">
+                                    @forelse (($coreUpdates['history'] ?? []) as $entry)
+                                        <tr>
+                                            <td class="px-3 py-2 text-gray-600">{{ $entry['at'] ?? '' }}</td>
+                                            <td class="px-3 py-2 text-gray-700">{{ $entry['file'] ?? '' }}</td>
+                                            <td class="px-3 py-2 text-gray-600">{{ $entry['files'] ?? 0 }}</td>
+                                            <td class="px-3 py-2">
+                                                <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ ($entry['status'] ?? '') === 'success' ? 'bg-green-50 text-green-700' : (($entry['status'] ?? '') === 'rolled-back' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700') }}">
+                                                    {{ $entry['status'] ?? '' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-3 py-2 text-gray-600">{{ $entry['message'] ?? '' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="5" class="px-3 py-4 text-center text-gray-500">{{ __('core.updates.empty') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <form method="POST" action="{{ route('admin.settings.mail.test') }}" class="smtp-test-card" data-settings-mail-test hidden>
                 @csrf
                 <label>
-                    <span class="mb-2 block text-sm font-semibold text-gray-900">Send Test Email</span>
+                    <span class="mb-2 block text-sm font-semibold text-gray-900" data-i18n="core.settings.send_test_email">{{ __('core.settings.send_test_email') }}</span>
                     <input type="email" name="test_email" value="{{ old('test_email', data_get($groups, 'general.fields.admin_email.value', '')) }}" required class="block w-full rounded-md border-gray-300 shadow-sm">
-                    <small class="mt-2 block text-gray-500">Uses the currently saved SMTP configuration.</small>
+                    <small class="mt-2 block text-gray-500" data-i18n="core.settings.send_test_hint">{{ __('core.settings.send_test_hint') }}</small>
                 </label>
-                <button type="submit" class="rounded-md border border-blue-600 bg-white px-4 py-2 text-sm font-semibold text-blue-700">Send Test</button>
+                <button type="submit" class="rounded-md border border-blue-600 bg-white px-4 py-2 text-sm font-semibold text-blue-700" data-i18n="core.settings.send_test">{{ __('core.settings.send_test') }}</button>
             </form>
 
             <div class="media-modal" data-media-modal hidden>
                 <div class="media-modal-panel">
                     <div class="media-modal-header">
                         <h3 data-media-modal-title>{{ $translate('Add Media') }}</h3>
-                        <button type="button" class="media-close" data-close-media aria-label="Close">x</button>
+                        <button type="button" class="media-close" data-close-media aria-label="{{ __('core.common.close') }}">x</button>
                     </div>
 
                     <div class="media-modal-tabs">
@@ -561,7 +578,8 @@
                 tab.addEventListener('click', () => activateTab(tab.dataset.settingsTab));
             });
 
-            const requestedTab = window.location.hash.replace('#settings-', '');
+            const tabParam = new URLSearchParams(window.location.search).get('tab') || '';
+            const requestedTab = tabParam !== '' ? tabParam : window.location.hash.replace('#settings-', '');
             const hasRequestedTab = tabs.some((tab) => tab.dataset.settingsTab === requestedTab);
 
             if (hasRequestedTab) {
@@ -774,3 +792,4 @@
         });
     </script>
 </x-app-layout>
+

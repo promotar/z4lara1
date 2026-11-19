@@ -10,6 +10,7 @@ use App\Platform\Core\Models\Menu;
 use App\Platform\Core\Services\PluginOwnedPageGuard;
 use App\Platform\Core\Services\PluginRuntimeGate;
 use App\Platform\Core\Services\SettingsRepository;
+use App\Platform\Core\UI\IconSet;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -53,10 +54,57 @@ class PlatformContentRenderer
             ->get(['id', 'html', 'content', 'css'])
             ->map(function (object $section) use ($type): object {
                 $section->content_type = $type;
-                $section->rendered_html = $this->renderHtml((string) ($section->html ?: $section->content));
+
+                $source = (string) ($section->html ?: $section->content);
+                $translated = $this->localizedSectionHtml((int) $section->id);
+
+                if ($translated !== null) {
+                    $source = $translated;
+                }
+
+                $section->rendered_html = $this->renderHtml($source);
 
                 return $section;
             });
+    }
+
+    /**
+     * Published translation of a layout section (header/footer) for the active
+     * locale. Layout sections are content too, so they follow the same
+     * per-locale rule as pages instead of always rendering the default language.
+     */
+    private function localizedSectionHtml(int $sectionId): ?string
+    {
+        try {
+            if (! Schema::hasTable('platform_page_translations')) {
+                return null;
+            }
+
+            $platform = app(\App\Platform\Core\Localization\PlatformLocale::class);
+            $locale = app()->getLocale();
+
+            if (! $platform->isAvailable($locale) || $locale === $platform->defaultCode()) {
+                return null;
+            }
+
+            $translation = DB::table('platform_page_translations')
+                ->where('page_id', $sectionId)
+                ->where('locale', $locale)
+                ->where('status', 'published')
+                ->first(['html', 'vvvebjs_html']);
+
+            if ($translation === null) {
+                return null;
+            }
+
+            $html = trim((string) ($translation->html ?? '')) !== ''
+                ? (string) $translation->html
+                : (string) ($translation->vvvebjs_html ?? '');
+
+            return trim($html) === '' ? null : $html;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public function layoutCss(): string
@@ -643,10 +691,10 @@ CSS;
 
         if ($layout === 'offcanvas') {
             $body = '<input class="platform-menu-toggle-control" type="checkbox" id="'.e($toggleId).'">'
-                .'<label class="platform-menu-toggle" for="'.e($toggleId).'" aria-label="Open menu">'.$this->menuToggleIcon($icon).'</label>'
-                .'<label class="platform-menu-overlay" for="'.e($toggleId).'" aria-label="Close menu"></label>'
+                .'<label class="platform-menu-toggle" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.open_menu')).'">'.$this->menuToggleIcon($icon).'</label>'
+                .'<label class="platform-menu-overlay" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.close_menu')).'"></label>'
                 .'<div class="platform-menu-surface">'
-                .'<label class="platform-menu-close" for="'.e($toggleId).'" aria-label="Close menu">&times;</label>'
+                .'<label class="platform-menu-close" for="'.e($toggleId).'" aria-label="'.e(__('core.menus.close_menu')).'">&times;</label>'
                 .$itemsHtml
                 .'</div>';
         } else {
@@ -655,7 +703,21 @@ CSS;
 
         $stylesheet = '';
         if (! $this->menuStylesRendered) {
-            $stylesheet = '<link rel="stylesheet" href="'.e(url('/page-builder-assets/v5/integration/css/frontend-menu.css')).'" data-platform-menu-styles="1">';
+            // The menu stylesheet is owned by the Page Builder plugin; resolve it
+            // from plugin metadata so core never links a missing plugin asset.
+            $menuStylesheet = null;
+
+            try {
+                $menuStylesheet = app(\App\Platform\Core\Services\PluginAssetRegistry::class)
+                    ->runtimeStyleUrl('frontend-menu');
+            } catch (\Throwable) {
+                $menuStylesheet = null;
+            }
+
+            if (is_string($menuStylesheet) && $menuStylesheet !== '') {
+                $stylesheet = '<link rel="stylesheet" href="'.e($menuStylesheet).'" data-platform-menu-styles="1">';
+            }
+
             $this->menuStylesRendered = true;
         }
 
@@ -774,9 +836,13 @@ CSS;
         $label = (string) ($item['label'] ?: $item['title']);
         $target = ($item['target'] ?? '_self') === '_blank' ? ' target="_blank" rel="noopener"' : '';
         $linkAttributes = $this->linkAttributesForIndex($linkTemplates, $index);
+        $iconName = (string) ($item['icon'] ?? '');
+        $iconHtml = $iconName !== '' && IconSet::has($iconName)
+            ? '<span class="platform-menu-item-icon" aria-hidden="true">'.IconSet::render($iconName).'</span>'
+            : '';
         $link = $href !== null
-            ? '<a href="'.e($href).'"'.$target.$linkAttributes.'>'.e($label).'</a>'
-            : '<span class="platform-menu-link"'.$linkAttributes.'>'.e($label).'</span>';
+            ? '<a href="'.e($href).'"'.$target.$linkAttributes.'>'.$iconHtml.e($label).'</a>'
+            : '<span class="platform-menu-link"'.$linkAttributes.'>'.$iconHtml.e($label).'</span>';
 
         if ($children === '') {
             return $link;
@@ -797,7 +863,12 @@ CSS;
         $url = $item['url'] ?? null;
 
         if (is_string($routeName) && Route::has($routeName)) {
-            return route($routeName, $item['route_params'] ?? []);
+            try {
+                return route($routeName, $item['route_params'] ?? []);
+            } catch (\Throwable) {
+                // A menu item that misses a required route parameter must not
+                // break the page; fall back to the explicit URL below.
+            }
         }
 
         if (is_string($url) && trim($url) !== '') {

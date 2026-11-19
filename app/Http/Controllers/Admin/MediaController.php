@@ -105,7 +105,7 @@ class MediaController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Media uploaded successfully: '.$url);
+        return back()->with('status', __('core.media.flash.uploaded').$url);
     }
 
     public function update(Request $request): RedirectResponse
@@ -119,7 +119,7 @@ class MediaController extends Controller
         ]);
 
         if (! $this->publicStoragePathFromUrl($validated['media_url'])) {
-            return back()->with('status', 'Media file was not found.');
+            return back()->with('status', __('core.media.flash.not_found'));
         }
 
         $this->saveMediaMetadata($validated['media_url'], [
@@ -129,7 +129,7 @@ class MediaController extends Controller
             'description' => $validated['description'] ?? '',
         ]);
 
-        return back()->with('status', 'Image SEO data saved successfully.');
+        return back()->with('status', __('core.media.flash.seo_saved'));
     }
 
     public function destroy(Request $request): RedirectResponse

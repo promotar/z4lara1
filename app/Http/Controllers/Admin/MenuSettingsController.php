@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Platform\Core\Logs\OperationLogger;
+use App\Platform\Core\Menus\MenuDefaults;
 use App\Platform\Core\Models\Menu;
 use App\Platform\Core\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -66,11 +68,15 @@ class MenuSettingsController extends Controller
         abort_unless(in_array($location, ['frontend', 'admin'], true), 404);
 
         $data = $this->validatedMenu($request);
-        $key = $this->uniqueMenuKey(($data['key'] ?? null) ?: $data['name'], $location);
+        $translations = $this->normalizedTitleTranslations($data);
+        $baseName = $translations[app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()] ?? $data['name'];
+        $key = $this->uniqueMenuKey(($data['key'] ?? null) ?: $baseName, $location);
 
         $menu = Menu::query()->create([
             'key' => $key,
-            'name' => $data['name'],
+            'name' => $baseName,
+            'name_translations' => $translations === [] ? null : $translations,
+            'icon' => $data['icon'] ?? null,
             'location' => $location,
             'description' => $data['description'] ?? null,
             'source' => 'platform',
@@ -100,12 +106,17 @@ class MenuSettingsController extends Controller
             && ! (bool) ($data['is_active'] ?? false)
             && $menu->is_active
             && ! Menu::query()->where('location', 'admin')->where('is_active', true)->where('id', '!=', $menu->id)->exists()) {
-            throw ValidationException::withMessages(['is_active' => 'At least one admin section must remain active.']);
+            throw ValidationException::withMessages(['is_active' => __('core.menus.validation.last_section_active')]);
         }
 
+        $translations = $this->normalizedTitleTranslations($data);
+        $baseName = $translations[app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()] ?? $data['name'];
+
         $menu->update([
-            'key' => $this->uniqueMenuKey(($data['key'] ?? null) ?: $data['name'], $menu->location, $menu->id),
-            'name' => $data['name'],
+            'key' => $this->uniqueMenuKey(($data['key'] ?? null) ?: $baseName, $menu->location, $menu->id),
+            'name' => $baseName,
+            'name_translations' => $translations === [] ? null : $translations,
+            'icon' => $data['icon'] ?? null,
             'description' => $data['description'] ?? null,
             'is_active' => (bool) ($data['is_active'] ?? false),
             'sort_order' => (int) ($data['sort_order'] ?? 0),
@@ -128,11 +139,11 @@ class MenuSettingsController extends Controller
         abort_unless(in_array($menu->location, ['frontend', 'admin'], true), 404);
 
         if ($menu->location === 'admin' && $menu->items()->exists()) {
-            throw ValidationException::withMessages(['menu' => 'Move or delete every item before deleting an admin section.']);
+            throw ValidationException::withMessages(['menu' => __('core.menus.validation.section_not_empty')]);
         }
 
         if ($menu->location === 'admin' && Menu::query()->where('location', 'admin')->where('id', '!=', $menu->id)->doesntExist()) {
-            throw ValidationException::withMessages(['menu' => 'The final admin section cannot be deleted.']);
+            throw ValidationException::withMessages(['menu' => __('core.menus.validation.last_section_delete')]);
         }
 
         $operation = app(OperationLogger::class)->start('admin.menus.delete', 'menu', (string) $menu->id, [
@@ -155,6 +166,10 @@ class MenuSettingsController extends Controller
 
         $item = $menu->items()->create($this->itemPayload($data, $menu));
 
+        if ($item->route_name === 'locale.switch') {
+            $this->clearLanguageSwitcherFlag();
+        }
+
         $operation = app(OperationLogger::class)->start('admin.menus.items.create', 'menu-item', (string) $item->id, [
             'menu_id' => $menu->id,
             'menu_key' => $menu->key,
@@ -165,7 +180,7 @@ class MenuSettingsController extends Controller
 
         return redirect()
             ->route('admin.menus.index', ['location' => $menu->location, 'menu' => $menu->id])
-            ->with('status', 'Menu item created.');
+            ->with('status', __('core.menus.flash.item_created'));
     }
 
     public function update(Request $request, MenuItem $item): RedirectResponse
@@ -189,7 +204,7 @@ class MenuSettingsController extends Controller
 
         return redirect()
             ->route('admin.menus.index', ['location' => $item->menu->location, 'menu' => $item->menu_id])
-            ->with('status', 'Menu item updated.');
+            ->with('status', __('core.menus.flash.item_updated'));
     }
 
     public function destroy(MenuItem $item): RedirectResponse
@@ -203,12 +218,42 @@ class MenuSettingsController extends Controller
             'location' => $location,
             'title' => $title,
         ], request()->user()?->id);
+        $removedLanguageLink = $item->route_name === 'locale.switch';
         $item->delete();
+
+        if ($removedLanguageLink) {
+            $this->flagLanguageSwitcherRemoved();
+        }
+
         app(OperationLogger::class)->success($operation, 'Menu item removed from menu settings.');
 
         return redirect()
             ->route('admin.menus.index', ['location' => $location, 'menu' => $menuId])
-            ->with('status', 'Menu item removed.');
+            ->with('status', __('core.menus.flash.item_removed'));
+    }
+
+    private function flagLanguageSwitcherRemoved(): void
+    {
+        try {
+            DB::table('platform_registry_entries')->updateOrInsert(
+                ['registry_type' => 'menus', 'registry_key' => 'language_switcher_removed'],
+                ['payload' => json_encode(['value' => true]), 'status' => 'active', 'updated_at' => now(), 'created_at' => now()],
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    private function clearLanguageSwitcherFlag(): void
+    {
+        try {
+            DB::table('platform_registry_entries')
+                ->where('registry_type', 'menus')
+                ->where('registry_key', 'language_switcher_removed')
+                ->delete();
+        } catch (\Throwable) {
+            //
+        }
     }
 
     /**
@@ -216,13 +261,32 @@ class MenuSettingsController extends Controller
      */
     private function validatedMenu(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'icon' => ['nullable', 'string', 'max:64'],
+            'translations' => ['nullable', 'array'],
+            'translations.*' => ['nullable', 'string', 'max:255'],
+            'translation_locale' => ['nullable', 'string', 'max:16'],
             'key' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z0-9_.:-]+$/'],
             'description' => ['nullable', 'string', 'max:500'],
             'sort_order' => ['nullable', 'integer', 'min:-10000', 'max:10000'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+
+        $data['icon'] = $this->normalizedIcon($data['icon'] ?? null);
+
+        return $data;
+    }
+
+    /**
+     * Icons are opt-in: unknown values (legacy letters/emoji) are dropped so a
+     * menu entry without a chosen icon renders without any icon.
+     */
+    private function normalizedIcon(?string $icon): ?string
+    {
+        $name = strtolower(trim((string) $icon));
+
+        return $name !== '' && \App\Platform\Core\UI\IconSet::has($name) ? $name : null;
     }
 
     /**
@@ -233,6 +297,9 @@ class MenuSettingsController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'label' => ['nullable', 'string', 'max:255'],
+            'translations' => ['nullable', 'array'],
+            'translations.*' => ['nullable', 'string', 'max:255'],
+            'translation_locale' => ['nullable', 'string', 'max:16'],
             'type' => ['required', 'in:link,route,header'],
             'url' => ['nullable', 'string', 'max:255'],
             'route_name' => ['nullable', 'string', 'max:255'],
@@ -260,6 +327,7 @@ class MenuSettingsController extends Controller
         $data['type'] = $this->normalizeItemType((string) $data['type'], $data['url'], $data['route_name']);
         $data['audience'] = (string) ($data['audience'] ?? 'all');
         $data['action_method'] = (string) ($data['action_method'] ?? 'get');
+        $data['icon'] = $this->normalizedIcon($data['icon'] ?? null);
 
         $errors = [];
 
@@ -306,9 +374,13 @@ class MenuSettingsController extends Controller
                 : 'get';
         }
 
+        $translations = $this->normalizedTitleTranslations($data);
+        $defaultLocale = app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
+
         return [
-            'title' => $data['title'],
+            'title' => $translations[$defaultLocale] ?? $data['title'],
             'label' => $data['label'] ?? null,
+            'title_translations' => $translations === [] ? null : $translations,
             'type' => $type,
             'url' => $type === 'link' ? ($data['url'] ?? null) : null,
             'route_name' => $type === 'route' ? ($data['route_name'] ?? null) : null,
@@ -322,6 +394,36 @@ class MenuSettingsController extends Controller
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, string>
+     */
+    private function normalizedTitleTranslations(array $data): array
+    {
+        $input = $data['translations'] ?? [];
+
+        if (! is_array($input)) {
+            return [];
+        }
+
+        $available = app(\App\Platform\Core\Localization\PlatformLocale::class)->languages();
+        $result = [];
+
+        foreach ($input as $locale => $label) {
+            $locale = str_replace('_', '-', trim((string) $locale));
+            $label = trim((string) $label);
+
+            if ($locale === '' || $label === '' || ! isset($available[$locale])) {
+                continue;
+            }
+
+            $result[$locale] = mb_substr($label, 0, 255);
+        }
+
+        return $result;
+    }
+
+    
     /** @param array<string, mixed> $data */
     private function assertAdminItemAllowed(array $data, Menu $menu, ?MenuItem $item = null): void
     {
@@ -332,7 +434,7 @@ class MenuSettingsController extends Controller
         $routeName = (string) ($data['route_name'] ?? '');
 
         if (! in_array($routeName, ['dashboard', 'front.account'], true) && ! str_starts_with($routeName, 'admin.')) {
-            throw ValidationException::withMessages(['route_name' => 'Admin sections accept dashboard, front.account, or admin.* routes only.']);
+            throw ValidationException::withMessages(['route_name' => __('core.menus.validation.admin_route_only')]);
         }
 
         $duplicate = MenuItem::query()
@@ -342,7 +444,7 @@ class MenuSettingsController extends Controller
             ->exists();
 
         if ($duplicate) {
-            throw ValidationException::withMessages(['route_name' => 'This admin route is already registered in another menu section.']);
+            throw ValidationException::withMessages(['route_name' => __('core.menus.validation.admin_route_taken')]);
         }
     }
 
@@ -356,7 +458,7 @@ class MenuSettingsController extends Controller
         $destination = Menu::query()->where('location', 'admin')->find($data['destination_menu_id']);
 
         if (! $destination) {
-            throw ValidationException::withMessages(['destination_menu_id' => 'Choose a registered admin section.']);
+            throw ValidationException::withMessages(['destination_menu_id' => __('core.menus.validation.choose_section')]);
         }
 
         return $destination;
@@ -467,19 +569,19 @@ class MenuSettingsController extends Controller
 
         if ($parent === null) {
             throw ValidationException::withMessages([
-                'parent_id' => 'Choose a parent item from the same menu.',
+                'parent_id' => __('core.menus.validation.choose_parent'),
             ]);
         }
 
         if ($item !== null && $parent->id === $item->id) {
             throw ValidationException::withMessages([
-                'parent_id' => 'A menu item cannot be its own parent.',
+                'parent_id' => __('core.menus.validation.self_parent'),
             ]);
         }
 
         if ($item !== null && $this->isDescendantOf($parent, $item)) {
             throw ValidationException::withMessages([
-                'parent_id' => 'A menu item cannot be moved under one of its children.',
+                'parent_id' => __('core.menus.validation.child_parent'),
             ]);
         }
 
@@ -514,13 +616,15 @@ class MenuSettingsController extends Controller
             'key' => 'platform.frontend',
             'location' => 'frontend',
         ], [
-            'name' => 'Frontend Menu',
-            'description' => 'Editable frontend navigation menu.',
+            'name' => __('core.menus.default_frontend_name'),
+            'description' => __('core.menus.default_frontend_description'),
             'source' => 'platform',
             'is_active' => true,
             'sort_order' => 0,
         ]);
 
+        // Core default: expose the language switcher in the header/frontend menu.
+        MenuDefaults::ensureDefaultLanguageMenu();
     }
 
     private function menuFor(string $location): Menu

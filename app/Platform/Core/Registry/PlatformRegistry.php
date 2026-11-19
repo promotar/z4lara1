@@ -9,6 +9,12 @@ use Illuminate\Support\Str;
 
 class PlatformRegistry
 {
+    /** @var array<string, array<string, mixed>>|null */
+    private ?array $manifestCache = null;
+
+    /** @var array<string, array<string, mixed>> */
+    private array $entryCache = [];
+
     public function functions(): array
     {
         return $this->entries('functions');
@@ -92,6 +98,10 @@ class PlatformRegistry
 
     private function entries(string $key): array
     {
+        if (isset($this->entryCache[$key])) {
+            return $this->entryCache[$key];
+        }
+
         $entries = config("platform_registry.{$key}", []);
         $entries = is_array($entries) ? $entries : [];
         $entries = array_replace($entries, $this->databaseEntries($key));
@@ -101,7 +111,7 @@ class PlatformRegistry
             $entries = array_replace($entries, $this->pluginEntries($manifest, $key, $slug, $status));
         }
 
-        return $entries;
+        return $this->entryCache[$key] = $entries;
     }
 
     private function databaseEntries(string $key): array
@@ -133,10 +143,14 @@ class PlatformRegistry
 
     private function pluginManifests(): array
     {
+        if ($this->manifestCache !== null) {
+            return $this->manifestCache;
+        }
+
         try {
             $plugins = DB::table('plugins')->select('slug', 'status', 'manifest')->get();
         } catch (\Throwable) {
-            return [];
+            return $this->manifestCache = [];
         }
 
         $manifests = [];
@@ -156,7 +170,7 @@ class PlatformRegistry
             $manifests[(string) $plugin->slug] = $manifest;
         }
 
-        return $manifests;
+        return $this->manifestCache = $manifests;
     }
 
     private function pluginEntries(array $manifest, string $key, string $slug, string $pluginStatus): array

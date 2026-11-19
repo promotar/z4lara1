@@ -53,13 +53,13 @@ class MenuManager
 
                 return [
                     'id' => 'admin-menu-'.$menu->id,
-                    'title' => $menu->name,
-                    'label' => $menu->name,
+                    'title' => $this->localizedMenuName($menu),
+                    'label' => $this->localizedMenuName($menu),
                     'type' => 'group',
                     'url' => null,
                     'route_name' => null,
                     'route_params' => [],
-                    'icon' => strtoupper(substr((string) $menu->name, 0, 1)),
+                    'icon' => self::explicitIcon($menu->icon),
                     'target' => null,
                     'permission' => null,
                     'metadata' => [
@@ -85,8 +85,58 @@ class MenuManager
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * Per-language menu section name with fallback to the stored name.
      */
+    private function localizedMenuName(Menu $menu): string
+    {
+        $translations = $menu->name_translations;
+
+        if (is_string($translations)) {
+            $translations = json_decode($translations, true) ?: [];
+        }
+
+        $value = is_array($translations) ? ($translations[app()->getLocale()] ?? null) : null;
+
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+
+        return (string) $menu->name;
+    }
+
+    /**
+     * Per-language display name with a fallback to the stored label/title.
+     */
+    private function localizedTitle(MenuItem $item): string
+    {
+        $translations = $item->title_translations;
+
+        if (is_string($translations)) {
+            $translations = json_decode($translations, true) ?: [];
+        }
+
+        $value = is_array($translations) ? ($translations[app()->getLocale()] ?? null) : null;
+
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+
+        return (string) ($item->label ?: $item->title);
+    }
+
+    
+    /**
+     * Icons are opt-in: only an explicitly chosen, known icon name is returned.
+     * No inference from the label/route and no letter/emoji fallback, so a menu
+     * entry without a chosen icon renders without any icon at all.
+     */
+    private static function explicitIcon(?string $icon): string
+    {
+        $name = strtolower(trim((string) $icon));
+
+        return $name !== '' && \App\Platform\Core\UI\IconSet::has($name) ? $name : '';
+    }
+
     public function getFrontendMenuByKey(string $key, ?User $user = null): array
     {
         $menu = $this->menus->activeByKey($key, 'frontend');
@@ -180,13 +230,13 @@ class MenuManager
 
                 return [
                     'id' => $item->id,
-                    'title' => $item->title,
-                    'label' => $item->label ?: $item->title,
+                    'title' => $this->localizedTitle($item),
+                    'label' => $this->localizedTitle($item),
                     'type' => $item->type,
                     'url' => $item->url,
                     'route_name' => $item->route_name,
                     'route_params' => $item->route_params ?? [],
-                    'icon' => $item->icon,
+                    'icon' => self::explicitIcon($item->icon),
                     'target' => $item->target,
                     'permission' => $item->permission,
                     'metadata' => $item->metadata ?? [],

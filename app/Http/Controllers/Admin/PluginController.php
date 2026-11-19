@@ -24,16 +24,35 @@ class PluginController extends Controller
 
     public function index(Request $request): View
     {
+        $status = (string) $request->query('status', 'all');
+
+        if (! in_array($status, ['all', 'active', 'disabled'], true)) {
+            $status = 'all';
+        }
+
         $plugins = Plugin::query()
+            ->when($status !== 'all', fn ($query) => $query->where('status', $status))
             ->latest('created_at')
             ->paginate(25)
             ->withQueryString();
+
         $plugins->getCollection()->each(function (Plugin $plugin): void {
             $plugin->setAttribute('admin_settings_link', $this->settingsLink($plugin));
         });
 
+        $counts = Plugin::query()
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
         return view('admin.plugins.index', [
             'plugins' => $plugins,
+            'statusFilter' => $status,
+            'statusCounts' => [
+                'all' => (int) $counts->sum(),
+                'active' => (int) ($counts['active'] ?? 0),
+                'disabled' => (int) ($counts['disabled'] ?? 0),
+            ],
         ]);
     }
 
@@ -84,7 +103,7 @@ class PluginController extends Controller
 
                     return redirect()
                         ->route('admin.plugins.index')
-                        ->with('status', 'Plugin installed successfully through PluginManager.');
+                        ->with('status', __('core.plugins.flash.installed'));
                 }
 
                 $this->assertSamePluginIdentity($existing, $manifest);
@@ -128,7 +147,7 @@ class PluginController extends Controller
             $uploads->discardFile($zipPath);
         }
 
-        return redirect()->route('admin.plugins.index')->with('status', 'Plugin installed successfully through PluginManager.');
+        return redirect()->route('admin.plugins.index')->with('status', __('core.plugins.flash.installed'));
     }
 
     public function reviewUpdate(string $token): View|RedirectResponse
@@ -138,7 +157,7 @@ class PluginController extends Controller
         if (! $pending) {
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin update expired. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_expired')]);
         }
 
         return view('admin.plugins.update', [
@@ -158,7 +177,7 @@ class PluginController extends Controller
         if (! $pending) {
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin update expired. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_expired')]);
         }
 
         $zipPath = (string) ($pending['zip_path'] ?? '');
@@ -168,7 +187,7 @@ class PluginController extends Controller
 
             return redirect()
                 ->route('admin.plugins.create')
-                ->withErrors(['plugin_zip' => 'The pending plugin ZIP was not found. Upload the plugin ZIP again.']);
+                ->withErrors(['plugin_zip' => __('core.plugins.validation.update_missing')]);
         }
 
         $extractDirectory = null;
@@ -207,7 +226,7 @@ class PluginController extends Controller
 
         return redirect()
             ->route('admin.plugins.index')
-            ->with('status', "Plugin [{$plugin->slug}] updated from version {$pending['old']['version']} to {$plugin->version}.");
+            ->with('status', __('core.plugins.flash.updated', ['slug' => $plugin->slug, 'from' => $pending['old']['version'], 'to' => $plugin->version]));
     }
 
     public function activate(string $slug, PluginManager $plugins): RedirectResponse
@@ -219,7 +238,7 @@ class PluginController extends Controller
             return back()->withErrors(['plugin' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Plugin activated successfully.');
+        return back()->with('status', __('core.plugins.flash.activated'));
     }
 
     public function deactivate(string $slug, PluginManager $plugins): RedirectResponse
@@ -231,9 +250,138 @@ class PluginController extends Controller
             return back()->withErrors(['plugin' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Plugin deactivated successfully and remains installed.');
+        return back()->with('status', __('core.plugins.flash.deactivated'));
     }
 
+    /**
+     * @return list<string>
+     */
+    private function bulkSlugs(Request $request): array
+    {
+        $validated = $request->validate([
+            'plugins' => ['required', 'array', 'min:1'],
+            'plugins.*' => ['string', 'max:191'],
+        ]);
+
+        return array_values(array_unique(array_filter(
+            array_map(static fn (mixed $slug): string => trim((string) $slug), $validated['plugins']),
+            static fn (string $slug): bool => $slug !== ''
+        )));
+    }
+
+    public function bulkDeactivate(Request $request, PluginManager $plugins): RedirectResponse
+    {
+        $done = [];
+        $skipped = [];
+        $failed = [];
+
+        foreach ($this->bulkSlugs($request) as $slug) {
+            $plugin = $plugins->findBySlug($slug);
+
+            if (! $plugin) {
+                $skipped[] = $slug.' (غير مثبّت)';
+                continue;
+            }
+            if ($plugin->isCore()) {
+                $skipped[] = $slug.' (core)';
+                continue;
+            }
+            if ($plugin->isDefaultAdminTheme()) {
+                $skipped[] = $slug.' (ثيم افتراضي محمي)';
+                continue;
+            }
+            if ($plugin->status !== Plugin::STATUS_ACTIVE) {
+                $skipped[] = $slug.' ('.$plugin->status.')';
+                continue;
+            }
+
+            try {
+                $plugins->deactivate($plugin);
+                $done[] = $slug;
+            } catch (\Throwable $exception) {
+                $failed[] = $slug.': '.$exception->getMessage();
+            }
+        }
+
+        return $this->bulkResult('deactivate', $done, $skipped, $failed);
+    }
+
+    public function bulkPurge(Request $request, PluginManager $plugins): RedirectResponse
+    {
+        $request->validate([
+            'bulk_confirmation' => ['required', 'in:PURGE'],
+        ]);
+
+        $done = [];
+        $skipped = [];
+        $failed = [];
+
+        foreach ($this->bulkSlugs($request) as $slug) {
+            $plugin = $plugins->findBySlug($slug);
+
+            if (! $plugin) {
+                $skipped[] = $slug.' (غير مثبّت)';
+                continue;
+            }
+            if ($plugin->isCore()) {
+                $skipped[] = $slug.' (core — لا يمكن حذفه)';
+                continue;
+            }
+
+            if ($plugin->status === Plugin::STATUS_ACTIVE) {
+                $skipped[] = $slug.' (مفعّل — عطّله أولاً)';
+                continue;
+            }
+
+            try {
+                $result = $plugins->purge($slug);
+
+                if (! ($result['success'] ?? false)) {
+                    $blocked = $result['blocked_by_dependencies'] ?? [];
+                    $failed[] = $slug.': '.($result['message'] ?? 'uninstall failed')
+                        .($blocked !== [] ? ' ['.implode(', ', (array) $blocked).']' : '');
+                    continue;
+                }
+
+                $done[] = $slug;
+            } catch (\Throwable $exception) {
+                $failed[] = $slug.': '.$exception->getMessage();
+            }
+        }
+
+        return $this->bulkResult('purge', $done, $skipped, $failed);
+    }
+
+    /**
+     * @param  list<string>  $done
+     * @param  list<string>  $skipped
+     * @param  list<string>  $failed
+     */
+    private function bulkResult(string $action, array $done, array $skipped, array $failed): RedirectResponse
+    {
+        $label = $action === 'purge' ? 'حُذف' : 'عُطّل';
+        $parts = [];
+
+        if ($done !== []) {
+            $parts[] = $label.': '.implode(', ', $done);
+        }
+        if ($skipped !== []) {
+            $parts[] = 'تم التخطي: '.implode(', ', $skipped);
+        }
+        if ($failed !== []) {
+            $parts[] = 'فشل: '.implode(' | ', $failed);
+        }
+
+        $redirect = redirect()
+            ->route('admin.plugins.index')
+            ->with('status', $parts === [] ? 'لا يوجد ما يُنفّذ.' : implode(' · ', $parts));
+
+        if ($failed !== []) {
+            $redirect = $redirect->withErrors(['bulk' => implode(' | ', $failed)]);
+        }
+
+        return $redirect;
+    }
     public function destroy(string $slug, PluginManager $plugins): RedirectResponse
     {
         request()->validate([

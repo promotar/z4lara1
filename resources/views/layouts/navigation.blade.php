@@ -9,53 +9,6 @@
         $platformSettings = [];
     }
 
-    $isArabicLanguage = false;
-    $translations = [
-        'Dashboard' => 'لوحة التحكم',
-        'Admin' => 'الإدارة',
-        'Platform Registry' => 'سجل المنصة',
-        'Documentation' => 'التوثيق',
-        'Menus' => 'القوائم',
-        'Front Builder' => 'منشئ الواجهة',
-        'Docs' => 'الوثائق',
-        'Media' => 'الوسائط',
-        'Pages' => 'الصفحات',
-        'Themes' => 'القوالب',
-        'Settings' => 'الإعدادات',
-        'Backup' => 'النسخ الاحتياطي',
-        'Plugins' => 'الإضافات',
-        'Install Plugin' => 'تثبيت إضافة',
-        'Theme Manager' => 'إدارة الثيمات',
-        'Theme Builder' => 'منشئ الثيم',
-        'Theme Editor' => 'محرر الثيم',
-        'Users' => 'المستخدمون',
-        'Roles' => 'الأدوار',
-        'Permissions' => 'الصلاحيات',
-        'Blog' => 'المدونة',
-        'All Posts' => 'كل المقالات',
-        'Add New Post' => 'إضافة مقال',
-        'Categories' => 'التصنيفات',
-        'Add Category' => 'إضافة تصنيف',
-        'Blog Settings' => 'إعدادات المدونة',
-        'AI Core' => 'نواة الذكاء',
-        'AI Assistant' => 'مساعد الذكاء',
-        'Professional Programmer' => 'المبرمج المحترف',
-        'Professional Programmer Alerts' => 'تنبيهات المبرمج المحترف',
-        'Overview' => 'نظرة عامة',
-        'Content Management' => 'إدارة المحتوى',
-        'Platform' => 'المنصة',
-        'AI Tools' => 'أدوات الذكاء',
-        'Users & Access' => 'المستخدمون والصلاحيات',
-        'System' => 'النظام',
-        'Home' => 'الرئيسية',
-        'My Account' => 'حسابي',
-        'Profile' => 'الملف الشخصي',
-        'Log Out' => 'تسجيل الخروج',
-        'Menu' => 'القائمة',
-        'Close' => 'إغلاق',
-    ];
-    $t = fn (string $text): string => $isArabicLanguage ? ($translations[$text] ?? $text) : $text;
-
     $menuItems = [];
 
     if ($hasAdminAccess) {
@@ -68,7 +21,7 @@
                     ->exists();
 
             if ($hasRegisteredAdminMenus && $storedAdminItems !== []) {
-                $mapStoredAdminItem = function (array $item) use ($t, &$mapStoredAdminItem): ?array {
+                $mapStoredAdminItem = function (array $item) use (&$mapStoredAdminItem): ?array {
                     $routeName = $item['route_name'] ?? null;
                     $url = $item['url'] ?? null;
                     $href = null;
@@ -100,14 +53,14 @@
                     }
 
                     $childActive = collect($children)->contains(fn (array $child): bool => (bool) ($child['active'] ?? false));
-                    $label = (string) ($item['label'] ?: $item['title']);
+                    $label = (string) ($item['title'] ?: $item['label']);
 
                     return [
-                        'label' => $t($label),
+                        'label' => $label,
                         'href' => $href,
                         'route_name' => $routeName,
                         'active' => $directActive || $childActive,
-                        'icon' => (string) ($item['icon'] ?: strtoupper(substr((string) $item['title'], 0, 1))),
+                        'icon' => (string) ($item['icon'] ?? ''),
                         'visible' => true,
                         'type' => (string) ($item['type'] ?? 'link'),
                         'target' => $item['target'] ?? null,
@@ -134,7 +87,7 @@
 
         $menuItems = $moduleItems !== [] ? $moduleItems : [
                 [
-                    'label' => $t('Home'),
+                    'label' => __('core.nav.home'),
                     'href' => route('front.home'),
                     'active' => request()->routeIs('front.home'),
                     'icon' => 'H',
@@ -143,7 +96,7 @@
                     'children' => [],
                 ],
                 [
-                    'label' => $t('My Account'),
+                    'label' => __('core.nav.my_account'),
                     'href' => route('front.account'),
                     'active' => request()->routeIs('front.account'),
                     'icon' => 'A',
@@ -155,7 +108,7 @@
 
         if ($moduleItems !== []) {
             $menuItems[] = [
-                'label' => $t('My Account'),
+                'label' => __('core.nav.my_account'),
                 'href' => route('front.account'),
                 'route_name' => 'front.account',
                 'active' => request()->routeIs('front.account'),
@@ -201,27 +154,35 @@
             </a>
 
             <a href="{{ route('front.home') }}" class="z4-admin-home-link">
-                {{ $t('Home') }}
+                {{ __('core.nav.home') }}
             </a>
 
             <button
                 type="button"
                 class="z4-builder-sidebar-toggle"
-                title="Toggle admin sidebar"
-                aria-label="Toggle admin sidebar"
+                title="{{ __('core.nav.toggle_sidebar') }}"
+                aria-label="{{ __('core.nav.toggle_sidebar') }}"
                 @click="
                     const body = document.body;
                     const expanded = body.classList.toggle('page-builder-sidebar-expanded');
                     body.classList.toggle('page-builder-sidebar-compact', ! expanded);
                     try { window.localStorage.setItem('z4-page-builder-sidebar', expanded ? 'expanded' : 'compact'); } catch (error) {}
                 "
-            >{{ $t('Menu') }}</button>
+            >{{ __('core.common.menu') }}</button>
         </div>
 
         <div class="z4-admin-bar-actions">
+            @if (count($platformLanguages ?? []) > 1)
+                <div style="display:flex;align-items:center;margin-inline-end:6px">
+                    @include('platform.language-switcher')
+                </div>
+            @endif
+            
+            {{-- Translation shortcut moved to Settings. --}}
+
             @if ($accountMenuItem !== null && $accountMenuItem['href'])
                 <a href="{{ $accountMenuItem['href'] }}" class="z4-admin-profile-link" @if($accountMenuItem['target'] ?? null) target="{{ $accountMenuItem['target'] }}" @endif>
-                    <span class="z4-admin-icon z4-admin-profile-icon" aria-hidden="true">{{ $accountMenuItem['icon'] }}</span>
+                    @if (! empty($accountMenuItem['icon']))<span class="z4-admin-icon z4-admin-profile-icon" aria-hidden="true">{!! \App\Platform\Core\UI\IconSet::render($accountMenuItem['icon']) !!}</span>@endif
                     <span>{{ $accountMenuItem['label'] }}</span>
                 </a>
             @else
@@ -229,21 +190,21 @@
             @endif
             <form method="POST" action="{{ route('logout') }}" class="z4-admin-logout-form">
                 @csrf
-                <button type="submit" class="z4-admin-bar-button">{{ $t('Log Out') }}</button>
+                <button type="submit" class="z4-admin-bar-button">{{ __('core.common.log_out') }}</button>
             </form>
             <button type="button" @click="mobileOpen = ! mobileOpen" class="z4-mobile-menu-button">
-                {{ $t('Menu') }}
+                {{ __('core.common.menu') }}
             </button>
         </div>
     </div>
 
-    <aside class="z4-admin-sidebar" aria-label="Admin navigation">
+    <aside class="z4-admin-sidebar" aria-label="{{ __('core.nav.admin_navigation') }}">
         <div class="z4-admin-sidebar-scroll" x-data="{ openSection: @js($activeAdminSectionKey) }">
             @foreach ($menuItems as $item)
                 @continue(! ($item['visible'] ?? true))
 
                 @php
-                    $children = $item['children'] ?? [];
+                    $children = collect($item['children'] ?? [])->unique(fn (array $child): string => (string) ($child['href'] ?? '').'|'.(string) ($child['label'] ?? ''))->values()->all();
                     $hasChildren = $children !== [];
                     $isGroup = ($item['type'] ?? null) === 'group' || $hasChildren;
                     $sectionKey = 'admin-section-'.\Illuminate\Support\Str::slug($item['label']);
@@ -271,7 +232,10 @@
                                     const visiblePanelRect = panel.getBoundingClientRect();
                                     const panelHeight = Math.min(visiblePanelRect.height || panel.scrollHeight || 320, window.innerHeight - 58);
                                     const panelWidth = Math.min(Math.max(visiblePanelRect.width || panel.scrollWidth || 250, 250), 310);
-                                    const panelLeft = Math.max(4, Math.min(sectionRect.right + 2, window.innerWidth - panelWidth - 8));
+                                    const rtl = (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
+                                    const panelLeft = rtl
+                                        ? Math.max(8, Math.min(sectionRect.left - panelWidth - 2, window.innerWidth - panelWidth - 8))
+                                        : Math.max(4, Math.min(sectionRect.right + 2, window.innerWidth - panelWidth - 8));
                                     const panelTop = Math.max(42, Math.min(sectionRect.top, window.innerHeight - panelHeight - 12));
 
                                     panel.style.setProperty('left', panelLeft + 'px', 'important');
@@ -289,7 +253,10 @@
                                     const visiblePanelRect = panel.getBoundingClientRect();
                                     const panelHeight = Math.min(visiblePanelRect.height || panel.scrollHeight || 260, window.innerHeight - 58);
                                     const panelWidth = Math.min(Math.max(visiblePanelRect.width || panel.scrollWidth || 220, 220), 300);
-                                    const panelLeft = Math.max(4, Math.min(groupRect.right + 2, window.innerWidth - panelWidth - 8));
+                                    const rtl = (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
+                                    const panelLeft = rtl
+                                        ? Math.max(8, Math.min(groupRect.left - panelWidth - 2, window.innerWidth - panelWidth - 8))
+                                        : Math.max(4, Math.min(groupRect.right + 2, window.innerWidth - panelWidth - 8));
                                     const panelTop = Math.max(42, Math.min(groupRect.top, window.innerHeight - panelHeight - 12));
 
                                     panel.style.setProperty('left', panelLeft + 'px', 'important');
@@ -308,7 +275,7 @@
                             :aria-expanded="(openSection === @js($sectionKey)).toString()"
                             aria-controls="{{ $sectionKey }}"
                         >
-                            <span class="z4-admin-icon">{{ $item['icon'] }}</span>
+                            @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                             <span class="z4-admin-section-label">{{ $item['label'] }}</span>
                             <span class="z4-admin-chevron" aria-hidden="true"></span>
                         </button>
@@ -333,12 +300,12 @@
                                         <div class="z4-admin-parent-row">
                                             @if ($child['href'])
                                                 <a href="{{ $child['href'] }}" class="z4-admin-link z4-admin-parent-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                                    <span class="z4-admin-icon">{{ $child['icon'] }}</span>
+                                                    @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                                     <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                                 </a>
                                             @else
                                                 <span class="z4-admin-link z4-admin-parent-link {{ $child['active'] ? 'is-active' : '' }}">
-                                                    <span class="z4-admin-icon">{{ $child['icon'] }}</span>
+                                                    @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                                     <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                                 </span>
                                             @endif
@@ -364,7 +331,7 @@
                                     </div>
                                 @else
                                     <a href="{{ $child['href'] }}" class="z4-admin-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                        <span class="z4-admin-icon">{{ $child['icon'] }}</span>
+                                        @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                         <span class="z4-admin-link-label">{{ $child['label'] }}</span>
                                     </a>
                                 @endif
@@ -373,7 +340,7 @@
                     </section>
                 @else
                     <a href="{{ $item['href'] }}" class="z4-admin-link {{ $item['active'] ? 'is-active' : '' }}" @if($item['target'] ?? null) target="{{ $item['target'] }}" @endif>
-                        <span class="z4-admin-icon">{{ $item['icon'] }}</span>
+                        @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                         <span class="z4-admin-link-label">{{ $item['label'] }}</span>
                     </a>
                 @endif
@@ -384,10 +351,10 @@
 
     <div x-show="mobileOpen" x-cloak class="z4-mobile-overlay" @click="mobileOpen = false"></div>
 
-    <aside x-show="mobileOpen" x-cloak class="z4-mobile-drawer" aria-label="Mobile admin navigation">
+    <aside x-show="mobileOpen" x-cloak class="z4-mobile-drawer" aria-label="{{ __('core.nav.mobile_navigation') }}">
         <div class="z4-mobile-drawer-header">
             <x-application-logo class="z4-mobile-logo" />
-            <button type="button" @click="mobileOpen = false" class="z4-mobile-close-button">{{ $t('Close') }}</button>
+            <button type="button" @click="mobileOpen = false" class="z4-mobile-close-button">{{ __('core.common.close') }}</button>
         </div>
 
         <div class="z4-mobile-drawer-body">
@@ -395,7 +362,7 @@
                 @continue(! ($item['visible'] ?? true))
 
                 @php
-                    $children = $item['children'] ?? [];
+                    $children = collect($item['children'] ?? [])->unique(fn (array $child): string => (string) ($child['href'] ?? '').'|'.(string) ($child['label'] ?? ''))->values()->all();
                     $hasChildren = $children !== [];
                 @endphp
 
@@ -405,7 +372,7 @@
                         @foreach ($children as $child)
                             @continue(! ($child['visible'] ?? true))
                             <a href="{{ $child['href'] }}" class="z4-mobile-link {{ $child['active'] ? 'is-active' : '' }}" @if($child['target'] ?? null) target="{{ $child['target'] }}" @endif>
-                                <span class="z4-admin-icon">{{ $child['icon'] }}</span>
+                                @if (! empty($child['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($child['icon']) !!}</span>@endif
                                 <span>{{ $child['label'] }}</span>
                             </a>
                             @foreach (($child['children'] ?? []) as $grandChild)
@@ -417,7 +384,7 @@
                         @endforeach
                     @else
                         <a href="{{ $item['href'] }}" class="z4-mobile-link {{ $item['active'] ? 'is-active' : '' }}" @if($item['target'] ?? null) target="{{ $item['target'] }}" @endif>
-                            <span class="z4-admin-icon">{{ $item['icon'] }}</span>
+                            @if (! empty($item['icon']))<span class="z4-admin-icon">{!! \App\Platform\Core\UI\IconSet::render($item['icon']) !!}</span>@endif
                             <span>{{ $item['label'] }}</span>
                         </a>
                     @endif
@@ -426,3 +393,5 @@
         </div>
     </aside>
 </nav>
+
+

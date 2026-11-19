@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="ainpa-page-title">Roles & Permissions</h2>
+        <h2 class="ainpa-page-title" data-i18n="core.roles.title">{{ __('core.roles.title') }}</h2>
     </x-slot>
 
     <div class="ainpa-admin-page">
@@ -27,17 +27,17 @@
 
             <div class="admin-access-toolbar">
                 <div>
-                    <h3 class="admin-access-title">Roles</h3>
-                    <p class="admin-access-subtitle">Create roles, rename existing roles, and assign registered permissions.</p>
+                    <h3 class="admin-access-title" data-i18n="core.roles.heading">{{ __('core.roles.heading') }}</h3>
+                    <p class="admin-access-subtitle" data-i18n="core.roles.subtitle">{{ __('core.roles.subtitle') }}</p>
                 </div>
-                <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true">
-                    Create Role
+                <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true" data-i18n="core.roles.create">
+                    {{ __('core.roles.create') }}
                 </button>
             </div>
 
             <section class="admin-access-card">
                 <div class="admin-access-card-header">
-                    <h3 class="admin-access-card-title">Registered Roles</h3>
+                    <h3 class="admin-access-card-title" data-i18n="core.roles.registered">{{ __('core.roles.registered') }}</h3>
                 </div>
 
                 <div class="admin-access-accordion">
@@ -52,10 +52,10 @@
                             >
                                 <span class="admin-access-entity">
                                     <span class="admin-access-entity-name">{{ $role->name }}</span>
-                                    <span class="admin-access-entity-meta">{{ $role->users_count }} assigned users</span>
+                                    <span class="admin-access-entity-meta">{{ __('core.roles.assigned_users', ['count' => $role->users_count]) }}</span>
                                 </span>
                                 <span class="admin-access-count admin-permission-accordion-meta">
-                                    <span>{{ $role->permissions->count() }} permissions</span>
+                                    <span>{{ __('core.roles.permissions_count', ['count' => $role->permissions->count()]) }}</span>
                                     <span class="admin-permission-chevron" :class="{ 'is-open': openRoles.includes('{{ $role->id }}') }" aria-hidden="true"></span>
                                 </span>
                             </button>
@@ -67,14 +67,14 @@
                                     <input type="hidden" name="_form" value="update-{{ $role->id }}">
 
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Role name</span>
+                                        <span class="admin-field-label" data-i18n="core.roles.name">{{ __('core.roles.name') }}</span>
                                         <input
                                             name="name"
                                             class="admin-input"
                                             value="{{ old('_form') === 'update-'.$role->id ? old('name', $role->name) : $role->name }}"
                                             required
                                         >
-                                        <span class="admin-field-hint">Renaming a role changes its platform role key. Keep system role names stable unless this is intentional.</span>
+                                        <span class="admin-field-hint" data-i18n="core.roles.name_hint">{{ __('core.roles.name_hint') }}</span>
                                     </label>
 
                                     @include('admin.roles._permission-fields', [
@@ -85,27 +85,27 @@
                                     ])
 
                                     <div class="admin-access-actions">
-                                        <button type="submit" class="ainpa-button ainpa-button-primary">Save Role</button>
+                                        <button type="submit" class="ainpa-button ainpa-button-primary" data-i18n="core.roles.save">{{ __('core.roles.save') }}</button>
                                     </div>
                                 </form>
 
                                 <div class="admin-danger-zone">
                                     @if ($role->name === 'super-admin')
-                                        <p class="admin-access-note">The super-admin role is protected and cannot be deleted.</p>
+                                        <p class="admin-access-note" data-i18n="core.roles.protected">{{ __('core.roles.protected') }}</p>
                                     @elseif ($role->users_count > 0)
-                                        <p class="admin-access-note">
-                                            This role is assigned to {{ $role->users_count }} user{{ $role->users_count === 1 ? '' : 's' }}. Remove it from users before deleting it.
+                                        <p class="admin-access-note" data-i18n="core.roles.assigned_warning">
+                                            {{ __('core.roles.assigned_warning', ['count' => $role->users_count]) }}
                                         </p>
                                     @else
                                         <form
                                             method="POST"
                                             action="{{ route('admin.roles.destroy', $role) }}"
-                                            onsubmit="return confirm('Delete this role permanently? This cannot be undone.')"
+                                            onsubmit="return confirm('{{ __('core.roles.delete_confirm') }}')"
                                             class="admin-danger-form"
                                         >
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="ainpa-button ainpa-button-danger">Delete Role</button>
+                                            <button type="submit" class="ainpa-button ainpa-button-danger" data-i18n="core.roles.delete">{{ __('core.roles.delete') }}</button>
                                         </form>
                                     @endif
                                 </div>
@@ -130,11 +130,11 @@
                     <section class="admin-modal-panel" x-transition.scale.origin.center>
                         <div class="admin-modal-header">
                             <div>
-                                <h3 id="create-role-title" class="admin-modal-title">Create Role</h3>
-                                <p class="admin-modal-subtitle">Name the role and select the permissions it should receive.</p>
+                                <h3 id="create-role-title" class="admin-modal-title" data-i18n="core.roles.create">{{ __('core.roles.create') }}</h3>
+                                <p class="admin-modal-subtitle" data-i18n="core.roles.create_hint">{{ __('core.roles.create_hint') }}</p>
                             </div>
-                            <button type="button" class="admin-modal-close" @click="createOpen = false">
-                                Close
+                            <button type="button" class="admin-modal-close" @click="createOpen = false" data-i18n="core.common.close">
+                                {{ __('core.common.close') }}
                             </button>
                         </div>
 
@@ -144,7 +144,7 @@
 
                             <div class="admin-modal-body">
                                 <label class="admin-field">
-                                    <span class="admin-field-label">Role name</span>
+                                    <span class="admin-field-label" data-i18n="core.roles.name">{{ __('core.roles.name') }}</span>
                                     <input name="name" value="{{ old('_form') === 'create' ? old('name') : '' }}" class="admin-input" required>
                                 </label>
 
@@ -155,10 +155,10 @@
                             </div>
 
                             <div class="admin-modal-footer">
-                                <button type="button" class="admin-modal-cancel" @click="createOpen = false">
-                                    Cancel
+                                <button type="button" class="admin-modal-cancel" @click="createOpen = false" data-i18n="core.common.cancel">
+                                    {{ __('core.common.cancel') }}
                                 </button>
-                                <button type="submit" class="ainpa-button ainpa-button-primary">Create Role</button>
+                                <button type="submit" class="ainpa-button ainpa-button-primary" data-i18n="core.roles.create">{{ __('core.roles.create') }}</button>
                             </div>
                         </form>
                     </section>

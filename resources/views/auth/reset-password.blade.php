@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="ainpa-auth-heading ainpa-auth-heading--password">
-        <h1>Reset Password</h1>
-        <p>Create a new secure password for your INPA account.</p>
+        <h1 data-i18n="core.auth.reset_title">{{ __('core.auth.reset_title') }}</h1>
+        <p data-i18n="core.auth.reset_subtitle">{{ __('core.auth.reset_subtitle') }}</p>
     </div>
 
     <form method="POST" action="{{ route('password.store') }}" class="ainpa-auth-form ainpa-auth-form--password">
@@ -10,7 +10,7 @@
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
         <label class="ainpa-auth-field" for="email">
-            <span>Email Address</span>
+            <span data-i18n="core.auth.email">{{ __('core.auth.email') }}</span>
             <span class="ainpa-auth-input-wrap">
                 <input
                     id="email"
@@ -20,14 +20,14 @@
                     required
                     autofocus
                     autocomplete="username"
-                    placeholder="Enter your email address"
+                    placeholder="{{ __('core.auth.email_placeholder') }}"
                 >
             </span>
             <x-input-error :messages="$errors->get('email')" class="ainpa-auth-error" />
         </label>
 
         <label class="ainpa-auth-field" for="password">
-            <span>New Password</span>
+            <span data-i18n="core.auth.new_password">{{ __('core.auth.new_password') }}</span>
             <span class="ainpa-auth-input-wrap ainpa-auth-password">
                 <input
                     id="password"
@@ -35,15 +35,15 @@
                     name="password"
                     required
                     autocomplete="new-password"
-                    placeholder="Create a new password"
+                    placeholder="{{ __('core.auth.new_password_placeholder') }}"
                 >
-                <button type="button" data-auth-toggle-password aria-label="Show password" aria-controls="password">Show</button>
+                <button type="button" data-auth-toggle-password aria-label="{{ __('core.auth.show_password') }}" aria-controls="password">{{ __('core.auth.show') }}</button>
             </span>
             <x-input-error :messages="$errors->get('password')" class="ainpa-auth-error" />
         </label>
 
         <label class="ainpa-auth-field" for="password_confirmation">
-            <span>Confirm Password</span>
+            <span data-i18n="core.auth.confirm_password">{{ __('core.auth.confirm_password') }}</span>
             <span class="ainpa-auth-input-wrap ainpa-auth-password">
                 <input
                     id="password_confirmation"
@@ -51,21 +51,21 @@
                     name="password_confirmation"
                     required
                     autocomplete="new-password"
-                    placeholder="Confirm your new password"
+                    placeholder="{{ __('core.auth.confirm_new_password_placeholder') }}"
                 >
-                <button type="button" data-auth-toggle-password aria-label="Show password" aria-controls="password_confirmation">Show</button>
+                <button type="button" data-auth-toggle-password aria-label="{{ __('core.auth.show_password') }}" aria-controls="password_confirmation">{{ __('core.auth.show') }}</button>
             </span>
             <x-input-error :messages="$errors->get('password_confirmation')" class="ainpa-auth-error" />
         </label>
 
-        <button type="submit" class="ainpa-auth-submit">Reset Password</button>
+        <button type="submit" class="ainpa-auth-submit" data-i18n="core.auth.reset_submit">{{ __('core.auth.reset_submit') }}</button>
 
-        <div class="ainpa-auth-divider"><span>or</span></div>
+        <div class="ainpa-auth-divider"><span data-i18n="core.common.or">{{ __('core.common.or') }}</span></div>
 
         <p class="ainpa-auth-switch ainpa-auth-switch--back">
             <a href="{{ route('login') }}">
                 <span aria-hidden="true">←</span>
-                Back to Sign In
+                <span data-i18n="core.auth.back_to_sign_in">{{ __('core.auth.back_to_sign_in') }}</span>
             </a>
         </p>
     </form>

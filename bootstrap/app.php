@@ -7,6 +7,11 @@ use App\Http\Middleware\EnsurePlatformInstalled;
 use App\Http\Middleware\EnsureRegisteredRoute;
 use App\Http\Middleware\EnsureStaffUser;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\PrefixLinkRewriter;
+use App\Http\Middleware\PrefixLocaleMiddleware;
+use App\Http\Middleware\ReplaceTranslationTokens;
+use App\Http\Middleware\SeoErrorMiddleware;
+use App\Http\Middleware\SeoMiddleware;
 use App\Installation\RuntimeEnvironment;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -34,6 +39,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
         $middleware->prepend(EnsurePlatformInstalled::class);
+        $middleware->prepend(PrefixLocaleMiddleware::class);
+        $middleware->append(ReplaceTranslationTokens::class);
+        $middleware->append(SeoErrorMiddleware::class);
+        $middleware->append(PrefixLinkRewriter::class);
         $middleware->trustProxies(
             at: $trustedProxies,
             headers: Request::HEADER_X_FORWARDED_FOR
@@ -52,6 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             ApplyPlatformLocale::class,
+            SeoMiddleware::class,
             EnsureRegisteredRoute::class,
             EnforceRoutePermission::class,
         ]);

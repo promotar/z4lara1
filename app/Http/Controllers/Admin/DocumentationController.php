@@ -56,7 +56,7 @@ class DocumentationController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('status', 'Documentation task created successfully.');
+        return back()->with('status', __('core.docs.flash.created'));
     }
 
     public function update(Request $request, int $task): RedirectResponse
@@ -76,7 +76,7 @@ class DocumentationController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('status', 'Documentation task updated successfully.');
+        return back()->with('status', __('core.docs.flash.updated'));
     }
 
     public function toggle(int $task): RedirectResponse
@@ -98,7 +98,7 @@ class DocumentationController extends Controller
 
         DB::table('documentation_tasks')->where('id', $task)->delete();
 
-        return back()->with('status', 'Documentation task deleted successfully.');
+        return back()->with('status', __('core.docs.flash.deleted'));
     }
 
     public function viewReport(string $report)
@@ -175,13 +175,40 @@ class DocumentationController extends Controller
             return [];
         }
 
-        $content = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        // Read a bounded window from the end: laravel.log can reach hundreds of
+        // megabytes and file() would exhaust the PHP memory limit.
+        $handle = @fopen($path, 'rb');
 
-        if (! is_array($content)) {
+        if ($handle === false) {
             return [];
         }
 
-        return array_slice($content, -max(1, $lines));
+        try {
+            $window = 512 * 1024;
+            $stats = fstat($handle);
+            $size = (int) ($stats['size'] ?? 0);
+            $offset = max(0, $size - $window);
+
+            fseek($handle, $offset);
+            $chunk = (string) fread($handle, $window);
+        } finally {
+            fclose($handle);
+        }
+
+        if ($offset > 0) {
+            $firstBreak = strpos($chunk, "\n");
+
+            if ($firstBreak === false) {
+                return [];
+            }
+
+            $chunk = substr($chunk, $firstBreak + 1);
+        }
+
+        $content = preg_split('/\r\n|\r|\n/', $chunk, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $content = array_map(fn (string $line): string => mb_substr($line, 0, 4000), $content);
+
+        return array_slice($content, -max(1, min($lines, 200)));
     }
 
     private function formatBytes(int $bytes): string

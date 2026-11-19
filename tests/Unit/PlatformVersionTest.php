@@ -7,22 +7,21 @@ use Tests\TestCase;
 
 class PlatformVersionTest extends TestCase
 {
-    public function test_release_version_is_declared_by_the_environment_contract(): void
+    public function test_release_label_and_compatibility_version_are_declared_in_code(): void
     {
-        $environment = (string) file_get_contents(base_path('.env.example'));
+        $configuration = (string) file_get_contents(config_path('platform.php'));
 
-        $this->assertMatchesRegularExpression(
-            '/^PLATFORM_VERSION=(\d+\.\d+\.\d+)$/m',
-            $environment,
-        );
-        preg_match('/^PLATFORM_VERSION=(\d+\.\d+\.\d+)$/m', $environment, $matches);
-        $declaredVersion = $matches[1];
+        $this->assertMatchesRegularExpression("/'release' => '(\d+\.\d+\.\d+)'/", $configuration);
+        preg_match("/'release' => '(\d+\.\d+\.\d+)'/", $configuration, $matches);
+        $this->assertSame('4.5.71', $matches[1]);
+        $this->assertSame('4.5.71', config('platform.release'));
 
-        $this->assertSame('3.4.4', $declaredVersion);
-        $this->assertSame($declaredVersion, config('platform.version'));
-        $this->assertStringContainsString(
-            "env('PLATFORM_VERSION', '{$declaredVersion}')",
-            (string) file_get_contents(config_path('platform.php')),
+        $this->assertMatchesRegularExpression("/'version' => '(\d+\.\d+\.\d+)'/", $configuration);
+        $this->assertSame('3.4.4', config('platform.version'));
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/^PLATFORM_VERSION=/m',
+            (string) file_get_contents(base_path('.env.example')),
         );
     }
 

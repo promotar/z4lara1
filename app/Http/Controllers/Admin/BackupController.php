@@ -44,7 +44,7 @@ class BackupController extends Controller
 
         return redirect()
             ->route('admin.backups.index')
-            ->with('status', 'Manual backup checkpoint created successfully.');
+            ->with('status', __('core.backups.flash.created'));
     }
 
     public function showLocation(Request $request, BackupCheckpoint $backup): RedirectResponse
@@ -54,7 +54,7 @@ class BackupController extends Controller
         if (! $this->isSafeBackupPath($backup->path)) {
             return redirect()
                 ->route('admin.backups.index')
-                ->with('status', 'Backup location is not available.');
+                ->with('status', __('core.backups.flash.location_unavailable'));
         }
 
         return redirect()->away($this->fileManagerUrl(dirname((string) $backup->path)));
@@ -67,7 +67,7 @@ class BackupController extends Controller
         if (! $this->isSafeBackupPath($backup->path) || ! File::exists((string) $backup->path)) {
             return redirect()
                 ->route('admin.backups.index')
-                ->with('status', 'Restore was not started because the checkpoint file is missing or outside the approved backup path.');
+                ->with('status', __('core.backups.flash.restore_blocked'));
         }
 
         $backups->addRestoreNote(
@@ -77,7 +77,7 @@ class BackupController extends Controller
 
         return redirect()
             ->route('admin.backups.index')
-            ->with('status', 'Backup restore confirmed successfully. Restore note was recorded for this checkpoint.');
+            ->with('status', __('core.backups.flash.restore_confirmed'));
     }
 
     public function destroy(Request $request, BackupCheckpoint $backup): RedirectResponse
@@ -94,7 +94,7 @@ class BackupController extends Controller
 
         return redirect()
             ->route('admin.backups.index')
-            ->with('status', 'Backup checkpoint removed successfully.');
+            ->with('status', __('core.backups.flash.deleted'));
     }
 
     /**

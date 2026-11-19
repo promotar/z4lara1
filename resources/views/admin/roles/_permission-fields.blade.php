@@ -5,11 +5,11 @@
 <section class="admin-permission-accordion" x-data="{ open: true }" data-role-permission-accordion="capabilities">
     <button type="button" class="admin-permission-accordion-button" @click="open = ! open" :aria-expanded="open.toString()" aria-controls="{{ $permissionAccordionScope }}-capabilities-panel">
         <span class="admin-permission-accordion-copy">
-            <span class="admin-field-label">Capability Permissions</span>
-            <span class="admin-field-hint">Capabilities remain an additional policy layer. Route access below is mandatory.</span>
+            <span class="admin-field-label" data-i18n="core.roles.capabilities">{{ __('core.roles.capabilities') }}</span>
+            <span class="admin-field-hint" data-i18n="core.roles.capabilities_hint">{{ __('core.roles.capabilities_hint') }}</span>
         </span>
         <span class="admin-permission-accordion-meta">
-            <span class="admin-access-count">{{ $permissions->count() }} capabilities</span>
+            <span class="admin-access-count">{{ __('core.roles.capabilities_count', ['count' => $permissions->count()]) }}</span>
             <span class="admin-permission-chevron" :class="{ 'is-open': open }" aria-hidden="true"></span>
         </span>
     </button>
@@ -29,11 +29,11 @@
 <section class="admin-permission-accordion" x-data="{ open: true }" data-role-permission-accordion="routes">
     <button type="button" class="admin-permission-accordion-button" @click="open = ! open" :aria-expanded="open.toString()" aria-controls="{{ $permissionAccordionScope }}-routes-panel">
         <span class="admin-permission-accordion-copy">
-            <span class="admin-field-label">Mandatory Route Access</span>
-            <span class="admin-field-hint">Active core and plugin routes are discovered automatically. An unchecked route is denied on the server and removed from the rendered interface.</span>
+            <span class="admin-field-label" data-i18n="core.roles.mandatory">{{ __('core.roles.mandatory') }}</span>
+            <span class="admin-field-hint" data-i18n="core.roles.mandatory_hint">{{ __('core.roles.mandatory_hint') }}</span>
         </span>
         <span class="admin-permission-accordion-meta">
-            <span class="admin-access-count">{{ $routePermissions->count() }} routes</span>
+            <span class="admin-access-count">{{ __('core.roles.routes_count', ['count' => $routePermissions->count()]) }}</span>
             <span class="admin-permission-chevron" :class="{ 'is-open': open }" aria-hidden="true"></span>
         </span>
     </button>
@@ -50,7 +50,7 @@
                 <button type="button" class="admin-route-group-accordion-button" @click="open = ! open" :aria-expanded="open.toString()" aria-controls="{{ $permissionAccordionScope }}-route-group-{{ $loop->index }}">
                     <span class="admin-access-card-title">{{ $group }}</span>
                     <span class="admin-permission-accordion-meta">
-                        <span class="admin-access-count">{{ $entries->count() }} routes</span>
+                        <span class="admin-access-count">{{ __('core.roles.routes_count', ['count' => $entries->count()]) }}</span>
                         <span class="admin-permission-chevron" :class="{ 'is-open': open }" aria-hidden="true"></span>
                     </span>
                 </button>

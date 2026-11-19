@@ -20,17 +20,25 @@
     $siteLogo = $platformSettings['general.site_logo'] ?? null;
     $siteLanguage = $platformLocale ?? app()->getLocale();
     $htmlDirection = $platformDirection ?? app(\App\Platform\Core\Localization\PlatformLocale::class)->direction($siteLanguage);
-    $isArabicLanguage = str_starts_with(strtolower($siteLanguage), 'ar');
-    $translations = [
-        'Home' => 'الرئيسية',
-        'My Account' => 'حسابي',
-        'Dashboard' => 'لوحة التحكم',
-        'Admin' => 'الإدارة',
-        'Log Out' => 'تسجيل الخروج',
-        'Log In' => 'تسجيل الدخول',
-        'Register' => 'إنشاء حساب',
+    $isArabicLanguage = str_starts_with(strtolower((string) $siteLanguage), 'ar');
+    $languageSwitcherPath = trim(request()->path(), '/');
+    $platformOnlyPaths = [
+        'account', 'dashboard', 'profile', 'cart', 'checkout', 'student',
+        'instructor', 'artist', 'my-courses', 'learn', 'certificates',
+        'confirm-password', 'forgot-password', 'reset-password', 'login',
+        'register', 'verify-email', 'email', 'store/account', 'store/cart',
+        'store/checkout', 'store/orders', 'blog/writer',
     ];
-    $t = fn (string $text): string => $isArabicLanguage ? ($translations[$text] ?? $text) : $text;
+    $hideTopLanguageSwitcher = false;
+
+    foreach ($platformOnlyPaths as $platformPath) {
+        if ($languageSwitcherPath === $platformPath || str_starts_with($languageSwitcherPath, $platformPath.'/')) {
+            $hideTopLanguageSwitcher = true;
+            break;
+        }
+    }
+
+    $showTopLanguageSwitcher = count($platformLanguages ?? []) > 1 && ! $hideTopLanguageSwitcher;
 
     try {
         $frontendMenuItems = app(\App\Platform\Core\Menus\MenuManager::class)->getFrontendMenu(auth()->user());
@@ -111,6 +119,16 @@
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+        @if ($isArabicLanguage)
+            <link href="https://fonts.bunny.net/css?family=cairo:400,500,600,700,800&display=swap" rel="stylesheet" />
+            <style>
+                html[lang^="ar"] body,
+html[lang^="ar"] body :not(i):not(svg):not(code):not(pre):not(kbd):not(samp):not(text):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not(.material-symbols-outlined):not([class^="fa-"]):not([class*=" fa-"]):not(.font-mono):not([class*="font-mono"]):not(textarea[spellcheck="false"]) {
+                    font-family: 'Cairo', 'Figtree', ui-sans-serif, system-ui, sans-serif !important;
+                }
+                }
+            </style>
+        @endif
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @if ($frontendStyleBundleUrl)
@@ -121,6 +139,8 @@
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-950">
         <div class="min-h-screen">
+            {{-- The platform top bar / header menu owns the language switcher; the legacy top strip was removed. --}}
+
             <header class="border-b border-slate-200 bg-white">
                 <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <a href="{{ route('front.home') }}" class="flex items-center text-lg font-bold tracking-tight text-slate-950">
@@ -143,24 +163,24 @@
                                     class="{{ $frontendStyleBundle ? $frontendStyleBundle->menuItemClass($frontendMenuItem) : '' }} {{ $frontendMenuClass($frontendMenuItem) }}"
                                     @if ($target === '_blank') target="_blank" rel="noopener" @endif
                                 >
-                                    {{ $t((string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title'])) }}
+                                    {{ (string) ($frontendMenuItem['label'] ?: $frontendMenuItem['title']) }}
                                 </a>
                             @endif
                         @endforeach
                         @auth
                             @if (auth()->user()->hasAnyRole(['super-admin', 'admin', 'staff', 'employee']) || auth()->user()->getAllPermissions()->isNotEmpty())
-                                <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-950">{{ $t('Dashboard') }}</a>
+                                <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-950">{{ __('core.nav.dashboard') }}</a>
                             @endif
                             @if (auth()->user()->hasRole('super-admin'))
-                                <a href="{{ route('admin.platform-registry.index') }}" class="text-slate-700 hover:text-slate-950">{{ $t('Admin') }}</a>
+                                <a href="{{ route('admin.platform-registry.index') }}" class="text-slate-700 hover:text-slate-950">{{ __('core.nav.admin') }}</a>
                             @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="rounded-md bg-slate-950 px-3 py-2 text-white hover:bg-slate-800">{{ $t('Log Out') }}</button>
+                                <button type="submit" class="rounded-md bg-slate-950 px-3 py-2 text-white hover:bg-slate-800">{{ __('core.common.log_out') }}</button>
                             </form>
                         @else
-                            <a href="{{ route('login') }}" class="text-slate-700 hover:text-slate-950">{{ $t('Log In') }}</a>
-                            <a href="{{ route('register') }}" class="rounded-md bg-slate-950 px-3 py-2 text-white hover:bg-slate-800">{{ $t('Register') }}</a>
+                            <a href="{{ route('login') }}" class="text-slate-700 hover:text-slate-950">{{ __('core.auth.sign_in') }}</a>
+                            <a href="{{ route('register') }}" class="rounded-md bg-slate-950 px-3 py-2 text-white hover:bg-slate-800">{{ __('core.auth.register') }}</a>
                         @endauth
                     </nav>
                 </div>
@@ -179,5 +199,55 @@
             </main>
         </div>
         @include('platform.plugin-assets', ['scope' => 'frontend', 'kind' => 'scripts'])
-    </body>
+
+    
+        {{-- Keep mixed-language text readable without flipping its alignment:
+         block elements keep the page direction; only bidi runs are recomputed.
+         app.js adds dir="auto" to blocks, so this repairs it after load and
+         keeps repairing it when dynamic content appears. --}}
+    <style>.platform-plaintext{unicode-bidi:plaintext;direction:inherit;text-align:inherit}[data-auto-direction="true"]:not(input):not(textarea){direction:inherit!important;unicode-bidi:plaintext;text-align:inherit}</style>
+    <script>
+        (function () {
+            var blocks = {H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,P:1,LI:1,DT:1,DD:1,DIV:1,BLOCKQUOTE:1,FIGCAPTION:1,SUMMARY:1,TD:1,TH:1};
+
+            function fix(element) {
+                if (element && blocks[element.tagName] && element.getAttribute('dir') === 'auto') {
+                    element.removeAttribute('dir');
+                    element.classList.add('platform-plaintext');
+                }
+            }
+
+            function scan(root) {
+                if (!root.querySelectorAll) { return; }
+                root.querySelectorAll('[data-auto-direction="true"]').forEach(fix);
+            }
+
+            scan(document);
+
+            new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes') {
+                        fix(mutation.target);
+                        return;
+                    }
+                    mutation.addedNodes.forEach(function (node) {
+                        if (node.nodeType === 1) {
+                            fix(node);
+                            scan(node);
+                        }
+                    });
+                });
+            }).observe(document.documentElement, {
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['dir'],
+                childList: true,
+            });
+
+            window.addEventListener('load', function () { scan(document); });
+        })();
+    </script>
+</body>
 </html>
+
+

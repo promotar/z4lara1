@@ -45,25 +45,28 @@ secrets/
 /public/storage
 /modules/*
 !/modules/.gitkeep
-!/modules/admin-theme/
-!/modules/admin-theme/**
-!/modules/page-builder/
-!/modules/page-builder/**
 /modules/**/*.zip
-/public/platform/plugins/*
-!/public/platform/plugins/art-inpa-admin-pro-theme/
-!/public/platform/plugins/art-inpa-admin-pro-theme/**
-!/public/platform/plugins/page-builder/
-!/public/platform/plugins/page-builder/**
-/public/platform/plugins/**/*.bak
-/public/platform/plugins/**/*.bak-*
-/public/platform/plugins/**/*.backup-*
+
+# Plugin source and published plugin assets are distributed separately from
+# the core platform. A deployment installs them into these runtime paths.
+/public/platform/
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
 /storage/app/
 /storage/pail
+
+# Per-installation media content. These directories hold artist uploads,
+# lesson attachments, product images and identity documents that belong to a
+# single deployment. They live on the runtime volume and must never be part of
+# the distributable code that is published to GitHub.
+/public/blog/
+/public/lms/
+/public/store/
+/public/media/
+/public/hero/
+/public/settings/
 /vendor
 Homestead.json
 Homestead.yaml

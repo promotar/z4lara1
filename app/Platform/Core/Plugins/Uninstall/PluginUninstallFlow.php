@@ -3,6 +3,7 @@
 namespace App\Platform\Core\Plugins\Uninstall;
 
 use App\Platform\Core\DTOs\PluginManifest;
+use App\Platform\Core\Hooks\HookManager;
 use App\Platform\Core\Logs\FailedOperationLogger;
 use App\Platform\Core\Logs\OperationLogger;
 use App\Platform\Core\Models\Plugin;
@@ -37,6 +38,7 @@ class PluginUninstallFlow
         private readonly OperationLogger $operations,
         private readonly FailedOperationLogger $failedOperations,
         private readonly ?PluginLifecycleHookRunner $lifecycleHooks = null,
+        private readonly ?HookManager $hooks = null,
     ) {
         //
     }
@@ -111,6 +113,7 @@ class PluginUninstallFlow
             $this->storage->preflight($manifest);
             $result['completed_steps'][] = 'package_preflight';
 
+            $this->hooks?->doAction('plugin.uninstalling', $plugin);
             $this->lifecycleHooks?->run($manifest, 'purge');
             $result['completed_steps'][] = 'purge_hook';
 
@@ -159,6 +162,7 @@ class PluginUninstallFlow
 
             $this->cache->clear();
             $result['completed_steps'][] = 'cache';
+            $this->hooks?->doAction('plugin.uninstalled', $plugin, $result);
 
             $result['success'] = true;
             $result['message'] = "Plugin [{$manifest->slug}] and all owned data were permanently deleted.";

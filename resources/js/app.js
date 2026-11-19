@@ -24,7 +24,11 @@ const autoDirectionSelector = [
 const skipAutoDirectionTags = new Set([
     'HTML', 'BODY', 'SCRIPT', 'STYLE', 'SVG', 'PATH',
     'FORM', 'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR',
-    'UL', 'OL', 'NAV', 'MAIN', 'SECTION', 'ARTICLE'
+    'UL', 'OL', 'NAV', 'MAIN', 'SECTION', 'ARTICLE',
+    // Block-level text keeps the page direction so its alignment never flips
+    // when a paragraph happens to be English inside an Arabic page.
+    'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'LI', 'DT', 'DD', 'DIV',
+    'BLOCKQUOTE', 'FIGCAPTION', 'SUMMARY', 'TD', 'TH',
 ]);
 
 const layoutClassPattern = /(^|\s)(flex|inline-flex|grid|inline-grid|table|flow-root)(\s|$)/;

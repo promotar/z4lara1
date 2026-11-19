@@ -7,9 +7,15 @@
 
     $siteTitle = $platformSettings['general.site_title'] ?? config('app.name', 'Z4Rank');
     $siteLogo = $platformSettings['general.site_logo'] ?? null;
+    $logoPath = is_string($siteLogo) ? parse_url($siteLogo, PHP_URL_PATH) : null;
+    $hasLogo = is_string($siteLogo) && trim($siteLogo) !== '' && (
+        str_starts_with($siteLogo, 'http://')
+        || str_starts_with($siteLogo, 'https://')
+        || (is_string($logoPath) && file_exists(public_path(ltrim($logoPath, '/'))))
+    );
 @endphp
 
-@if ($siteLogo)
+@if ($hasLogo)
     <img
         src="{{ $siteLogo }}"
         alt="{{ $siteTitle }}"

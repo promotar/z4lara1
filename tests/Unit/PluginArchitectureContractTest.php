@@ -78,7 +78,10 @@ class PluginArchitectureContractTest extends TestCase
         $moduleSlugs = array_map('basename', $moduleDirectories);
         sort($moduleSlugs);
 
-        self::assertSame(['admin-theme', 'page-builder'], $moduleSlugs);
+        self::assertSame(
+            ['admin-theme', 'blog', 'certificates', 'exhibitions', 'lms', 'page-builder', 'seo', 'store'],
+            $moduleSlugs,
+        );
 
         $archives = [];
         $iterator = new \RecursiveIteratorIterator(

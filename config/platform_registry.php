@@ -48,6 +48,8 @@ return [
 
     'routes' => [
         'front.home' => ['uri' => '/', 'methods' => ['GET', 'HEAD'], 'description' => 'Frontend home', 'status' => 'active'],
+        'seo.sitemap' => ['uri' => 'sitemap.xml', 'methods' => ['GET', 'HEAD'], 'description' => 'Core-owned XML sitemap', 'status' => 'active'],
+        'seo.robots' => ['uri' => 'robots.txt', 'methods' => ['GET', 'HEAD'], 'description' => 'Core-owned robots.txt', 'status' => 'active'],
         'front.account' => ['uri' => 'account', 'methods' => ['GET', 'HEAD'], 'description' => 'Authenticated user account', 'status' => 'active'],
         'ai.message' => ['uri' => 'ai/message', 'methods' => ['POST'], 'description' => 'Laravel AI intent routing endpoint', 'status' => 'active'],
         'dashboard' => ['uri' => 'dashboard', 'methods' => ['GET', 'HEAD'], 'description' => 'Staff dashboard', 'status' => 'active'],

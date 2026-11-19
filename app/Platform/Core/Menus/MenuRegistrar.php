@@ -33,8 +33,43 @@ class MenuRegistrar
             'sort_order' => $definition['sort_order'],
         ]);
 
+        // Keep administrator edits (per-language names, icons) when a plugin is
+        // re-activated or updated: the registry recreates the rows, so carry the
+        // stored translations over to the new rows.
+        $preserved = [];
+
+        foreach ($menu->items()->get() as $existing) {
+            $preserved[$this->itemIdentity($existing)][] = [
+                'title_translations' => $existing->title_translations,
+                'icon' => $existing->icon,
+            ];
+        }
+
         $this->menus->deleteMenuItems($menu);
         $this->createItems($menu, $definition['items'], null, $plugin);
+
+        foreach ($menu->items()->get() as $created) {
+            $identity = $this->itemIdentity($created);
+
+            if (empty($preserved[$identity])) {
+                continue;
+            }
+
+            $previous = array_shift($preserved[$identity]);
+            $updates = [];
+
+            if (empty($created->title_translations) && ! empty($previous['title_translations'])) {
+                $updates['title_translations'] = $previous['title_translations'];
+            }
+
+            if (empty($created->icon) && ! empty($previous['icon'])) {
+                $updates['icon'] = $previous['icon'];
+            }
+
+            if ($updates !== []) {
+                $created->forceFill($updates)->save();
+            }
+        }
 
         return $menu;
     }
@@ -151,5 +186,12 @@ class MenuRegistrar
                 $this->createItems($menu, $children, $created->id, $plugin);
             }
         }
+    }
+
+    private function itemIdentity(object $item): string
+    {
+        $identity = trim((string) ($item->route_name ?: $item->url ?: $item->title));
+
+        return strtolower($identity);
     }
 }

@@ -16,6 +16,9 @@ final class PluginAssetRegistry
     /** @var array<string, bool> */
     private array $published = [];
 
+    /** @var array<string, string|null> */
+    private array $runtimeStyles = [];
+
     public function __construct(
         private readonly PluginRepository $plugins,
         private readonly PluginFilesystem $filesystem,
@@ -90,6 +93,60 @@ final class PluginAssetRegistry
     public function scripts(string $scope): array
     {
         return $this->assets($scope)['scripts'];
+    }
+
+    /**
+     * URL of a plugin-declared stylesheet that is served by the plugin's own
+     * asset route instead of the published public/platform tree.
+     *
+     * Declared in the package manifest as:
+     *   runtime_assets.<scope>.styles.<key> = "<route-prefix>/<path>.css"
+     *
+     * Kept outside the `assets` catalog on purpose: that catalog is validated
+     * against published files, while these URLs are served by the plugin's own
+     * asset route.
+     *
+     * Returns null when no active plugin declares the key, so core markup
+     * never references an asset owned by a disabled or removed plugin.
+     */
+    public function runtimeStyleUrl(string $key, string $scope = 'frontend'): ?string
+    {
+        $scope = $this->scope($scope);
+        $cacheKey = $scope.':'.$key;
+
+        if (array_key_exists($cacheKey, $this->runtimeStyles)) {
+            return $this->runtimeStyles[$cacheKey];
+        }
+
+        if (! Schema::hasTable('plugins')) {
+            return $this->runtimeStyles[$cacheKey] = null;
+        }
+
+        $plugins = $this->plugins->findActive()
+            ->filter(fn (Plugin $plugin): bool => $this->gate->allows($plugin->slug))
+            ->sortBy(fn (Plugin $plugin): string => sprintf(
+                '%06d:%s',
+                $this->priority($plugin, $scope),
+                $plugin->slug,
+            ));
+
+        foreach ($plugins as $plugin) {
+            $declared = data_get($this->filesystem->manifest($plugin), "runtime_assets.{$scope}.styles.{$key}");
+
+            if (! is_string($declared)) {
+                continue;
+            }
+
+            $path = ltrim(trim(str_replace('\\', '/', $declared)), '/');
+
+            if ($path === '' || str_contains($path, '..') || preg_match('#^[a-z][a-z0-9+.-]*:#i', $path) === 1) {
+                continue;
+            }
+
+            return $this->runtimeStyles[$cacheKey] = url($path);
+        }
+
+        return $this->runtimeStyles[$cacheKey] = null;
     }
 
     /**
@@ -185,6 +242,7 @@ final class PluginAssetRegistry
     public function flush(?string $slug = null): void
     {
         $this->resolved = [];
+        $this->runtimeStyles = [];
 
         if ($slug === null) {
             $this->published = [];

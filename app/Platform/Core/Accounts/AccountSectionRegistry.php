@@ -22,11 +22,21 @@ final class AccountSectionRegistry
     {
         $sections = [[
             'key' => 'overview',
-            'label' => 'Overview',
+            'label' => \App\Platform\Core\Localization\Translation::label('core.nav.overview', 'Overview'),
             'icon' => 'A',
             'order' => 10,
             'badge' => null,
             'view' => 'frontend.account-sections.overview',
+            'data' => [],
+        ], [
+            // Profile lives inside the account shell so the user never leaves
+            // the account sidebar when editing their own data.
+            'key' => 'profile',
+            'label' => \App\Platform\Core\Localization\Translation::label('core.account.profile', 'Profile'),
+            'icon' => 'P',
+            'order' => 15,
+            'badge' => null,
+            'view' => 'frontend.account-sections.profile',
             'data' => [],
         ]];
 

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="ainpa-page-title">Users</h2>
+        <h2 class="ainpa-page-title" data-i18n="core.users.title">{{ __('core.users.title') }}</h2>
     </x-slot>
 
     <div class="ainpa-admin-page">
@@ -25,28 +25,28 @@
                             name="q"
                             value="{{ $search }}"
                             class="admin-input"
-                            placeholder="Name, email, or phone"
+                            placeholder="{{ __('core.users.search_placeholder') }}"
                             autocomplete="off"
-                            aria-label="Search users"
+                            aria-label="{{ __('core.users.search_aria') }}"
                             @if ($search !== '') autofocus @endif
                             @input.debounce.400ms="$refs.userSearchForm.requestSubmit()"
                         >
-                        <button type="submit" class="ainpa-button">Search</button>
+                        <button type="submit" class="ainpa-button" data-i18n="core.users.search">{{ __('core.users.search') }}</button>
                         @if ($search !== '')
-                            <a href="{{ route('admin.users.index') }}" class="admin-user-search-clear">Clear</a>
+                            <a href="{{ route('admin.users.index') }}" class="admin-user-search-clear" data-i18n="core.users.clear">{{ __('core.users.clear') }}</a>
                         @endif
                     </form>
-                    <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true">
-                        New Account
+                    <button type="button" class="ainpa-button ainpa-button-primary" @click="createOpen = true" data-i18n="core.users.new">
+                        {{ __('core.users.new') }}
                     </button>
                 </div>
             </div>
 
             <section class="admin-access-card">
                 <div class="admin-access-card-header admin-user-list-header">
-                    <h3 class="admin-access-card-title">Accounts</h3>
+                    <h3 class="admin-access-card-title" data-i18n="core.users.accounts">{{ __('core.users.accounts') }}</h3>
                     <p class="admin-user-results">
-                        {{ number_format($users->total()) }} {{ $users->total() === 1 ? 'account' : 'accounts' }}
+                        {{ __('core.users.account_count', ['count' => number_format($users->total())]) }}
                     </p>
                 </div>
 
@@ -65,8 +65,8 @@
                                     @if ($managedUser->phone)<span class="admin-user-phone">{{ $managedUser->phone }}</span>@endif
                                 </span>
                                 <span class="admin-access-count">
-                                    {{ $managedUser->roles->count() }} roles
-                                    · {{ $managedUser->email_verified_at ? 'Active' : 'Pending activation' }}
+                                    {{ __('core.users.roles_count', ['count' => $managedUser->roles->count()]) }}
+                                    · {{ $managedUser->email_verified_at ? __('core.users.active') : __('core.users.pending_activation') }}
                                 </span>
                             </button>
 
@@ -83,34 +83,34 @@
 
                                     <div class="admin-access-form-grid">
                                         <label class="admin-field">
-                                            <span class="admin-field-label">Name</span>
+                                            <span class="admin-field-label" data-i18n="core.users.name">{{ __('core.users.name') }}</span>
                                             <input name="name" value="{{ old('_form') === 'update-'.$managedUser->id ? old('name', $managedUser->name) : $managedUser->name }}" class="admin-input" required>
                                         </label>
 
                                         <label class="admin-field">
-                                            <span class="admin-field-label">Email</span>
+                                            <span class="admin-field-label" data-i18n="core.users.email">{{ __('core.users.email') }}</span>
                                             <input name="email" type="email" value="{{ old('_form') === 'update-'.$managedUser->id ? old('email', $managedUser->email) : $managedUser->email }}" class="admin-input" required>
                                         </label>
 
                                         <label class="admin-field">
-                                            <span class="admin-field-label">New Password</span>
+                                            <span class="admin-field-label" data-i18n="core.users.new_password">{{ __('core.users.new_password') }}</span>
                                             <input name="password" type="password" class="admin-input" autocomplete="new-password">
                                         </label>
 
                                         <label class="admin-field">
-                                            <span class="admin-field-label">Phone Number</span>
+                                            <span class="admin-field-label" data-i18n="core.users.phone">{{ __('core.users.phone') }}</span>
                                             <input name="phone" type="tel" value="{{ old('_form') === 'update-'.$managedUser->id ? old('phone', $managedUser->phone) : $managedUser->phone }}" class="admin-input" autocomplete="tel">
                                         </label>
 
                                         <label class="admin-field">
-                                            <span class="admin-field-label">Confirm New Password</span>
+                                            <span class="admin-field-label" data-i18n="core.users.confirm_new_password">{{ __('core.users.confirm_new_password') }}</span>
                                             <input name="password_confirmation" type="password" class="admin-input" autocomplete="new-password">
                                         </label>
                                     </div>
 
                                     <div class="admin-access-stack">
                                         <div>
-                                            <div class="admin-field-label">Roles</div>
+                                            <div class="admin-field-label" data-i18n="core.users.roles">{{ __('core.users.roles') }}</div>
                                             <div class="admin-option-grid admin-option-grid-compact">
                                                 @foreach ($roles as $role)
                                                     <label class="admin-option">
@@ -134,12 +134,12 @@
                                         @if ($managedUser->email_verified_at)
                                             <span class="admin-user-status-dot" aria-hidden="true"></span>
                                             <p class="admin-access-note">
-                                                Active since {{ $managedUser->email_verified_at->format('Y-m-d H:i') }}
+                                                {{ __('core.users.active_since', ['date' => $managedUser->email_verified_at->format('Y-m-d H:i')]) }}
                                             </p>
                                         @else
                                             <span class="admin-user-status-dot is-pending" aria-hidden="true"></span>
-                                            <p class="admin-access-note">
-                                                Email verification is pending.
+                                            <p class="admin-access-note" data-i18n="core.users.verification_pending">
+                                                {{ __('core.users.verification_pending') }}
                                             </p>
                                         @endif
                                     </div>
@@ -149,18 +149,19 @@
                                             type="submit"
                                             form="admin-user-update-{{ $managedUser->id }}"
                                             class="ainpa-button ainpa-button-primary"
-                                        >Save User</button>
+                                            data-i18n="core.users.save"
+                                        >{{ __('core.users.save') }}</button>
 
                                         @unless ($managedUser->email_verified_at)
                                             <form
                                                 method="POST"
                                                 action="{{ route('admin.users.verify-email', $managedUser) }}"
                                                 class="admin-user-inline-form"
-                                                onsubmit="return confirm('Verify this user email as an administrator?')"
+                                                onsubmit="return confirm('{{ __('core.users.verify_confirm') }}')"
                                             >
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="ainpa-button ainpa-button-success">Activate User</button>
+                                                <button type="submit" class="ainpa-button ainpa-button-success" data-i18n="core.users.activate">{{ __('core.users.activate') }}</button>
                                             </form>
                                         @endunless
 
@@ -169,11 +170,11 @@
                                                 method="POST"
                                                 action="{{ route('admin.users.destroy', $managedUser) }}"
                                                 class="admin-user-inline-form"
-                                                onsubmit="return confirm('Delete this user account? This action is blocked when protected plugin data exists.')"
+                                                onsubmit="return confirm('{{ __('core.users.delete_confirm') }}')"
                                             >
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="ainpa-button ainpa-button-danger">Delete User</button>
+                                                <button type="submit" class="ainpa-button ainpa-button-danger" data-i18n="core.users.delete">{{ __('core.users.delete') }}</button>
                                             </form>
                                         @endif
                                     </div>
@@ -181,7 +182,7 @@
                             </div>
                         </article>
                     @empty
-                        <div class="admin-access-note">No accounts found.</div>
+                        <div class="admin-access-note" data-i18n="core.users.empty">{{ __('core.users.empty') }}</div>
                     @endforelse
                 </div>
 
@@ -205,10 +206,10 @@
                     <section class="admin-modal-panel" x-transition.scale.origin.center>
                         <div class="admin-modal-header">
                             <div>
-                                <h3 id="create-user-title" class="admin-modal-title">New Account</h3>
+                                <h3 id="create-user-title" class="admin-modal-title" data-i18n="core.users.new">{{ __('core.users.new') }}</h3>
                             </div>
-                            <button type="button" class="admin-modal-close" @click="createOpen = false">
-                                Close
+                            <button type="button" class="admin-modal-close" @click="createOpen = false" data-i18n="core.common.close">
+                                {{ __('core.common.close') }}
                             </button>
                         </div>
 
@@ -219,34 +220,34 @@
                             <div class="admin-modal-body">
                                 <div class="admin-access-form-grid">
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Name</span>
+                                        <span class="admin-field-label" data-i18n="core.users.name">{{ __('core.users.name') }}</span>
                                         <input name="name" value="{{ old('_form') === 'create' ? old('name') : '' }}" class="admin-input" required>
                                     </label>
 
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Email</span>
+                                        <span class="admin-field-label" data-i18n="core.users.email">{{ __('core.users.email') }}</span>
                                         <input name="email" type="email" value="{{ old('_form') === 'create' ? old('email') : '' }}" class="admin-input" required>
                                     </label>
 
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Password</span>
+                                        <span class="admin-field-label" data-i18n="core.users.password">{{ __('core.users.password') }}</span>
                                         <input name="password" type="password" class="admin-input" required autocomplete="new-password">
                                     </label>
 
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Phone Number</span>
+                                        <span class="admin-field-label" data-i18n="core.users.phone">{{ __('core.users.phone') }}</span>
                                         <input name="phone" type="tel" value="{{ old('_form') === 'create' ? old('phone') : '' }}" class="admin-input" autocomplete="tel">
                                     </label>
 
                                     <label class="admin-field">
-                                        <span class="admin-field-label">Confirm Password</span>
+                                        <span class="admin-field-label" data-i18n="core.users.confirm_password">{{ __('core.users.confirm_password') }}</span>
                                         <input name="password_confirmation" type="password" class="admin-input" required autocomplete="new-password">
                                     </label>
                                 </div>
 
                                 <div class="admin-access-stack">
                                     <div>
-                                        <div class="admin-field-label">Roles</div>
+                                        <div class="admin-field-label" data-i18n="core.users.roles">{{ __('core.users.roles') }}</div>
                                         <div class="admin-option-grid admin-option-grid-compact">
                                             @foreach ($roles as $role)
                                                 <label class="admin-option">
@@ -265,10 +266,10 @@
                             </div>
 
                             <div class="admin-modal-footer">
-                                <button type="button" class="admin-modal-cancel" @click="createOpen = false">
-                                    Cancel
+                                <button type="button" class="admin-modal-cancel" @click="createOpen = false" data-i18n="core.common.cancel">
+                                    {{ __('core.common.cancel') }}
                                 </button>
-                                <button type="submit" class="ainpa-button ainpa-button-primary">Create Account</button>
+                                <button type="submit" class="ainpa-button ainpa-button-primary" data-i18n="core.users.create">{{ __('core.users.create') }}</button>
                             </div>
                         </form>
                     </section>

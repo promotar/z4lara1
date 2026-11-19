@@ -4,6 +4,7 @@ namespace App\Platform\Core\Services;
 
 use App\Platform\Core\Backups\StepBackupper;
 use App\Platform\Core\DTOs\PluginManifest;
+use App\Platform\Core\Hooks\HookManager;
 use App\Platform\Core\Licensing\LicenseManager;
 use App\Platform\Core\Models\Plugin;
 use App\Platform\Core\Repositories\PluginRepository;
@@ -24,6 +25,7 @@ class PluginActivator
         private readonly ?AdminThemeManager $adminThemes = null,
         private readonly ?PluginLifecycleHookRunner $lifecycleHooks = null,
         private readonly ?PluginAssetRegistry $assets = null,
+        private readonly ?HookManager $hooks = null,
     ) {
         //
     }
@@ -49,6 +51,8 @@ class PluginActivator
             throw new RuntimeException("Plugin [{$plugin->slug}] requires a valid license before activation.");
         }
 
+        $this->hooks?->doAction('plugin.activating', $plugin);
+
         if ($this->lifecycleHooks !== null) {
             $this->lifecycleHooks->run($manifest, $wasDisabled ? 'reactivate' : 'activate');
             $this->checkpointStep($plugin->slug, $wasDisabled ? 'reactivate_hook_completed' : 'activate_hook_completed');
@@ -72,6 +76,7 @@ class PluginActivator
         }
         $this->cache->clear();
         $this->checkpointStep($plugin->slug, 'cache_cleared');
+        $this->hooks?->doAction('plugin.activated', $plugin);
 
         return $plugin;
     }

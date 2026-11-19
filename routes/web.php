@@ -10,10 +10,14 @@ use App\Http\Controllers\Admin\PlatformRegistryController;
 use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Ai\AiChatController;
 use App\Http\Controllers\InstallationController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SitemapController;
 use App\Platform\Core\Services\PluginRouteLoader;
 use App\Platform\Core\Services\SettingsRepository;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +34,9 @@ Route::middleware('throttle:20,1')->prefix('install')->name('install.')->group(f
     Route::get('/owner', [InstallationController::class, 'owner'])->name('owner');
     Route::post('/finish', [InstallationController::class, 'finish'])->name('finish');
 });
+
+Route::get('/locale/{locale}', LocaleController::class)
+    ->name('locale.switch');
 
 Route::get('/', function (SettingsRepository $settings) {
     $cacheBypassHeaders = [
@@ -62,7 +69,7 @@ Route::get('/', function (SettingsRepository $settings) {
             ) {
                 return response()
                     ->view('page-builder::public.show', [
-                        'page' => $page,
+                        'page' => app(\App\Platform\Core\Localization\PageTranslator::class)->localize($page),
                         'isPreview' => false,
                     ])
                     ->withHeaders($cacheBypassHeaders);
@@ -81,7 +88,7 @@ Route::get('/', function (SettingsRepository $settings) {
         if ($coreHome) {
             return response()
                 ->view('page-builder::public.show', [
-                    'page' => $coreHome,
+                    'page' => app(\App\Platform\Core\Localization\PageTranslator::class)->localize($coreHome),
                     'isPreview' => false,
                 ])
                 ->withHeaders($cacheBypassHeaders);
@@ -101,12 +108,18 @@ Route::get('/account', AccountController::class)
     ->middleware(['auth', 'verified'])
     ->name('front.account');
 
+Route::post('/account/language', [LocaleController::class, 'updatePanel'])
+    ->middleware(['auth', 'verified'])
+    ->name('front.account.language');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', 'staff'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // The profile form now lives inside the account shell (/account#profile);
+    // keep this URL as a redirect so both entry points show the same sidebar.
+    Route::get('/profile', fn () => redirect()->to(route('front.account', ['section' => 'profile'])))->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
@@ -128,6 +141,14 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/backups/{backup}/location', [BackupController::class, 'showLocation'])->name('backups.location');
         Route::post('/backups/{backup}/restore', [BackupController::class, 'restore'])->name('backups.restore');
         Route::delete('/backups/{backup}', [BackupController::class, 'destroy'])->name('backups.destroy');
+
+        Route::get('/translations', [TranslationController::class, 'index'])->name('translations.index');
+        Route::get('/translations/{locale}/{group}', [TranslationController::class, 'edit'])->name('translations.edit');
+        Route::post('/translations/raw', [TranslationController::class, 'raw'])->name('translations.raw');
+        Route::post('/translations/languages', [TranslationController::class, 'storeLanguage'])->name('translations.languages.store');
+        Route::post('/translations/bulk', [TranslationController::class, 'bulk'])->name('translations.bulk');
+        Route::post('/translations/lookup', [TranslationController::class, 'lookup'])->name('translations.lookup');
+        Route::post('/translations', [TranslationController::class, 'save'])->name('translations.save');
     });
 
     Route::middleware('permission:menus.manage')->group(function () {
@@ -162,6 +183,13 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/plugins/{slug}/deactivate', [PluginController::class, 'deactivate'])
         ->middleware('permission:plugins.activate')
         ->name('plugins.deactivate');
+    Route::post('/plugins/bulk/deactivate', [PluginController::class, 'bulkDeactivate'])
+        ->middleware('permission:plugins.activate')
+        ->name('plugins.bulk.deactivate');
+    Route::post('/plugins/bulk/purge', [PluginController::class, 'bulkPurge'])
+        ->middleware('permission:plugins.install')
+        ->name('plugins.bulk.purge');
+
     Route::delete('/plugins/{slug}', [PluginController::class, 'destroy'])
         ->middleware('permission:plugins.install')
         ->name('plugins.destroy');
@@ -192,6 +220,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/mail/test', [SettingsController::class, 'testMail'])->name('settings.mail.test');
         Route::patch('/settings/media', [SettingsController::class, 'updateMedia'])->name('settings.media.update');
+        Route::post('/settings/core-update', [\App\Http\Controllers\Admin\CoreUpdateController::class, 'store'])->name('settings.core-update');
     });
 
     Route::middleware('permission:media.manage')->group(function () {
@@ -208,6 +237,12 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
             ->name('platform-registry.live-log');
     });
 });
+
+Route::get('/sitemap.xml', SitemapController::class)->name('seo.sitemap');
+Route::get('/sitemap/{chunk}.xml', [SitemapController::class, 'chunk'])
+    ->whereNumber('chunk')
+    ->name('seo.sitemap.chunk');
+Route::get('/robots.txt', RobotsController::class)->name('seo.robots');
 
 app(PluginRouteLoader::class)->loadWebRoutes();
 app(PluginRouteLoader::class)->loadAdminRoutes();

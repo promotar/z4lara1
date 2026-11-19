@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Media</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight" data-i18n="core.media.title">{{ __('core.media.title') }}</h2>
     </x-slot>
 
 
@@ -29,19 +29,19 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" class="media-button media-button-primary" data-upload-trigger>
                             <span class="text-base leading-none">+</span>
-                            <span>Add New Media File</span>
+                            <span data-i18n="core.media.add">{{ __('core.media.add') }}</span>
                         </button>
-                        <button type="button" class="media-button" data-bulk-toggle>Bulk Select</button>
+                        <button type="button" class="media-button" data-bulk-toggle data-i18n="core.media.bulk">{{ __('core.media.bulk') }}</button>
                         <div data-bulk-actions hidden class="flex flex-wrap items-center gap-2">
-                            <button type="submit" form="bulk-delete-form" class="media-button media-button-danger" data-bulk-delete disabled>Delete Selected</button>
-                            <button type="button" class="media-button" data-bulk-cancel>Cancel</button>
+                            <button type="submit" form="bulk-delete-form" class="media-button media-button-danger" data-bulk-delete disabled data-i18n="core.media.delete_selected">{{ __('core.media.delete_selected') }}</button>
+                            <button type="button" class="media-button" data-bulk-cancel data-i18n="core.common.cancel">{{ __('core.common.cancel') }}</button>
                             <span class="text-sm text-gray-500" data-selected-count>0 selected</span>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button type="button" class="media-button media-button-primary" data-view-mode="grid">Grid</button>
-                        <button type="button" class="media-button" data-view-mode="list">List</button>
+                        <button type="button" class="media-button media-button-primary" data-view-mode="grid" data-i18n="core.media.grid">{{ __('core.media.grid') }}</button>
+                        <button type="button" class="media-button" data-view-mode="list" data-i18n="core.media.list">{{ __('core.media.list') }}</button>
                     </div>
                 </div>
             </section>
@@ -49,12 +49,12 @@
             <div class="media-workspace shadow-sm">
                 <section class="media-library media-library-panel is-grid" data-media-library>
                     <div class="mb-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-900">Media Library</h3>
-                        <span class="text-sm text-gray-500">{{ $mediaLibrary->total() }} media files</span>
+                        <h3 class="text-lg font-semibold text-gray-900" data-i18n="core.media.library">{{ __('core.media.library') }}</h3>
+                        <span class="text-sm text-gray-500">{{ __('core.media.files_count', ['count' => $mediaLibrary->total()]) }}</span>
                     </div>
 
                     @if ($mediaLibrary->isEmpty())
-                        <p class="text-sm text-gray-600">No media files uploaded yet.</p>
+                        <p class="text-sm text-gray-600" data-i18n="core.media.empty">{{ __('core.media.empty') }}</p>
                     @else
                         <div class="media-grid">
                             @foreach ($mediaLibrary as $item)
@@ -89,11 +89,11 @@
                 </section>
 
                 <aside class="media-details" data-media-details>
-                    <h3 class="media-details-title">Image Details</h3>
-                    <p class="media-details-help">Click an image to edit SEO fields and copy its site URL.</p>
+                    <h3 class="media-details-title" data-i18n="core.media.details">{{ __('core.media.details') }}</h3>
+                    <p class="media-details-help" data-i18n="core.media.details_hint">{{ __('core.media.details_hint') }}</p>
 
-                    <div data-empty-details class="mt-6 rounded-md border border-dashed border-gray-300 p-5 text-sm text-gray-500">
-                        No image selected.
+                    <div data-empty-details class="mt-6 rounded-md border border-dashed border-gray-300 p-5 text-sm text-gray-500" data-i18n="core.media.no_image">
+                        {{ __('core.media.no_image') }}
                     </div>
 
                     <div data-filled-details hidden class="mt-5 space-y-4">
@@ -104,7 +104,7 @@
                         </div>
 
                         <label class="media-seo-field">
-                            <span>File URL</span>
+                            <span data-i18n="core.media.file_url">{{ __('core.media.file_url') }}</span>
                             <input readonly data-details-url class="bg-white">
                         </label>
 
@@ -114,24 +114,24 @@
                             <input type="hidden" name="media_url" data-details-media-url>
 
                             <label class="media-seo-field">
-                                <span>Alternative Text</span>
+                                <span data-i18n="core.media.alt">{{ __('core.media.alt') }}</span>
                                 <textarea name="alt_text" rows="3" data-details-alt></textarea>
                             </label>
                             <label class="media-seo-field">
-                                <span>Title</span>
+                                <span data-i18n="core.media.title_field">{{ __('core.media.title_field') }}</span>
                                 <input name="title" data-details-title>
                             </label>
                             <label class="media-seo-field">
-                                <span>Caption</span>
+                                <span data-i18n="core.media.caption">{{ __('core.media.caption') }}</span>
                                 <textarea name="caption" rows="3" data-details-caption></textarea>
                             </label>
                             <label class="media-seo-field">
-                                <span>Description</span>
+                                <span data-i18n="core.media.description">{{ __('core.media.description') }}</span>
                                 <textarea name="description" rows="4" data-details-description></textarea>
                             </label>
 
                             <div class="media-details-actions">
-                                <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800">Save Image SEO</button>
+                                <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800" data-i18n="core.media.save_seo">{{ __('core.media.save_seo') }}</button>
                             </div>
                         </form>
                     </div>
