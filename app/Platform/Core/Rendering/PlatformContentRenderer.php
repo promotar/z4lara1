@@ -816,7 +816,12 @@ CSS;
         $url = $item['url'] ?? null;
 
         if (is_string($routeName) && Route::has($routeName)) {
-            return route($routeName, $item['route_params'] ?? []);
+            try {
+                return route($routeName, $item['route_params'] ?? []);
+            } catch (\Throwable) {
+                // A menu item that misses a required route parameter must not
+                // break the page; fall back to the explicit URL below.
+            }
         }
 
         if (is_string($url) && trim($url) !== '') {
