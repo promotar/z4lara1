@@ -24,15 +24,52 @@ seed_missing_entries() {
     done
 }
 
-# Required plugins ship as part of the platform release. Their source must
-# follow the deployed image even when /modules is a persistent volume. Overlay
-# only these known core entries; runtime-installed plugins remain untouched.
+# Required plugins ship as part of the platform release, but /modules is a
+# persistent volume that may already hold a newer or locally patched copy.
+# The volume is the source of truth once a module is installed: the image only
+# seeds a missing module, or upgrades it when the release ships a strictly
+# newer module version. An equal or unknown version never overwrites the
+# installed files, so a container restart cannot roll back deployed changes.
+module_version() {
+    [ -f "$1/module.json" ] || return 0
+
+    php -r '
+        $manifest = json_decode((string) file_get_contents($argv[1]), true);
+        echo is_array($manifest) ? (string) ($manifest["version"] ?? "") : "";
+    ' "$1/module.json" 2>/dev/null || true
+}
+
 sync_required_entry() {
     source_directory="$1"
     target_directory="$2"
 
     [ -d "$source_directory" ] || return 0
-    mkdir -p "$target_directory"
+
+    module_name="$(basename "$target_directory")"
+
+    if [ ! -d "$target_directory" ] || [ -z "$(ls -A "$target_directory" 2>/dev/null)" ]; then
+        echo ">>> Seeding required module ${module_name} from the release image."
+        mkdir -p "$target_directory"
+        cp -a "$source_directory/." "$target_directory/"
+        return 0
+    fi
+
+    source_version="$(module_version "$source_directory")"
+    target_version="$(module_version "$target_directory")"
+
+    if [ -z "$source_version" ] || [ -z "$target_version" ]; then
+        echo ">>> Keeping installed module ${module_name}: module version is not comparable."
+        return 0
+    fi
+
+    newest_version="$(printf '%s\n%s\n' "$source_version" "$target_version" | sort -V | tail -n 1)"
+
+    if [ "$newest_version" = "$target_version" ]; then
+        echo ">>> Keeping installed module ${module_name} v${target_version} (image ships v${source_version})."
+        return 0
+    fi
+
+    echo ">>> Upgrading required module ${module_name} v${target_version} -> v${source_version}."
     cp -a "$source_directory/." "$target_directory/"
 }
 
