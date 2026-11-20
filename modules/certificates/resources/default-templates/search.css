@@ -1,0 +1,10 @@
+.certificates-public .cert-search{max-width:780px;margin:0 auto;background:#fff;border:1px solid color-mix(in srgb, var(--art-color-accent, #e2d4f0) 18%, #fff);border-radius:20px;box-shadow:0 18px 50px rgba(54,35,76,.07);padding:40px 38px;text-align:center}
+.certificates-public .cert-search__head{display:grid;justify-items:center;gap:14px;margin-bottom:26px}
+.certificates-public .cert-search__emblem{display:grid;place-items:center;width:78px;height:78px;border-radius:18px;background:color-mix(in srgb, var(--art-color-accent, #f1eafa) 9%, #fff);color:var(--art-color-accent, #624397)}
+.certificates-public .cert-search__emblem .certificate-symbol{width:42px;height:42px}
+.certificates-public .cert-search__title{margin:0;color:color-mix(in srgb, var(--art-color-accent, #352353) 78%, #000);font-size:36px;font-weight:800;line-height:1.4}
+.certificates-public .cert-search__intro{margin:0;max-width:560px;color:var(--art-color-muted, #6c6475);font-size:16px;line-height:1.85}
+.certificates-public .cert-search__form{text-align:right}
+.certificates-public .cert-search__back{display:inline-block;margin-top:22px;color:var(--art-color-accent, #624397);font-weight:800;text-decoration:none}
+.certificates-public .cert-search__back:hover{text-decoration:underline}
+@media(max-width:575px){.certificates-public .cert-search{padding:26px 20px}.certificates-public .cert-search__title{font-size:26px}}

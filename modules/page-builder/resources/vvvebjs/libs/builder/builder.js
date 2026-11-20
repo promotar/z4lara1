@@ -1084,6 +1084,8 @@ Vvveb.Builder = {
 				selectBoxPosition = function(event) {
 						let pos;
 						let target;
+						/* Guard: scroll/resize fire before any element is selected. */
+						if (!self.selectedEl && !self.highlightEl) { SelectBox.style.display = "none"; return; }
 						
 						if (self.selectedEl) {
 							pos    = offset(self.selectedEl);
@@ -3387,8 +3389,8 @@ Vvveb.TreeList = {
 	
 	loadComponents: function() {
 		let list = this.container.querySelector(".tree > ol");
-		//if navigator not visible don't load
-		if (list.offsetParent === null) return;
+		// Always rebuild: a hidden navigator would otherwise keep stale nodes.
+		if (!list) return;
 		
 		this.tree     = [];
 		this.idToNode = {};

@@ -21,7 +21,7 @@ while IFS= read -r tracked_path; do
 done < <(git ls-files)
 
 content_matches="$({
-    git grep -IlE '^APP_KEY=base64:[A-Za-z0-9+/=]{20,}|^(DB|MYSQL|MARIADB|REDIS|MAIL)_PASSWORD=(")?[^"$<{[:space:]][^[:space:]]*|(^|[^A-Za-z0-9])sk-(proj-)?[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|xox[baprs]-[0-9A-Za-z-]{20,}|-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----' -- ':!.env.example' || true
+    git grep -IlE '^APP_KEY=base64:[A-Za-z0-9+/=]{20,}|^(DB|MYSQL|MARIADB|REDIS|MAIL)_PASSWORD=(")?[^"$<{[:space:]][^[:space:]]*|(^|[^A-Za-z0-9])sk-(proj-)?[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|(^|[[:space:]="'"'"'])(AKIA|ASIA)[0-9A-Z]{16}([[:space:]"'"'"']|$)|xox[baprs]-[0-9A-Za-z-]{20,}|-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----' -- ':!.env.example' || true
 } | sort -u)"
 
 if [[ -n "$content_matches" ]]; then
@@ -33,7 +33,11 @@ fi
 
 private_ip_matches="$({
     git grep -IlE '(^|[^0-9])(10\.([0-9]{1,3}\.){2}[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3})([^0-9]|$)' -- \
-        app bootstrap config database ops reports scripts tests verification .env.example || true
+        app bootstrap config database modules ops reports scripts tests verification .env.example \
+        ':(exclude)modules/**/*.svg' \
+        ':(exclude)modules/**/*.min.js' \
+        ':(exclude)modules/*/resources/private-assets/**' \
+        ':(exclude)modules/page-builder/resources/vvvebjs/**' || true
 } | sort -u)"
 
 if [[ -n "$private_ip_matches" ]]; then

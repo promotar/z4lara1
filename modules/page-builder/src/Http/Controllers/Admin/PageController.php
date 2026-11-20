@@ -36,6 +36,11 @@ class PageController extends Controller
         return view('page-builder::pages.index', [
             'pages' => $pages->latest('updated_at')->latest('id')->paginate(25)->withQueryString(),
             'search' => $search,
+            'pageTranslations' => Schema::hasTable('platform_page_translations')
+                ? DB::table('platform_page_translations')->get(['id', 'page_id', 'locale', 'title', 'status'])->groupBy('page_id')
+                : collect(),
+            'defaultLocale' => $this->defaultLocale(),
+            'installLanguages' => $this->languageOptions(),
         ]);
     }
 
@@ -140,9 +145,12 @@ class PageController extends Controller
         return redirect()->route('admin.pages.edit', $id);
     }
 
-    public function edit(int $page, PlatformContentRenderer $renderer, HookManager $hooks): Response
+    public function edit(int $page, Request $request, PlatformContentRenderer $renderer, HookManager $hooks): Response
     {
-        $record = $this->findPage($page);
+        $baseRecord = $this->findPage($page);
+        $locale = $this->resolveLocale($request);
+        $translationExists = $this->translationRow((int) $baseRecord->id, $locale) !== null;
+        $record = $this->editorRecord($baseRecord, $locale);
         $template = dirname(__DIR__, 4).'/resources/vvvebjs/editor.html';
         abort_unless(is_file($template), 503, 'VvvebJs assets are not installed.');
         $assetBase = url('/page-builder-assets/v7');
@@ -159,25 +167,29 @@ class PageController extends Controller
                 'metaDescription' => $record->meta_description,
                 'blockKey' => $record->block_key ?? null,
                 'sortOrder' => (int) ($record->sort_order ?? 0),
-                'documentVersion' => $this->documentVersion($record),
+                'documentVersion' => $this->documentVersion($record, $locale),
             ],
+            'editorLocale' => $locale,
+            'editorLanguages' => $this->languageOptions(),
+            'translationExists' => $translationExists,
+            'isDefaultLocale' => $locale === $this->defaultLocale(),
             'pages' => [
                 'current' => [
                     'name' => 'current',
                     'filename' => $record->slug.'.html',
                     'file' => $record->slug.'.html',
-                    'url' => route('admin.pages.vvveb-canvas', $record->id),
+                    'url' => route('admin.pages.vvveb-canvas', ['page' => $record->id, 'locale' => $locale]),
                     'title' => $record->title,
                     'folder' => null,
                 ],
             ],
-            'saveUrl' => route('admin.pages.vvveb-save', $record->id),
-            'previewUrl' => route('admin.pages.preview', $record->id),
+            'saveUrl' => route('admin.pages.vvveb-save', ['page' => $record->id, 'locale' => $locale]),
+            'previewUrl' => route('admin.pages.preview', ['page' => $record->id, 'locale' => $locale]),
             'indexUrl' => route('admin.pages.index'),
             'assetBase' => $assetBase,
             'mediaUrl' => route('admin.pages.vvveb-media'),
             'mediaUploadUrl' => route('admin.media.store'),
-            'revisionsUrl' => route('admin.pages.vvveb-revisions', $record->id),
+            'revisionsUrl' => route('admin.pages.vvveb-revisions', ['page' => $record->id, 'locale' => $locale]),
             'reusableUrl' => route('admin.pages.vvveb-reusable'),
             'frontendMenus' => $renderer->menuTraitOptions(),
             'frontendMenuItems' => $renderer->menuPreviewItems(request()->user()),
@@ -223,7 +235,8 @@ class PageController extends Controller
             ->map(fn (string $url): string => '<script src="'.e($url).'" data-page-builder-extension></script>')
             ->implode('');
 
-        $html = str_replace('</head>', '<script>window.ArtInpaVvvebConfig='.$encodedConfig.';</script><link rel="stylesheet" href="'.$assetBase.'/integration/css/vvveb-integration.css">'.$extensionStyles.'</head>', $html);
+        $integrationVersion = @filemtime(dirname(__DIR__, 4).'/resources/vvvebjs/integration/js/vvveb-integration.js') ?: time();
+        $html = str_replace('</head>', '<script>window.ArtInpaVvvebConfig='.$encodedConfig.';</script><link rel="stylesheet" href="'.$assetBase.'/integration/css/vvveb-integration.css?v='.$integrationVersion.'">'.$extensionStyles.'</head>', $html);
         $html = str_replace('data-vvveb-url="save.php"', 'data-vvveb-url="'.e($config['saveUrl']).'"', $html);
         $html = str_replace("window.mediaPath = '../../media';", "window.mediaPath = '/';", $html);
         $html = str_replace("Vvveb.themeBaseUrl = 'demo/landing/';", "Vvveb.themeBaseUrl = '".$assetBase."/demo/landing/';", $html);
@@ -231,7 +244,7 @@ class PageController extends Controller
         $html = str_replace('let pages = defaultPages;', 'let pages = window.ArtInpaVvvebConfig.pages;', $html);
         // Plugin elements load first so the standard integration pass can apply global VvvebJs
         // properties (for example z-index) to core and plugin-owned elements uniformly.
-        $html = str_replace('</body>', $extensionScripts.'<script src="'.$assetBase.'/integration/js/vvveb-integration.js"></script></body>', $html);
+        $html = str_replace('</body>', $extensionScripts.'<script src="'.$assetBase.'/integration/js/vvveb-integration.js?v='.$integrationVersion.'"></script></body>', $html);
 
         return response($html)->header('Content-Type', 'text/html; charset=UTF-8')->header('Cache-Control', 'no-store');
     }
@@ -290,16 +303,21 @@ class PageController extends Controller
             ->all();
     }
 
-    public function canvas(int $page, VvvebDocument $documents): Response
+    public function canvas(int $page, Request $request, VvvebDocument $documents): Response
     {
-        return response($documents->fromPage($this->findPage($page)))
+        $locale = $this->resolveLocale($request);
+        $record = $this->editorRecord($this->findPage($page), $locale);
+
+        return response($documents->fromPage($record))
             ->header('Content-Type', 'text/html; charset=UTF-8')
             ->header('Cache-Control', 'no-store');
     }
 
     public function save(Request $request, int $page, VvvebDocument $documents, OperationLogger $operations): JsonResponse
     {
-        $record = $this->findPage($page);
+        $locale = $this->resolveLocale($request);
+        $isDefault = $locale === $this->defaultLocale();
+        $record = $this->editorRecord($this->findPage($page), $locale);
         $data = $request->validate([
             'html' => ['required', 'string', 'max:16000000'],
             'title' => ['nullable', 'string', 'max:255'],
@@ -312,10 +330,11 @@ class PageController extends Controller
             'sort_order' => ['nullable', 'integer', 'between:-100000,100000'],
             'autosave' => ['nullable', 'boolean'],
             'document_version' => ['nullable', 'string', 'size:64'],
+            'locale' => ['nullable', 'string', 'max:16'],
         ]);
 
         if (! is_string($data['document_version'] ?? null)
-            || ! hash_equals($this->documentVersion($record), $data['document_version'])) {
+            || ! hash_equals($this->documentVersion($record, $locale), $data['document_version'])) {
             return response()->json([
                 'success' => false,
                 'stale' => true,
@@ -325,14 +344,19 @@ class PageController extends Controller
 
         $document = $documents->normalize($data['html'], (string) ($data['title'] ?? $record->title));
         $title = trim((string) ($data['title'] ?? $record->title)) ?: (string) $record->title;
-        $slug = $this->uniqueSlug((string) ($data['slug'] ?? $record->slug), $page);
+        $slug = $isDefault
+            ? $this->uniqueSlug((string) ($data['slug'] ?? $record->slug), $page)
+            : (string) $record->slug;
         $type = $this->contentType((string) ($data['content_type'] ?? $record->content_type ?? 'page'));
         $status = (string) ($data['status'] ?? $record->status ?? 'draft');
+        $body = $documents->body($document);
+        $css = $documents->css($document);
         $now = now();
 
         if (! $request->boolean('autosave')) {
             DB::table('vvvebjs_page_revisions')->insert([
                 'page_id' => $page,
+                'locale' => $isDefault ? null : $locale,
                 'title' => $record->title,
                 'vvvebjs_html' => $record->vvvebjs_html,
                 'created_by' => $request->user()?->id,
@@ -340,68 +364,153 @@ class PageController extends Controller
             ]);
         }
 
-        DB::table('platform_pages')->where('id', $page)->update([
-            'title' => $title,
-            'slug' => $slug,
-            'content_type' => $type,
-            'block_key' => $type === 'block' ? ($data['block_key'] ?? $record->block_key ?? $slug) : null,
-            'vvvebjs_html' => $document,
-            'html' => $documents->body($document),
-            'content' => $documents->body($document),
-            'css' => $documents->css($document),
-            'status' => $status,
-            'sort_order' => (int) ($data['sort_order'] ?? $record->sort_order ?? 0),
-            'seo_title' => $data['seo_title'] ?? $record->seo_title,
-            'meta_description' => $data['meta_description'] ?? $record->meta_description,
-            'published_at' => $status === 'published' ? ($record->published_at ?: $now) : null,
-            'updated_at' => $now,
-        ]);
+        if ($isDefault) {
+            DB::table('platform_pages')->where('id', $page)->update([
+                'title' => $title,
+                'slug' => $slug,
+                'content_type' => $type,
+                'block_key' => $type === 'block' ? ($data['block_key'] ?? $record->block_key ?? $slug) : null,
+                'vvvebjs_html' => $document,
+                'html' => $body,
+                'content' => $body,
+                'css' => $css,
+                'status' => $status,
+                'sort_order' => (int) ($data['sort_order'] ?? $record->sort_order ?? 0),
+                'seo_title' => $data['seo_title'] ?? $record->seo_title,
+                'meta_description' => $data['meta_description'] ?? $record->meta_description,
+                'published_at' => $status === 'published' ? ($record->published_at ?: $now) : null,
+                'updated_at' => $now,
+            ]);
+        } else {
+            $payload = [
+                'title' => $title,
+                'seo_title' => $data['seo_title'] ?? $record->seo_title,
+                'meta_description' => $data['meta_description'] ?? $record->meta_description,
+                'vvvebjs_html' => $document,
+                'html' => $body,
+                'css' => $css,
+                'status' => $status,
+                'updated_by' => $request->user()?->id,
+                'updated_at' => $now,
+            ];
+
+            $existing = $this->translationRow($page, $locale);
+
+            if ($existing !== null) {
+                DB::table('platform_page_translations')
+                    ->where('id', $existing->id)
+                    ->update($payload);
+            } else {
+                DB::table('platform_page_translations')->insert($payload + [
+                    'page_id' => $page,
+                    'locale' => $locale,
+                    'created_by' => $request->user()?->id,
+                    'created_at' => $now,
+                ]);
+            }
+
+            DB::table('platform_pages')->where('id', $page)->update(['updated_at' => $now]);
+        }
 
         if (! $request->boolean('autosave')) {
             $operation = $operations->start('admin.vvvebjs.save', 'vvvebjs-page', (string) $page, ['status' => $status, 'type' => $type], $request->user()?->id);
             $operations->success($operation, 'VvvebJs document saved.');
         }
 
+        /*
+         * Return the same version hash the save guard checks, otherwise every
+         * following save (or autosave) is treated as stale (409).
+         */
+        $freshBase = $this->findPage($page);
+        $freshRecord = $isDefault ? $freshBase : $this->editorRecord($freshBase, $locale);
+
         return response()->json([
             'success' => true,
             'message' => $request->boolean('autosave') ? 'Autosaved' : 'Page saved',
             'updated_at' => $now->toIso8601String(),
-            'document_version' => hash('sha256', $page.'|'.$now->toDateTimeString().'|'.$document),
+            'document_version' => $this->documentVersion($freshRecord, $locale),
         ]);
     }
 
-    public function preview(int $page): View
+    public function preview(int $page, Request $request): View
     {
-        return view('page-builder::public.show', ['page' => $this->findPage($page), 'isPreview' => true]);
+        $locale = $this->resolveLocale($request);
+
+        return view('page-builder::public.show', [
+            'page' => $this->editorRecord($this->findPage($page), $locale),
+            'isPreview' => true,
+        ]);
     }
 
-    public function revisions(int $page): JsonResponse
+    public function revisions(int $page, Request $request): JsonResponse
     {
         $this->findPage($page);
+        $locale = $this->resolveLocale($request);
+        $scoped = $locale === $this->defaultLocale() ? null : $locale;
 
         return response()->json([
-            'revisions' => DB::table('vvvebjs_page_revisions')->where('page_id', $page)->latest('id')->limit(20)->get()->map(fn (object $revision): array => [
-                'id' => $revision->id,
-                'title' => $revision->title,
-                'created_at' => $revision->created_at,
-                'restore_url' => route('admin.pages.vvveb-revisions.restore', [$page, $revision->id]),
-            ])->all(),
+            'revisions' => DB::table('vvvebjs_page_revisions')
+                ->where('page_id', $page)
+                ->when($scoped === null, fn ($query) => $query->whereNull('locale'), fn ($query) => $query->where('locale', $scoped))
+                ->latest('id')
+                ->limit(20)
+                ->get()
+                ->map(fn (object $revision): array => [
+                    'id' => $revision->id,
+                    'title' => $revision->title,
+                    'locale' => $revision->locale,
+                    'created_at' => $revision->created_at,
+                    'restore_url' => route('admin.pages.vvveb-revisions.restore', [$page, $revision->id, 'locale' => $locale]),
+                ])->all(),
         ]);
     }
 
     public function restoreRevision(Request $request, int $page, int $revision, VvvebDocument $documents): JsonResponse
     {
         $this->findPage($page);
-        $snapshot = DB::table('vvvebjs_page_revisions')->where('page_id', $page)->where('id', $revision)->first();
+        $locale = $this->resolveLocale($request);
+        $isDefault = $locale === $this->defaultLocale();
+        $scoped = $isDefault ? null : $locale;
+
+        $snapshot = DB::table('vvvebjs_page_revisions')
+            ->where('page_id', $page)
+            ->where('id', $revision)
+            ->when($scoped === null, fn ($query) => $query->whereNull('locale'), fn ($query) => $query->where('locale', $scoped))
+            ->first();
         abort_unless($snapshot, 404);
+
         $document = $documents->normalize((string) $snapshot->vvvebjs_html, (string) $snapshot->title);
-        DB::table('platform_pages')->where('id', $page)->update([
-            'vvvebjs_html' => $document,
-            'html' => $documents->body($document),
-            'content' => $documents->body($document),
-            'css' => $documents->css($document),
-            'updated_at' => now(),
-        ]);
+
+        if ($isDefault) {
+            DB::table('platform_pages')->where('id', $page)->update([
+                'vvvebjs_html' => $document,
+                'html' => $documents->body($document),
+                'content' => $documents->body($document),
+                'css' => $documents->css($document),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $payload = [
+                'vvvebjs_html' => $document,
+                'html' => $documents->body($document),
+                'css' => $documents->css($document),
+                'updated_at' => now(),
+            ];
+
+            $existing = $this->translationRow($page, $locale);
+
+            if ($existing !== null) {
+                DB::table('platform_page_translations')->where('id', $existing->id)->update($payload);
+            } else {
+                DB::table('platform_page_translations')->insert($payload + [
+                    'page_id' => $page,
+                    'locale' => $locale,
+                    'title' => (string) $snapshot->title,
+                    'status' => 'draft',
+                    'created_at' => now(),
+                ]);
+            }
+        }
 
         return response()->json(['success' => true, 'message' => 'Revision restored.']);
     }
@@ -482,6 +591,11 @@ class PageController extends Controller
 
     public function destroy(int $page): RedirectResponse
     {
+        if (Schema::hasTable('platform_page_translations')) {
+            DB::table('platform_page_translations')->where('page_id', $page)->delete();
+        }
+
+        DB::table('vvvebjs_page_revisions')->where('page_id', $page)->delete();
         DB::table('platform_pages')->where('id', $page)->delete();
 
         return redirect()->route('admin.pages.index')->with('status', 'VvvebJs page deleted.');
@@ -490,6 +604,12 @@ class PageController extends Controller
     public function bulkDestroy(Request $request): RedirectResponse
     {
         $ids = $request->validate(['pages' => ['required', 'array'], 'pages.*' => ['integer']])['pages'];
+
+        if (Schema::hasTable('platform_page_translations')) {
+            DB::table('platform_page_translations')->whereIn('page_id', $ids)->delete();
+        }
+
+        DB::table('vvvebjs_page_revisions')->whereIn('page_id', $ids)->delete();
         DB::table('platform_pages')->whereIn('id', $ids)->delete();
 
         return back()->with('status', count($ids).' page(s) deleted.');
@@ -503,9 +623,82 @@ class PageController extends Controller
         return $page;
     }
 
-    private function documentVersion(object $page): string
+    private function documentVersion(object $page, ?string $locale = null): string
     {
-        return hash('sha256', $page->id.'|'.$page->updated_at.'|'.(string) ($page->vvvebjs_html ?? ''));
+        return hash('sha256', implode('|', [
+            (string) $page->id,
+            (string) ($locale ?? ''),
+            (string) ($page->updated_at ?? ''),
+            (string) ($page->translation_id ?? ''),
+            (string) ($page->vvvebjs_html ?? ''),
+        ]));
+    }
+
+    private function defaultLocale(): string
+    {
+        return app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
+    }
+
+    private function resolveLocale(Request $request): string
+    {
+        $locale = str_replace('_', '-', trim((string) ($request->input('locale') ?? $request->query('locale', ''))));
+        $platform = app(\App\Platform\Core\Localization\PlatformLocale::class);
+
+        if ($locale !== '' && $platform->isAvailable($locale)) {
+            return $locale;
+        }
+
+        $current = app()->getLocale();
+
+        return $platform->isAvailable($current) ? $current : $this->defaultLocale();
+    }
+
+    /** @return array<string,string> */
+    private function languageOptions(): array
+    {
+        try {
+            return app(\App\Platform\Core\Localization\PlatformLocale::class)->languages();
+        } catch (\Throwable) {
+            return ['en' => 'English'];
+        }
+    }
+
+    private function translationRow(int $pageId, string $locale): ?object
+    {
+        if (! Schema::hasTable('platform_page_translations') || $locale === $this->defaultLocale()) {
+            return null;
+        }
+
+        return DB::table('platform_page_translations')
+            ->where('page_id', $pageId)
+            ->where('locale', $locale)
+            ->first();
+    }
+
+    private function editorRecord(object $base, string $locale): object
+    {
+        $translation = $this->translationRow((int) $base->id, $locale);
+
+        if ($translation === null) {
+            $record = clone $base;
+            $record->editor_locale = $locale;
+            $record->translation_id = null;
+
+            return $record;
+        }
+
+        return (object) array_merge((array) $base, [
+            'title' => $translation->title ?: $base->title,
+            'seo_title' => $translation->seo_title,
+            'meta_description' => $translation->meta_description,
+            'vvvebjs_html' => $translation->vvvebjs_html,
+            'html' => $translation->html,
+            'css' => $translation->css,
+            'status' => $translation->status ?: ($base->status ?? 'draft'),
+            'updated_at' => $translation->updated_at ?: $base->updated_at,
+            'editor_locale' => $locale,
+            'translation_id' => $translation->id,
+        ]);
     }
 
     private function contentType(string $value): string

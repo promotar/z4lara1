@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "pipeline_revision": 2,
+  "environment_code": "artinpa-gallery-house",
+  "title": "Art INPA Gallery House",
+  "viewer_compatibility_version": "ve03-1",
+  "coordinate_system": {
+    "handedness": "right",
+    "up": "+Y",
+    "forward": "-Z",
+    "units": "meter"
+  },
+  "interior_anchor": [-0.797, 1.35, -4.276],
+  "spawn": {
+    "code": "main",
+    "translation": [-0.797, 0.0, -2.5],
+    "yaw_degrees": 180,
+    "pitch_degrees": 0,
+    "room_code": "main-hall",
+    "minimum_clearance_m": 1.9
+  },
+  "rooms": [
+    {
+      "code": "main-hall",
+      "title": "Main Hall",
+      "sort_order": 10,
+      "bounds": {
+        "min": [-5.2, -0.1, -12.6],
+        "max": [6.1, 4.4, 4.2]
+      }
+    },
+    {
+      "code": "west-gallery",
+      "title": "West Gallery",
+      "sort_order": 20,
+      "bounds": {
+        "min": [-7.8, -0.1, -6.2],
+        "max": [-5.0, 3.5, -1.8]
+      }
+    }
+  ],
+  "slot_assignment": {
+    "expected_slot_count": 14,
+    "west_gallery_max_x": -5.0,
+    "minimum_width_m": 0.2,
+    "minimum_height_m": 0.2,
+    "outward_offset_m": 0.025
+  },
+  "collision": {
+    "geometry_compression": "none",
+    "included_materials": ["FloorBaked", "Glass", "Terasse_baked", "WallBaked", "WoodBaked"],
+    "excluded_material_prefixes": ["Image_", "Picture_", "DecoLamp", "material"]
+  },
+  "license": {
+    "source_name": "VR Gallery House (baked)",
+    "creator": "Elin (ElinHohler)",
+    "source_url": "https://sketchfab.com/3d-models/vr-gallery-house-baked-8e3b280476eb4790af97e2abd3d9be59",
+    "license_name": "Creative Commons Attribution 4.0 International",
+    "license_code": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "commercial_use_allowed": true,
+    "adaptation_allowed": true,
+    "runtime_derivative_allowed": true,
+    "attribution": "VR Gallery House (baked) by Elin (ElinHohler), licensed under CC BY 4.0. Adapted for Art INPA VE-03."
+  }
+}

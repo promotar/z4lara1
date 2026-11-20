@@ -1,0 +1,231 @@
+{
+    "name": "SEO",
+    "slug": "seo",
+    "identifier": "artinpa.seo",
+    "version": "2.3.1",
+    "type": "feature",
+    "status": "stable",
+    "default_state": "installed_inactive",
+    "description": "Essential SEO management for ART INPA: dashboard, settings, sitemap, redirects and content audit.",
+    "author": "Art INPA",
+    "provider": "Modules\\Seo\\SeoServiceProvider",
+    "provider_file": "src/SeoServiceProvider.php",
+    "platform_version": ">=3.4.4 <4.0.0",
+    "dependencies": [],
+    "optional_dependencies": [],
+    "critical": false,
+    "can_deactivate": true,
+    "can_uninstall": true,
+    "integrations": {
+        "user_deletion": {
+            "mode": "none"
+        }
+    },
+    "routes": {
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/seo",
+            "name": "admin.plugins.seo.",
+            "middleware": [
+                "web",
+                "auth",
+                "staff",
+                "permission:seo.view"
+            ],
+            "methods": [
+                "GET",
+                "HEAD",
+                "POST",
+                "PATCH",
+                "PUT",
+                "DELETE"
+            ]
+        },
+        "web": {
+            "file": "routes/web.php",
+            "prefix": "",
+            "name": "seo.",
+            "middleware": [
+                "web"
+            ]
+        }
+    },
+    "permissions": [
+        {
+            "name": "seo.view",
+            "description": "View the SEO dashboard and audit summaries."
+        },
+        {
+            "name": "seo.settings",
+            "description": "Update global SEO defaults and organization information."
+        },
+        {
+            "name": "seo.sitemap",
+            "description": "Configure and generate the XML sitemap."
+        },
+        {
+            "name": "seo.redirects",
+            "description": "Create, update, enable, disable and remove redirects."
+        },
+        {
+            "name": "seo.audit",
+            "description": "Run and review the content SEO audit."
+        }
+    ],
+    "menus": [
+        {
+            "key": "seo.admin",
+            "name": "SEO",
+            "location": "admin",
+            "description": "Central SEO management.",
+            "source": "plugin",
+            "sort_order": 90,
+            "items": [
+                {
+                    "title": "SEO Dashboard",
+                    "label": "SEO Dashboard",
+                    "type": "route",
+                    "route": "admin.plugins.seo.dashboard",
+                    "icon": "S",
+                    "permission": "seo.view",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 10,
+                    "sort_order": 1
+                },
+                {
+                    "title": "SEO Settings",
+                    "label": "SEO Settings",
+                    "type": "route",
+                    "route": "admin.plugins.seo.settings.edit",
+                    "icon": "G",
+                    "permission": "seo.settings",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 20,
+                    "sort_order": 2
+                },
+                {
+                    "title": "Modules",
+                    "label": "Modules",
+                    "type": "route",
+                    "route": "admin.plugins.seo.modules.index",
+                    "icon": "M",
+                    "permission": "seo.settings",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 25,
+                    "sort_order": 3
+                },
+                {
+                    "title": "Sitemap",
+                    "label": "Sitemap",
+                    "type": "route",
+                    "route": "admin.plugins.seo.sitemap.index",
+                    "icon": "P",
+                    "permission": "seo.sitemap",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 30,
+                    "sort_order": 4
+                },
+                {
+                    "title": "Redirects",
+                    "label": "Redirects",
+                    "type": "route",
+                    "route": "admin.plugins.seo.redirects.index",
+                    "icon": "R",
+                    "permission": "seo.redirects",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 40,
+                    "sort_order": 5
+                },
+                {
+                    "title": "SEO Audit",
+                    "label": "SEO Audit",
+                    "type": "route",
+                    "route": "admin.plugins.seo.audit.index",
+                    "icon": "A",
+                    "permission": "seo.audit",
+                    "admin_group": "SEO",
+                    "admin_sort_order": 50,
+                    "sort_order": 6
+                }
+            ]
+        }
+    ],
+    "settings": {
+        "label": "SEO Settings",
+        "route": "admin.plugins.seo.settings.edit"
+    },
+    "seo": {
+        "enabled": true,
+        "sitemap": true,
+        "routes": {
+            "include": [
+                "*"
+            ],
+            "exclude": []
+        },
+        "settings": {
+            "general.title_suffix": " | ART INPA",
+            "general.default_description": "",
+            "general.default_og_image": "",
+            "robots.index": true,
+            "robots.follow": false,
+            "sitemap.changefreq": "weekly",
+            "sitemap.priority": 0.8,
+            "general.site_name": "",
+            "general.title_template": "{title} | {site_name}",
+            "general.description_template": "{excerpt}",
+            "general.robots_behavior": "index_nofollow",
+            "general.canonical_behavior": "auto",
+            "social.og_enabled": true,
+            "social.title": "",
+            "social.description": "",
+            "social.image": "",
+            "organization.name": "",
+            "organization.logo": "",
+            "organization.url": "",
+            "organization.email": "",
+            "organization.phone": "",
+            "sitemap.enabled": true,
+            "sitemap.max_urls": 50000,
+            "sitemap.include_images": false,
+            "sitemap.include_featured_images": true,
+            "sitemap.exclude_attachments": true
+        }
+    },
+    "migrations": "database/migrations",
+    "migration_ownership": {
+        "table_prefix": "seo_",
+        "core_tables_modified": false
+    },
+    "lifecycle": {
+        "file": "src/SeoLifecycle.php",
+        "install": "Modules\\Seo\\SeoLifecycle@install",
+        "activate": "Modules\\Seo\\SeoLifecycle@activate",
+        "deactivate": "Modules\\Seo\\SeoLifecycle@deactivate",
+        "reactivate": "Modules\\Seo\\SeoLifecycle@activate",
+        "purge": "Modules\\Seo\\SeoLifecycle@purge"
+    },
+    "uninstall": {
+        "tables": [
+            "seo_audit_issues",
+            "seo_audit_runs",
+            "seo_lifecycle_log",
+            "seo_meta",
+            "seo_module_states",
+            "seo_redirects",
+            "seo_schema_templates",
+            "seo_settings",
+            "seo_sitemap_chunks",
+            "seo_sitemap_runs",
+            "seo_sites"
+        ],
+        "settings": [],
+        "storage_paths": [],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": [
+            "seo."
+        ]
+    },
+    "docs": "docs/plugin.md"
+}

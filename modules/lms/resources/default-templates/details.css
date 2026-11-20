@@ -1,0 +1,32 @@
+/* The default Course Details template intentionally reuses the plugin's
+   native lms-course-details.css component system. This keeps the editable
+   template visually identical to the original tabbed course page. */
+[data-lms-template="default-details"] {
+    display: block;
+    width: 100%;
+}
+
+[data-lms-template="default-details"] .lms-details-description {
+    color: var(--ainpa-course-muted);
+    line-height: 1.75;
+}
+
+[data-lms-template="default-details"] .lms-details-inline-link {
+    color: var(--ainpa-course-primary);
+    display: inline-flex;
+    font-weight: 800;
+    margin-top: 8px;
+    text-decoration: none;
+}
+
+[data-lms-template="default-details"] .ainpa-course-faq-list:empty::before,
+[data-lms-template="default-details"] .ainpa-course-check-list:empty::before {
+    color: var(--ainpa-course-muted);
+    content: "No information has been added yet.";
+    display: block;
+    line-height: 1.6;
+}
+
+[data-lms-template="default-details"] .ainpa-course-price-card > .lms-template-details__action {
+    margin-top: 0;
+}

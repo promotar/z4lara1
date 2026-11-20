@@ -1,0 +1,235 @@
+{
+    "name": "Certificates",
+    "slug": "certificates",
+    "version": "1.5.2",
+    "type": "feature",
+    "platform_version": ">=3.4.4 <4.0.0",
+    "description": "Independent certificate posts with four editable fields, exact public lookup, private administration and original root URLs.",
+    "author": "Practika",
+    "provider": "Modules\\Certificates\\CertificatesServiceProvider",
+    "provider_file": "src/CertificatesServiceProvider.php",
+    "dependencies": [],
+    "integrations": {
+        "user_deletion": {
+            "mode": "none"
+        }
+    },
+    "routes": {
+        "web": {
+            "file": "routes/web.php",
+            "prefix": "",
+            "name": "certificates",
+            "middleware": [
+                "web",
+                "Modules\\Certificates\\Http\\Middleware\\NoIndex"
+            ]
+        },
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/certificates",
+            "name": "admin.plugins.certificates",
+            "middleware": [
+                "web",
+                "auth",
+                "staff",
+                "Modules\\Certificates\\Http\\Middleware\\EnsureCertificateAdministrator",
+                "permission:certificates.manage"
+            ]
+        }
+    },
+    "permissions": [
+        "certificates.manage",
+        "route.admin.plugins.certificates.index",
+        "route.admin.plugins.certificates.create",
+        "route.admin.plugins.certificates.store",
+        "route.admin.plugins.certificates.edit",
+        "route.admin.plugins.certificates.update",
+        "certificates.issuers.manage",
+        "route.admin.plugins.certificates.issuers.index",
+        "route.admin.plugins.certificates.issuers.users",
+        "route.admin.plugins.certificates.issuers.store",
+        "route.admin.plugins.certificates.issuers.update",
+        "route.admin.plugins.certificates.issuers.destroy",
+        "certificates.templates.manage",
+        "route.admin.plugins.certificates.templates.index",
+        "route.admin.plugins.certificates.templates.store",
+        "route.admin.plugins.certificates.templates.edit",
+        "route.admin.plugins.certificates.templates.update",
+        "route.admin.plugins.certificates.templates.destroy",
+        "route.admin.plugins.certificates.templates.duplicate",
+        "route.admin.plugins.certificates.templates.default",
+        "route.admin.plugins.certificates.destroy",
+        "route.admin.plugins.certificates.bulk-destroy",
+        "route.admin.plugins.certificates.bulk-restore",
+        "route.admin.plugins.certificates.bulk-force-destroy",
+        "route.admin.plugins.certificates.trash.empty",
+        "route.admin.plugins.certificates.restore",
+        "route.admin.plugins.certificates.force-destroy"
+    ],
+    "menus": [
+        {
+            "key": "certificates.admin",
+            "name": "Certificates",
+            "location": "admin",
+            "source": "plugin",
+            "sort_order": 66,
+            "items": [
+                {
+                    "title": "Certificates",
+                    "label": "Certificates",
+                    "type": "route",
+                    "route": "admin.plugins.certificates.index",
+                    "icon": "C",
+                    "permission": "certificates.admin-menu",
+                    "sort_order": 1
+                },
+                {
+                    "title": "Issuers",
+                    "label": "Issuers",
+                    "type": "route",
+                    "route": "admin.plugins.certificates.issuers.index",
+                    "icon": "U",
+                    "permission": "certificates.issuers.manage",
+                    "sort_order": 2
+                },
+                {
+                    "title": "Templates",
+                    "label": "Templates",
+                    "type": "route",
+                    "route": "admin.plugins.certificates.templates.index",
+                    "icon": "T",
+                    "permission": "certificates.templates.manage",
+                    "sort_order": 3
+                }
+            ]
+        }
+    ],
+    "settings": {
+        "label": "Certificates",
+        "route": "admin.plugins.certificates.index"
+    },
+    "migrations": "database/migrations",
+    "lifecycle": {
+        "file": "src/CertificatesLifecycle.php",
+        "install": "Modules\\Certificates\\CertificatesLifecycle@grantAdministration",
+        "activate": "Modules\\Certificates\\CertificatesLifecycle@grantAdministration",
+        "reactivate": "Modules\\Certificates\\CertificatesLifecycle@grantAdministration"
+    },
+    "registry": {
+        "routes": {
+            "certificates.manage.index": {
+                "uri": "certificates/manage",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Issuer portal: certificate list and search."
+            },
+            "certificates.manage.create": {
+                "uri": "certificates/manage/create",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Issuer portal: create certificate form."
+            },
+            "certificates.manage.store": {
+                "uri": "certificates/manage",
+                "methods": [
+                    "POST"
+                ],
+                "description": "Issuer portal: store a certificate."
+            },
+            "certificates.manage.edit": {
+                "uri": "certificates/manage/*/edit",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Issuer portal: edit certificate form."
+            },
+            "certificates.manage.update": {
+                "uri": "certificates/manage/*",
+                "methods": [
+                    "PUT",
+                    "PATCH"
+                ],
+                "description": "Issuer portal: update a certificate."
+            },
+            "certificates.search": {
+                "uri": "certificate-search",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Empty certificate number search form; no public archive."
+            },
+            "certificates.lookup": {
+                "uri": "certificate-search",
+                "methods": [
+                    "POST"
+                ],
+                "description": "Exact full certificate slug lookup."
+            },
+            "certificates.show": {
+                "uri": "*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Root certificate URL constrained to numeric identifiers and known certificate slugs."
+            },
+            "certificates.image": {
+                "uri": "certificate-media/*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Short-lived signed access to an original private certificate image."
+            },
+            "certificates.styles": {
+                "uri": "certificate-assets/certificates.css",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Plugin-owned public stylesheet."
+            },
+            "certificates.asset": {
+                "uri": "certificate-assets/*",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Allow-listed, plugin-owned Cairo font and standard certificate icon assets."
+            },
+            "certificates.template-script": {
+                "uri": "certificate-assets/templates/*.js",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Serves an active certificate template JavaScript file."
+            }
+        }
+    },
+    "uninstall": {
+        "tables": [
+            "certificates",
+            "certificate_issuers",
+            "certificate_templates",
+            "certificate_template_settings"
+        ],
+        "settings": [],
+        "storage_paths": [
+            {
+                "disk": "local",
+                "path": "certificates"
+            }
+        ],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": []
+    },
+    "docs": "docs/plugin.md"
+}

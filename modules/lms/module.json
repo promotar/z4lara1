@@ -1,0 +1,713 @@
+{
+    "name": "LMS",
+    "slug": "lms",
+    "version": "2.1.15",
+    "type": "feature",
+    "platform_version": ">=3.4.4 <4.0.0",
+    "description": "Independent Learning Management System plugin foundation for Z4Platform. Payment remains outside this plugin and belongs to a separate Payment plugin.",
+    "author": "Z4Platform",
+    "provider": "Modules\\Lms\\LmsServiceProvider",
+    "provider_file": "src/LmsServiceProvider.php",
+    "integrations": {
+        "user_deletion": {
+            "mode": "participant"
+        }
+    },
+    "routes": {
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/lms",
+            "name": "admin.plugins.lms.",
+            "middleware": [
+                "web",
+                "auth",
+                "staff",
+                "permission:lms.view"
+            ]
+        },
+        "web": {
+            "file": "routes/web.php",
+            "prefix": "",
+            "name": "lms.front.",
+            "middleware": [
+                "web"
+            ]
+        }
+    },
+    "assets": {
+        "source": "resources/assets",
+        "admin": {
+            "styles": [
+                "shared/media-picker.css",
+                "admin/course-form.css",
+                "admin/overview.css",
+                "admin/css/template-studio.css"
+            ],
+            "scripts": [
+                "admin/js/vvveb-lms-course-template.js",
+                "admin/js/vvveb-lms-course-cards.js",
+                "admin/js/vvveb-lms-instructors.js"
+            ]
+        },
+        "frontend": {
+            "styles": [
+                "shared/media-picker.css",
+                "frontend/css/lms-course-details.css",
+                "frontend/css/lms-course-player.css",
+                "frontend/css/lms-portal.css",
+                "frontend/css/lms-instructor-profile.css"
+            ],
+            "scripts": [
+                "frontend/js/lms-portal.js",
+                "frontend/js/lms-course-details.js",
+                "frontend/js/lms-course-player.js"
+            ]
+        }
+    },
+    "migrations": "database/migrations",
+    "uninstall": {
+        "tables": [
+            "lms_email_notifications",
+            "lms_notifications",
+            "lms_instructor_requests",
+            "lms_template_settings",
+            "lms_templates",
+            "lms_course_translations",
+            "lms_lesson_translations",
+            "lms_courses",
+            "lms_lessons",
+            "lms_students",
+            "lms_instructors",
+            "lms_invitations",
+            "lms_course_codes",
+            "lms_course_enrollments",
+            "lms_lesson_progress"
+        ],
+        "settings": [],
+        "storage_paths": [
+            {
+                "disk": "public",
+                "path": "lms"
+            },
+            {
+                "disk": "local",
+                "path": "lms"
+            }
+        ],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": [
+            "lms."
+        ]
+    },
+    "settings": {
+        "label": "LMS",
+        "route": "admin.plugins.lms.overview"
+    },
+    "permissions": [
+        "lms.view",
+        "lms.courses.view",
+        "lms.lessons.view",
+        "lms.students.view",
+        "lms.students.invite",
+        "lms.instructors.view",
+        "lms.instructors.manage",
+        "lms.student.portal",
+        "lms.instructor.portal",
+        "lms.instructor.courses.manage",
+        "lms.instructor.lessons.manage",
+        "lms.settings.manage",
+        "lms.codes.generate"
+    ],
+    "menus": [
+        {
+            "key": "lms.admin",
+            "name": "LMS",
+            "location": "admin",
+            "description": "Learning management admin menu.",
+            "items": [
+                {
+                    "title": "Overview",
+                    "label": "Overview",
+                    "route": "admin.plugins.lms.overview",
+                    "permission": "lms.view",
+                    "icon": "O",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 10,
+                    "sort_order": 1
+                },
+                {
+                    "title": "Courses",
+                    "label": "Courses",
+                    "route": "admin.plugins.lms.courses",
+                    "permission": "lms.courses.view",
+                    "icon": "C",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 20,
+                    "sort_order": 2,
+                    "children": [
+                        {
+                            "title": "All Courses",
+                            "label": "All Courses",
+                            "route": "admin.plugins.lms.courses",
+                            "permission": "lms.courses.view",
+                            "icon": "C",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Course Codes",
+                            "label": "Course Codes",
+                            "route": "admin.plugins.lms.courses.codes",
+                            "permission": "lms.courses.view",
+                            "icon": "#",
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Course Templates",
+                            "label": "Course Templates",
+                            "route": "admin.plugins.lms.templates.index",
+                            "permission": "lms.settings.manage",
+                            "icon": "T",
+                            "sort_order": 4
+                        }
+                    ]
+                },
+                {
+                    "title": "Lessons",
+                    "label": "Lessons",
+                    "route": "admin.plugins.lms.lessons",
+                    "permission": "lms.lessons.view",
+                    "icon": "L",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 30,
+                    "sort_order": 3,
+                    "children": [
+                        {
+                            "title": "All Lessons",
+                            "label": "All Lessons",
+                            "route": "admin.plugins.lms.lessons",
+                            "permission": "lms.lessons.view",
+                            "icon": "L",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Draft Lessons",
+                            "label": "Draft Lessons",
+                            "route": "admin.plugins.lms.lessons.drafts",
+                            "permission": "lms.lessons.view",
+                            "icon": "D",
+                            "sort_order": 2
+                        }
+                    ]
+                },
+                {
+                    "title": "Students",
+                    "label": "Students",
+                    "route": "admin.plugins.lms.students",
+                    "permission": "lms.students.view",
+                    "icon": "S",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 40,
+                    "sort_order": 4,
+                    "children": [
+                        {
+                            "title": "All Students",
+                            "label": "All Students",
+                            "route": "admin.plugins.lms.students",
+                            "permission": "lms.students.view",
+                            "icon": "S",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Invite Student",
+                            "label": "Invite Student",
+                            "route": "admin.plugins.lms.students.create",
+                            "permission": "lms.students.view",
+                            "icon": "+",
+                            "sort_order": 2
+                        }
+                    ]
+                },
+                {
+                    "title": "Instructors",
+                    "label": "Instructors",
+                    "route": "admin.plugins.lms.instructors",
+                    "permission": "lms.instructors.view",
+                    "icon": "I",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 50,
+                    "sort_order": 5,
+                    "children": [
+                        {
+                            "title": "All Instructors",
+                            "label": "All Instructors",
+                            "route": "admin.plugins.lms.instructors",
+                            "permission": "lms.instructors.view",
+                            "icon": "I",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Add New Instructor",
+                            "label": "Add New Instructor",
+                            "route": "admin.plugins.lms.instructors.create",
+                            "permission": "lms.instructors.manage",
+                            "icon": "+",
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Instructor Requests",
+                            "label": "Instructor Requests",
+                            "route": "admin.plugins.lms.instructor-requests.index",
+                            "permission": "lms.instructors.manage",
+                            "icon": "R",
+                            "sort_order": 3
+                        }
+                    ]
+                },
+                {
+                    "title": "Notifications",
+                    "label": "Notifications",
+                    "route": "admin.plugins.lms.notifications",
+                    "permission": "lms.view",
+                    "icon": "N",
+                    "admin_group": "LMS",
+                    "admin_sort_order": 60,
+                    "sort_order": 6
+                }
+            ]
+        },
+        {
+            "key": "lms.frontend",
+            "name": "LMS Frontend",
+            "location": "frontend",
+            "description": "Frontend LMS navigation entries.",
+            "source": "plugin",
+            "sort_order": 20,
+            "items": [
+                {
+                    "title": "Courses",
+                    "label": "الكورسات",
+                    "type": "route",
+                    "route": "lms.front.courses",
+                    "icon": "L",
+                    "sort_order": 20,
+                    "is_active": true
+                }
+            ]
+        }
+    ],
+    "functions": {
+        "lms.admin.overview.view": {
+            "description": "View LMS overview dashboard with metrics, charts, recent activity, and quick actions."
+        },
+        "lms.admin.overview.export": {
+            "description": "Export the LMS overview dashboard metrics as CSV."
+        },
+        "lms.admin.courses.view": {
+            "description": "View LMS courses list."
+        },
+        "lms.admin.courses.create": {
+            "description": "Create LMS courses from the admin panel."
+        },
+        "lms.admin.courses.update": {
+            "description": "Edit LMS course details, media, pricing, publishing, and access settings."
+        },
+        "lms.admin.courses.curriculum": {
+            "description": "Move and reorder course units and lessons, including moving lessons between units, with atomic database persistence."
+        },
+        "lms.admin.courses.media": {
+            "description": "Choose or upload LMS course media through the core Media Studio popup."
+        },
+        "lms.admin.courses.preview": {
+            "description": "Preview saved LMS course drafts and published courses."
+        },
+        "lms.admin.lessons.view": {
+            "description": "View LMS lessons list."
+        },
+        "lms.admin.students.view": {
+            "description": "View and filter LMS students list."
+        },
+        "lms.admin.students.create": {
+            "description": "Create LMS students from the admin panel."
+        },
+        "lms.admin.students.update": {
+            "description": "Update LMS student details and course assignments."
+        },
+        "lms.admin.students.profile": {
+            "description": "View an LMS student profile."
+        },
+        "lms.admin.students.courses": {
+            "description": "View courses assigned to an LMS student."
+        },
+        "lms.admin.students.bulk": {
+            "description": "Run bulk activate, deactivate, and delete actions for selected LMS students."
+        },
+        "lms.admin.students.status": {
+            "description": "Update a single LMS student account status."
+        },
+        "lms.admin.students.delete": {
+            "description": "Soft delete a single LMS student."
+        },
+        "lms.admin.students.export": {
+            "description": "Export filtered LMS students as CSV."
+        },
+        "lms.admin.settings.view": {
+            "description": "View LMS settings placeholder page."
+        },
+        "lms.admin.lessons.create": {
+            "description": "Create LMS lessons from the admin panel."
+        },
+        "lms.admin.lessons.update": {
+            "description": "Edit LMS lesson details, content, media, assignment, publishing, and access settings."
+        },
+        "lms.admin.lessons.media": {
+            "description": "Choose, upload, insert, and remove LMS lesson media through the core Media Studio popup."
+        },
+        "lms.admin.lessons.preview": {
+            "description": "Preview saved LMS lesson drafts and published lessons."
+        },
+        "lms.admin.lessons.bulk": {
+            "description": "Run bulk publish, draft, change course, and delete actions for selected LMS lessons."
+        },
+        "lms.admin.lessons.status": {
+            "description": "Update a single LMS lesson publishing status."
+        },
+        "lms.admin.lessons.delete": {
+            "description": "Soft delete a single LMS lesson."
+        },
+        "lms.admin.lessons.filters": {
+            "description": "Filter LMS lessons by search, course, author, status, sort order, and page size."
+        },
+        "lms.admin.courses.bulk": {
+            "description": "Run bulk publish, draft, and delete actions for selected LMS courses."
+        },
+        "lms.admin.courses.status": {
+            "description": "Update a single LMS course publishing status."
+        },
+        "lms.admin.courses.delete": {
+            "description": "Soft delete a single LMS course."
+        },
+        "lms.admin.courses.filters": {
+            "description": "Filter LMS courses by search, category, instructor, status, type, date range, and page size."
+        },
+        "lms.admin.courses.codes": {
+            "description": "Generate and list single-use LMS course enrollment codes from the Courses admin menu."
+        },
+        "lms.admin.templates.manage": {
+            "description": "Create and edit LMS course-list and course-details templates with live HTML, CSS, and JavaScript preview."
+        },
+        "lms.front.courses.view": {
+            "description": "Render the public LMS courses catalog page through the Page Builder page and LMS frontend assets."
+        },
+        "lms.front.courses.catalog": {
+            "description": "Return public published LMS courses for the frontend catalog filters and cards."
+        },
+        "lms.front.courses.details": {
+            "description": "Render a public LMS course details page with curriculum, instructor, certificate, enrollment popup, and video preview links routed through lms.front.courses.player."
+        },
+        "lms.front.courses.coupon": {
+            "description": "Redeem a single-use LMS course code for the authenticated user and create course enrollment inside the LMS plugin."
+        },
+        "lms.front.courses.player": {
+            "description": "Render the LMS student course player with resumable first-incomplete lesson routing, complete-and-continue actions, final course completion, every course unit, curriculum, notes, resources, progress, and protected platform-style playback controls."
+        },
+        "lms.front.courses.video": {
+            "description": "Stream locally hosted lesson video through a temporary signed LMS endpoint with enrollment authorization and without exposing its storage path."
+        },
+        "lms.front.templates.script": {
+            "description": "Serve active LMS template JavaScript as an independent frontend asset."
+        },
+        "lms.page_builder.courses_catalog": {
+            "description": "Register the LMS Courses element and frontend renderer through the active-plugin Page Builder hook boundary."
+        },
+        "lms.front.instructor.authoring": {
+            "description": "Allow approved instructors to create courses, diplomas, and lessons while enforcing the per-instructor publishing policy managed by LMS administrators."
+        },
+        "lms.front.instructor.request": {
+            "description": "Let an existing platform user request instructor access and let LMS administrators review the request."
+        },
+        "lms.notifications": {
+            "description": "Record LMS-owned user and administrator notifications for instructor submissions and access decisions."
+        }
+    },
+    "hooks": {
+        "lms.installed": {
+            "type": "action",
+            "description": "Reserved hook for future LMS installation completion behavior."
+        },
+        "lms.activated": {
+            "type": "action",
+            "description": "Reserved hook for future LMS activation completion behavior."
+        },
+        "lms.deactivated": {
+            "type": "action",
+            "description": "Reserved hook for future LMS deactivation completion behavior."
+        }
+    },
+    "lifecycle": {
+        "file": "src/LmsLifecycle.php",
+        "install": "Modules\\Lms\\LmsLifecycle@activate",
+        "activate": "Modules\\Lms\\LmsLifecycle@activate",
+        "reactivate": "Modules\\Lms\\LmsLifecycle@activate"
+    },
+    "registry": {
+        "routes": {
+            "lms.front.student.settings": {
+                "uri": "my-learning/settings",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@studentSettings",
+                "description": "Open the signed-in student's LMS-owned profile settings."
+            },
+            "lms.front.student.settings.update": {
+                "uri": "my-learning/settings",
+                "methods": [
+                    "PUT"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@updateStudentSettings",
+                "description": "Update only the signed-in student's LMS-owned profile fields."
+            },
+            "lms.front.instructor.settings": {
+                "uri": "instructor-dashboard/settings",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@instructorSettings",
+                "description": "Open the signed-in instructor's LMS-owned profile settings."
+            },
+            "lms.front.instructor.settings.update": {
+                "uri": "instructor-dashboard/settings",
+                "methods": [
+                    "PUT"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@updateInstructorSettings",
+                "description": "Update only the signed-in instructor's LMS-owned profile fields."
+            },
+            "lms.front.instructor-request.create": {
+                "uri": "teach/apply",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@instructorRequest",
+                "description": "Open the instructor access request page for an existing platform user."
+            },
+            "lms.front.instructor.courses.create": {
+                "uri": "instructor-dashboard/courses/create",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@createInstructorCourse",
+                "description": "Open the instructor course and diploma editor."
+            },
+            "lms.front.instructor.courses.store": {
+                "uri": "instructor-dashboard/courses",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@storeInstructorCourse",
+                "description": "Create an instructor-owned course or diploma under the configured publishing policy."
+            },
+            "lms.front.instructor.courses.edit": {
+                "uri": "instructor-dashboard/courses/*/edit",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@editInstructorCourse",
+                "description": "Edit an instructor-owned course or diploma."
+            },
+            "lms.front.instructor.courses.update": {
+                "uri": "instructor-dashboard/courses/*",
+                "methods": [
+                    "PUT"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@updateInstructorCourse",
+                "description": "Update an instructor-owned course or diploma under the configured publishing policy."
+            },
+            "lms.front.instructor.courses.curriculum": {
+                "uri": "instructor-dashboard/courses/*/curriculum",
+                "methods": [
+                    "PUT"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@updateInstructorCourseCurriculum",
+                "description": "Order only the lessons that belong to the selected instructor-owned course."
+            },
+            "lms.front.instructor.lessons.store": {
+                "uri": "instructor-dashboard/lessons",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@storeInstructorLesson",
+                "description": "Create a lesson in one of the instructor's courses."
+            },
+            "lms.front.instructor.lessons.edit": {
+                "uri": "instructor-dashboard/lessons/*/edit",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@editInstructorLesson",
+                "description": "Edit a lesson that belongs to one of the instructor's courses."
+            },
+            "lms.front.instructor.lessons.update": {
+                "uri": "instructor-dashboard/lessons/*",
+                "methods": [
+                    "PUT"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@updateInstructorLesson",
+                "description": "Update a lesson that belongs to one of the instructor's courses."
+            },
+            "lms.front.instructor.lessons.destroy": {
+                "uri": "instructor-dashboard/lessons/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsPortalController@deleteInstructorLesson",
+                "description": "Delete a lesson that belongs to one of the instructor's courses."
+            },
+            "admin.plugins.lms.instructor-requests.index": {
+                "uri": "admin/plugins/lms/instructor-requests",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\LmsPeopleController@instructorRequests",
+                "description": "Review instructor access requests."
+            },
+            "admin.plugins.lms.notifications": {
+                "uri": "admin/plugins/lms/notifications",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\LmsPeopleController@notifications",
+                "description": "View LMS administrator notifications."
+            },
+            "admin.plugins.lms.templates.index": {
+                "uri": "admin/plugins/lms/templates",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@index",
+                "description": "Open the LMS course template studio."
+            },
+            "admin.plugins.lms.templates.store": {
+                "uri": "admin/plugins/lms/templates",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@store",
+                "description": "Create an LMS course template."
+            },
+            "admin.plugins.lms.templates.edit": {
+                "uri": "admin/plugins/lms/templates/*/edit",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@edit",
+                "description": "Edit an LMS course template."
+            },
+            "admin.plugins.lms.templates.update": {
+                "uri": "admin/plugins/lms/templates/*",
+                "methods": [
+                    "PUT",
+                    "PATCH"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@update",
+                "description": "Update an LMS course template."
+            },
+            "admin.plugins.lms.templates.destroy": {
+                "uri": "admin/plugins/lms/templates/*",
+                "methods": [
+                    "DELETE"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@destroy",
+                "description": "Delete a custom LMS course template."
+            },
+            "admin.plugins.lms.templates.duplicate": {
+                "uri": "admin/plugins/lms/templates/*/duplicate",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@duplicate",
+                "description": "Copy an LMS course template."
+            },
+            "admin.plugins.lms.templates.default": {
+                "uri": "admin/plugins/lms/templates/*/default",
+                "methods": [
+                    "POST"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController@setDefault",
+                "description": "Select the active site-wide LMS catalog or course-details template."
+            },
+            "lms.front.template-script": {
+                "uri": "lms/assets/templates/*.js",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsFrontendController@templateScript",
+                "description": "Serve active LMS template JavaScript."
+            },
+            "lms.front.courses.player.video": {
+                "uri": "courses/*/player/*/video",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "controller": "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsFrontendController@lessonVideo",
+                "description": "Stream a protected lesson video to an enrolled student."
+            }
+        },
+        "controllers": {
+            "Modules\\Lms\\Http\\Controllers\\Admin\\TemplateController": {
+                "description": "LMS course template studio and site-wide template selection controller."
+            },
+            "Modules\\Lms\\Http\\Controllers\\Frontend\\LmsFrontendController": {
+                "description": "LMS catalog, course details, player, template scripts, and protected video controller."
+            }
+        }
+    },
+    "seo": {
+        "enabled": true,
+        "sitemap": true,
+        "routes": {
+            "include": [
+                "lms.front.courses",
+                "lms.front.courses.show",
+                "lms.front.instructors.show"
+            ],
+            "exclude": [
+                "lms.front.courses.player*",
+                "lms.front.courses.preview*",
+                "lms.front.student.*",
+                "lms.front.instructor.*"
+            ]
+        },
+        "schema": [
+            "Course",
+            "CourseInstance",
+            "Offer",
+            "FAQPage",
+            "BreadcrumbList"
+        ]
+    },
+    "docs": "docs/plugin.md",
+    "frontend": {
+        "owned_paths": [
+            "/courses/*",
+            "/lms/*",
+            "/my-learning/*",
+            "/teach/*",
+            "/instructor-dashboard/*",
+            "/instructors/*"
+        ]
+    }
+}

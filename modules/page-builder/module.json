@@ -36,6 +36,13 @@
       "description": "Manage VvvebJs pages, layouts and revisions."
     }
   ],
+  "runtime_assets": {
+    "frontend": {
+      "styles": {
+        "frontend-menu": "page-builder-assets/v5/integration/css/frontend-menu.css?v=5.3"
+      }
+    }
+  },
   "hooks": {
     "editor.extensions": {
       "type": "filter",

@@ -101,17 +101,17 @@ php artisan tinker --execute="echo public_path('build/manifest.json');"
 
 ## Bundled modules, runtime plugins and media
 
-The repository ships the core platform **and the default modules that the
-platform cannot run without**: `modules/admin-theme` and `modules/page-builder`,
-together with their published assets under `public/platform/plugins`.
+The repository ships the core platform **and the bundled modules**: every
+plugin under `modules/` is versioned here, together with its published assets
+under `public/platform/plugins`.
 
-Everything else is per-deployment runtime content and is never committed:
+Per-deployment content stays out of Git:
 
 | Path | Content | Ignored by |
 |---|---|---|
-| `modules/*` other than the two defaults | plugins installed per installation | `/modules/*` |
 | `storage/app/**` | installation state, uploads, backups, `installation.env` | `/storage/app/` |
 | `public/blog`, `public/lms`, `public/store`, `public/media`, `public/hero`, `public/settings` | content uploads per deployment | see `.gitignore` |
+| `modules/**/*.zip` | packaged plugin archives | `/modules/**/*.zip` |
 
 A deployment mounts `modules`, `public/platform` and `storage` as persistent
 volumes. `docker/php/entrypoint.sh` seeds a new volume from the image only for

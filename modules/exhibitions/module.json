@@ -1,0 +1,680 @@
+{
+    "name": "Exhibitions",
+    "slug": "exhibitions",
+    "identifier": "z4platform.exhibitions",
+    "version": "1.10.2",
+    "type": "feature",
+    "status": "stable",
+    "default_state": "installed_inactive",
+    "description": "Independent Z4Platform Exhibitions domain for artists, artworks, manual review, fulfillment contribution, and settlements.",
+    "author": "Z4Platform",
+    "provider": "Modules\\Exhibition\\ExhibitionServiceProvider",
+    "provider_file": "src/ExhibitionServiceProvider.php",
+    "platform_version": ">=3.4.4 <4.0.0",
+    "integrations": {
+        "user_deletion": {
+            "mode": "participant"
+        }
+    },
+    "critical": false,
+    "can_deactivate": true,
+    "can_uninstall": true,
+    "dependencies": [],
+    "optional_dependencies": [
+        "store"
+    ],
+    "optional_capabilities": [
+        "store.catalog.products.manage",
+        "store.pricing.manage",
+        "store.integrations.external-sellables.v1",
+        "store.integrations.external-sellable-lifecycle.v1",
+        "notifications.dispatch"
+    ],
+    "provides": [
+        "exhibitions.access",
+        "exhibitions.manage",
+        "exhibitions.manage_settings",
+        "exhibitions.purge_data",
+        "exhibitions.review",
+        "exhibitions.finance",
+        "exhibitions.operations",
+        "exhibitions.support",
+        "exhibitions.reports",
+        "exhibitions.security",
+        "exhibitions.artist.apply",
+        "exhibitions.artist.dashboard",
+        "exhibitions.audit",
+        "exhibitions.readiness",
+        "exhibitions.virtual_rooms.view",
+        "exhibitions.virtual_rooms.manage",
+        "exhibitions.virtual_rooms.publish",
+        "exhibitions.virtual_slots.manage",
+        "exhibitions.virtual.review",
+        "exhibitions.virtual.artist.view",
+        "exhibitions.virtual.artist.submit",
+        "exhibitions.virtual.artist.withdraw"
+    ],
+    "routes": {
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/exhibitions",
+            "name": "admin.plugins.exhibitions.",
+            "middleware": [
+                "web",
+                "auth",
+                "staff",
+                "permission:exhibitions.access"
+            ],
+            "methods": [
+                "GET",
+                "HEAD",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+            ],
+            "owned_paths": [
+                "/admin/plugins/exhibitions",
+                "/admin/plugins/exhibitions/*"
+            ]
+        },
+        "web": {
+            "file": "routes/web.php",
+            "prefix": "exhibitions",
+            "name": "exhibitions.",
+            "middleware": [
+                "web"
+            ],
+            "methods": [
+                "GET",
+                "HEAD",
+                "POST"
+            ],
+            "owned_paths": [
+                "/exhibitions",
+                "/exhibitions/*"
+            ]
+        }
+    },
+    "route_ownership": {
+        "admin": [
+            "/admin/plugins/exhibitions",
+            "/admin/plugins/exhibitions/*"
+        ],
+        "web": [
+            "/exhibitions",
+            "/exhibitions/*"
+        ]
+    },
+    "registry": {
+        "routes": {
+            "exhibitions.artist.register": {
+                "uri": "exhibitions/artist/register",
+                "methods": [
+                    "GET",
+                    "HEAD"
+                ],
+                "description": "Unified artist account and application registration form."
+            },
+            "exhibitions.artist.register.store": {
+                "uri": "exhibitions/artist/register",
+                "methods": [
+                    "POST"
+                ],
+                "description": "Create the artist account and submit its application atomically."
+            }
+        }
+    },
+    "functions": {
+        "exhibitions.page_builder.random_artworks": {
+            "description": "Register the Random Artworks element and its public renderer through the active-plugin Page Builder hook boundary."
+        }
+    },
+    "permissions": [
+        {
+            "name": "exhibitions.access",
+            "description": "Access the Exhibitions administration shell."
+        },
+        {
+            "name": "exhibitions.manage",
+            "description": "Manage Exhibitions publication and module operations."
+        },
+        {
+            "name": "exhibitions.manage_settings",
+            "description": "View and change Exhibitions-owned settings."
+        },
+        {
+            "name": "exhibitions.purge_data",
+            "description": "Perform explicitly confirmed destructive Exhibitions data operations."
+        },
+        {
+            "name": "exhibitions.review",
+            "description": "Perform authorized manual artist and artwork reviews."
+        },
+        {
+            "name": "exhibitions.finance",
+            "description": "Access Exhibitions finance and settlement operations."
+        },
+        {
+            "name": "exhibitions.operations",
+            "description": "Manage Exhibitions fulfillment operations."
+        },
+        {
+            "name": "exhibitions.support",
+            "description": "Manage Exhibitions support and dispute work."
+        },
+        {
+            "name": "exhibitions.reports",
+            "description": "View and export privacy-safe Exhibitions operational reports."
+        },
+        {
+            "name": "exhibitions.security",
+            "description": "Review Exhibitions security posture, retention rules and audit coverage."
+        },
+        {
+            "name": "exhibitions.artist.apply",
+            "description": "Apply to become an artist when Phase 2 is available."
+        },
+        {
+            "name": "exhibitions.artist.dashboard",
+            "description": "Access the private approved-artist dashboard when available."
+        },
+        {
+            "name": "exhibitions.virtual_rooms.view",
+            "description": "View platform-owned virtual exhibition rooms, previews and placement queues."
+        },
+        {
+            "name": "exhibitions.virtual_rooms.manage",
+            "description": "Create and configure platform-owned virtual exhibition rooms and panoramas."
+        },
+        {
+            "name": "exhibitions.virtual_rooms.publish",
+            "description": "Publish, schedule, unpublish and archive virtual exhibition rooms."
+        },
+        {
+            "name": "exhibitions.virtual_slots.manage",
+            "description": "Create and position spherical display slots in virtual rooms."
+        },
+        {
+            "name": "exhibitions.virtual.review",
+            "description": "Review, reposition, approve, reject and remove virtual placement requests."
+        },
+        {
+            "name": "exhibitions.virtual.artist.view",
+            "description": "View the approved artist virtual exhibition workspace."
+        },
+        {
+            "name": "exhibitions.virtual.artist.submit",
+            "description": "Submit eligible owned artwork to an available platform display slot."
+        },
+        {
+            "name": "exhibitions.virtual.artist.withdraw",
+            "description": "Withdraw an owned pending virtual exhibition placement request."
+        }
+    ],
+    "menus": [
+        {
+            "key": "exhibitions.admin",
+            "name": "Exhibitions",
+            "location": "admin",
+            "description": "Lifecycle-owned Exhibitions administration navigation.",
+            "source": "plugin",
+            "sort_order": 80,
+            "items": [
+                {
+                    "title": "Operational dashboard",
+                    "label": "Operational dashboard",
+                    "type": "route",
+                    "route": "admin.plugins.exhibitions.overview",
+                    "icon": "E",
+                    "permission": "exhibitions.access",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 10,
+                    "sort_order": 1
+                },
+                {
+                    "title": "Artist Agreements",
+                    "label": "Agreements",
+                    "type": "route",
+                    "route": "admin.plugins.exhibitions.agreements.index",
+                    "icon": "C",
+                    "permission": "exhibitions.manage_settings",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 15,
+                    "sort_order": 2
+                },
+                {
+                    "title": "Artists",
+                    "label": "Artists",
+                    "type": "group",
+                    "icon": "A",
+                    "permission": "exhibitions.access",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 20,
+                    "sort_order": 3,
+                    "children": [
+                        {
+                            "title": "Artist Applications",
+                            "label": "Applications",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.applications.index",
+                            "permission": "exhibitions.review",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Active Artists",
+                            "label": "Active Artists",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.workspace",
+                            "route_params": {
+                                "area": "artists",
+                                "tab": "active"
+                            },
+                            "permission": "exhibitions.review",
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Add Existing User",
+                            "label": "Add Artist",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.artists.create",
+                            "permission": "exhibitions.manage",
+                            "sort_order": 3
+                        }
+                    ]
+                },
+                {
+                    "title": "Artworks",
+                    "label": "Artworks",
+                    "type": "group",
+                    "icon": "W",
+                    "permission": "exhibitions.access",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 30,
+                    "sort_order": 4,
+                    "children": [
+                        {
+                            "title": "All Artworks",
+                            "label": "All Artworks",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.workspace",
+                            "route_params": {
+                                "area": "artworks",
+                                "tab": "all"
+                            },
+                            "permission": "exhibitions.review",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Add Artwork",
+                            "label": "Add Artwork",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.artworks.create",
+                            "permission": "exhibitions.manage",
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Import Artworks",
+                            "label": "Import / Export",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.artworks.import",
+                            "permission": "exhibitions.manage",
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Artwork Review Queue",
+                            "label": "Review Queue",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.artworks.review.index",
+                            "permission": "exhibitions.review",
+                            "sort_order": 4
+                        },
+                        {
+                            "title": "Published Artworks",
+                            "label": "Published Artworks",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.workspace",
+                            "route_params": {
+                                "area": "artworks",
+                                "tab": "published"
+                            },
+                            "permission": "exhibitions.review",
+                            "sort_order": 5
+                        },
+                        {
+                            "title": "Archived Artworks",
+                            "label": "Archived Artworks",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.workspace",
+                            "route_params": {
+                                "area": "artworks",
+                                "tab": "archived"
+                            },
+                            "permission": "exhibitions.review",
+                            "sort_order": 6
+                        }
+                    ]
+                },
+                {
+                    "title": "Virtual Exhibition",
+                    "label": "Virtual Exhibition",
+                    "type": "group",
+                    "icon": "V",
+                    "permission": "exhibitions.virtual_rooms.view",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 35,
+                    "sort_order": 5,
+                    "children": [
+                        {
+                            "title": "Virtual Rooms",
+                            "label": "Rooms",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.virtual.rooms.index",
+                            "permission": "exhibitions.virtual_rooms.view",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Published Virtual Artworks",
+                            "label": "Published Artworks",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.virtual.artworks.index",
+                            "permission": "exhibitions.virtual_rooms.view",
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Placement Requests",
+                            "label": "Placement Requests",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.virtual.requests.index",
+                            "permission": "exhibitions.virtual_rooms.view",
+                            "sort_order": 3
+                        }
+                    ]
+                },
+                {
+                    "title": "Sales and Payouts",
+                    "label": "Sales & Payouts",
+                    "type": "group",
+                    "icon": "S",
+                    "permission": "exhibitions.access",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 40,
+                    "sort_order": 6,
+                    "children": [
+                        {
+                            "title": "Artwork Sales",
+                            "label": "Artwork Sales",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.sales.index",
+                            "permission": "exhibitions.finance",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Artist Payouts",
+                            "label": "Artist Payouts",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.settlements.index",
+                            "permission": "exhibitions.finance",
+                            "sort_order": 2
+                        }
+                    ]
+                },
+                {
+                    "title": "Exhibitions Settings",
+                    "label": "Settings",
+                    "type": "group",
+                    "icon": "G",
+                    "permission": "exhibitions.manage_settings",
+                    "admin_group": "Exhibitions",
+                    "admin_sort_order": 50,
+                    "sort_order": 7,
+                    "children": [
+                        {
+                            "title": "Commission and Earnings",
+                            "label": "Commission & Earnings",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.settings.commission",
+                            "permission": "exhibitions.manage_settings",
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Artist Payout Policy",
+                            "label": "Payout Policy",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.settings.payout-policy",
+                            "permission": "exhibitions.manage_settings",
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Artwork Rules",
+                            "label": "Artwork Rules",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.settings.artwork-rules",
+                            "permission": "exhibitions.manage_settings",
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Exhibitions Notifications",
+                            "label": "Notifications",
+                            "type": "route",
+                            "route": "admin.plugins.exhibitions.settings.notifications",
+                            "permission": "exhibitions.manage_settings",
+                            "sort_order": 4
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "exhibitions.frontend",
+            "name": "Exhibitions",
+            "location": "frontend",
+            "description": "Applicant entry point owned by the Exhibitions module.",
+            "source": "plugin",
+            "sort_order": 85,
+            "items": [
+                {
+                    "title": "Artworks",
+                    "label": "Artworks",
+                    "type": "route",
+                    "route": "exhibitions.artworks.index",
+                    "icon": "W",
+                    "sort_order": 1
+                },
+                {
+                    "title": "Virtual Art Gallery",
+                    "label": "Virtual Art Gallery",
+                    "type": "route",
+                    "route": "exhibitions.virtual.index",
+                    "icon": "V",
+                    "sort_order": 2
+                },
+                {
+                    "title": "Become an Artist",
+                    "label": "Become an Artist",
+                    "type": "route",
+                    "route": "exhibitions.artist.register",
+                    "icon": "A",
+                    "sort_order": 3
+                },
+                {
+                    "title": "Artist Dashboard",
+                    "label": "Artist Dashboard",
+                    "type": "route",
+                    "route": "exhibitions.dashboard.overview",
+                    "icon": "D",
+                    "permission": "exhibitions.artist.dashboard",
+                    "sort_order": 4
+                },
+                {
+                    "title": "Virtual Exhibition",
+                    "label": "Virtual Exhibition",
+                    "type": "route",
+                    "route": "exhibitions.dashboard.virtual.index",
+                    "icon": "V",
+                    "permission": "exhibitions.virtual.artist.view",
+                    "sort_order": 5
+                }
+            ]
+        }
+    ],
+    "assets": {
+        "source": "resources/assets",
+        "admin": {
+            "styles": [],
+            "scripts": [
+                "admin/js/vvveb-random-artworks.js",
+                "admin/js/vvveb-virtual-exhibitions.js"
+            ]
+        },
+        "frontend": {
+            "styles": [],
+            "scripts": []
+        }
+    },
+    "migrations": "database/migrations",
+    "lifecycle": {
+        "file": "src/Infrastructure/Lifecycle/ExhibitionLifecycle.php",
+        "install": "Modules\\Exhibition\\Infrastructure\\Lifecycle\\ExhibitionLifecycle@install",
+        "activate": "Modules\\Exhibition\\Infrastructure\\Lifecycle\\ExhibitionLifecycle@activate",
+        "deactivate": "Modules\\Exhibition\\Infrastructure\\Lifecycle\\ExhibitionLifecycle@deactivate",
+        "reactivate": "Modules\\Exhibition\\Infrastructure\\Lifecycle\\ExhibitionLifecycle@reactivate",
+        "purge": "Modules\\Exhibition\\Infrastructure\\Lifecycle\\ExhibitionLifecycle@purge"
+    },
+    "uninstall": {
+        "tables": [
+            "exhibition_virtual_republish_requests",
+            "exhibition_virtual_placement_events",
+            "exhibition_virtual_slot_holds",
+            "exhibition_virtual_slot_occupancies",
+            "exhibition_virtual_placements",
+            "exhibition_virtual_environment_slots",
+            "exhibition_virtual_environment_rooms",
+            "exhibition_virtual_environment_versions",
+            "exhibition_virtual_environments",
+            "exhibition_virtual_placement_transitions",
+            "exhibition_virtual_placement_requests",
+            "exhibition_virtual_room_slots",
+            "exhibition_virtual_rooms",
+            "exhibition_integration_cursors",
+            "exhibition_store_lifecycle_receipts",
+            "exhibition_notification_attempts",
+            "exhibition_notification_deliveries",
+            "exhibition_notification_template_history",
+            "exhibition_notification_templates",
+            "exhibition_setting_history",
+            "exhibition_settings",
+            "exhibition_dispute_events",
+            "exhibition_dispute_evidence",
+            "exhibition_dispute_messages",
+            "exhibition_dispute_cases",
+            "exhibition_payout_attempts",
+            "exhibition_settlement_events",
+            "exhibition_settlement_ledger_entries",
+            "exhibition_settlements",
+            "exhibition_fulfillment_evidence",
+            "exhibition_fulfillment_events",
+            "exhibition_fulfillments",
+            "exhibition_artwork_inventory_events",
+            "exhibition_artwork_inventory_items",
+            "exhibition_artwork_inquiries",
+            "exhibition_artwork_publication_events",
+            "exhibition_artwork_publications",
+            "exhibition_artwork_review_events",
+            "exhibition_artwork_review_comments",
+            "exhibition_artwork_review_sections",
+            "exhibition_artwork_review_rounds",
+            "exhibition_artwork_pricing_history",
+            "exhibition_artwork_pricing_evidence",
+            "exhibition_artwork_pricing",
+            "exhibition_artwork_authenticity_reviews",
+            "exhibition_artwork_provenance",
+            "exhibition_artwork_evidence",
+            "exhibition_artwork_authenticity",
+            "exhibition_artwork_media_history",
+            "exhibition_artwork_media",
+            "exhibition_artwork_translations",
+            "exhibition_artwork_state_history",
+            "exhibition_artwork_revisions",
+            "exhibition_artworks",
+            "exhibition_artist_support_messages",
+            "exhibition_artist_support_tickets",
+            "exhibition_artist_account_status_history",
+            "exhibition_artist_commission_terms",
+            "exhibition_payout_profiles",
+            "exhibition_artist_agreements",
+            "exhibition_agreement_templates",
+            "exhibition_verification_documents",
+            "exhibition_verification_cases",
+            "exhibition_application_notifications",
+            "exhibition_application_status_history",
+            "exhibition_application_supporting_documents",
+            "exhibition_application_samples",
+            "exhibition_artist_applications",
+            "exhibition_audit_entries",
+            "exhibition_artist_identities"
+        ],
+        "settings": [],
+        "storage_paths": [
+            {
+                "disk": "local",
+                "path": "exhibitions"
+            }
+        ],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": []
+    },
+    "data_policy": {
+        "keep_data_on_deactivate": true,
+        "keep_data_on_uninstall": false,
+        "purge_requires_explicit_request": true
+    },
+    "page_builder": {
+        "widgets": [
+            "exhibitions/random-artworks",
+            "exhibitions/virtual-exhibitions"
+        ]
+    },
+    "events": [
+        "Modules\\Exhibition\\Events\\V1\\ExhibitionRuntimeRegistered",
+        "Modules\\Exhibition\\Events\\V1\\ArtworkPublicationRequested",
+        "Modules\\Exhibition\\Events\\V1\\ArtistApplicationSubmitted",
+        "Modules\\Exhibition\\Events\\V1\\ArtistApplicationStateChanged",
+        "Modules\\Exhibition\\Events\\V1\\VirtualPlacementStateChanged"
+    ],
+    "seo": {
+        "enabled": true,
+        "sitemap": true,
+        "routes": {
+            "include": [
+                "exhibitions.artworks.index",
+                "exhibitions.artworks.show",
+                "exhibitions.virtual.index"
+            ],
+            "exclude": [
+                "exhibitions.artworks.inquire",
+                "exhibitions.cases.*",
+                "exhibitions.dashboard.*"
+            ]
+        },
+        "schema": [
+            "VisualArtwork",
+            "Person",
+            "BreadcrumbList"
+        ]
+    },
+    "metadata": {
+        "architecture_document": "Z4Platform-Exhibitions-Module-Master-Execution-Plan",
+        "phase": "final-hardening-and-stable-release",
+        "canonical_directory": "modules/exhibitions",
+        "product_name": "Exhibitions",
+        "core_identity_source": "users",
+        "core_user_foreign_key_policy": "stable-identifier-without-cross-module-foreign-key",
+        "store_integration_contract": "Modules\\Exhibition\\Contracts\\Store\\V1\\ArtworkPublicationGateway",
+        "store_lifecycle_contract": "Modules\\Exhibition\\Contracts\\Store\\V1\\StoreLifecycleGateway",
+        "payout_outcome_contract": "Modules\\Exhibition\\Contracts\\Payments\\V1\\PayoutOutcomeReceiver",
+        "payment_gateway_owned": false,
+        "ai_features": false
+    }
+}

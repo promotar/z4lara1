@@ -1,0 +1,110 @@
+<div class="ainpa-course-shell lms-default-details-tabs">
+    <nav class="ainpa-course-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{home_url}}">Home</a><span>/</span>
+        <a href="{{courses_url}}">Courses</a><span>/</span>
+        <span>{{category}}</span><span>/</span><strong>{{title}}</strong>
+    </nav>
+
+    <section class="ainpa-course-hero">
+        <div class="ainpa-course-intro">
+            <span class="ainpa-course-pill">{{category}}</span>
+            <h1>{{title}}</h1>
+            <p>{{subtitle}}</p>
+            <div class="ainpa-course-instructor-row">
+                <span class="ainpa-course-avatar">{{instructor_initial}}</span>
+                <div><strong>{{instructor_name}}</strong><small>{{instructor_title}}</small></div>
+                <div class="ainpa-course-rating" aria-label="Course rating">
+                    <span>★★★★★</span><strong>{{rating}}</strong><small>({{reviews_count}} reviews)</small>
+                </div>
+            </div>
+            <div class="ainpa-course-meta-strip">
+                <div><span>Level</span><strong>{{level}}</strong></div>
+                <div><span>Language</span><strong>{{language}}</strong></div>
+                <div><span>Lessons</span><strong>{{lesson_count}}</strong></div>
+                <div><span>Duration</span><strong>{{duration}}</strong></div>
+                <div><span>Last Updated</span><strong>{{updated_at}}</strong></div>
+            </div>
+        </div>
+        {{{promo_card}}}
+    </section>
+
+    <div class="ainpa-course-layout">
+        <div class="ainpa-course-main">
+            <nav class="ainpa-course-tabs" aria-label="Course sections">
+                <button type="button" class="is-active" data-course-tab="about">About</button>{{{learn_tab}}}
+                <button type="button" data-course-tab="curriculum">Curriculum</button>
+                <button type="button" data-course-tab="instructor">Instructor</button>
+                <button type="button" data-course-tab="certificate">Certificate</button>
+                <button type="button" data-course-tab="reviews">Reviews</button>
+                {{{faq_tab}}}
+            </nav>
+
+            <section class="ainpa-course-tab-panel is-active" data-course-panel="about">
+                <div class="ainpa-course-card-grid">{{{about_cards}}}</div>
+            </section>
+
+            {{{learn_panel}}}<section class="ainpa-course-tab-panel" data-course-panel="curriculum">
+                {{{course_curriculum}}}
+            </section>
+
+            <section class="ainpa-course-tab-panel" data-course-panel="instructor">
+                <article class="ainpa-course-info-card">
+                    <h2>Instructor</h2>
+                    <div class="ainpa-course-instructor-block">
+                        <span class="ainpa-course-avatar is-large">{{instructor_initial}}</span>
+                        <div>
+                            <h3>{{instructor_name}}</h3>
+                            <p>{{instructor_title}}</p>
+                            <p>{{instructor_name}} leads this course with practical lessons and structured guidance for students.</p>
+                            <a class="lms-details-inline-link" href="{{instructor_profile_url}}">View Instructor Profile</a>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="ainpa-course-tab-panel" data-course-panel="certificate">
+                <article class="ainpa-course-info-card">
+                    <h2>Certificate Information</h2>
+                    <p>Students receive course completion access after finishing the required lessons according to the course progress policy.</p>
+                    <div class="ainpa-course-certificate">Certificate of Completion</div>
+                </article>
+            </section>
+
+            <section class="ainpa-course-tab-panel" data-course-panel="reviews">
+                <article class="ainpa-course-info-card">
+                    <h2>Reviews</h2>
+                    <p>This course is rated {{rating}} by learners. It currently has {{reviews_count}} enrolled students.</p>
+                </article>
+            </section>
+
+            {{{faq_panel}}}
+        </div>
+
+        <aside class="ainpa-course-sidebar" aria-label="Course enrollment">
+            <section class="ainpa-course-price-card">
+                <div class="ainpa-course-price-line"><strong>{{price_label}}</strong></div>{{{training_prices}}}
+                <div class="ainpa-course-status {{enrollment_status_class}}">{{enrollment_status}}</div>
+                {{{action_button}}}
+                <ul class="ainpa-course-benefits">
+                    <li>{{lesson_count}} Lessons</li>
+                    <li>{{duration}} of On-Demand Content</li>
+                    <li>{{access_duration}} Access</li>
+                    <li>Certificate of Completion</li>
+                    <li>{{level}} Level</li>
+                </ul>
+            </section>
+
+            <section class="ainpa-course-side-card">
+                <h2>Instructor Information</h2>
+                <div class="ainpa-course-instructor-mini">
+                    <span class="ainpa-course-avatar">{{instructor_initial}}</span>
+                    <div><strong>{{instructor_name}}</strong><small>{{instructor_title}}</small></div>
+                </div>
+                <ul><li>{{rating}} Instructor Rating</li><li>{{student_count}} Students</li><li>{{lesson_count}} Lessons in this course</li></ul>
+                <a class="ainpa-course-instructor-profile-link" href="{{instructor_profile_url}}">
+                    <span>View Profile</span><span aria-hidden="true">→</span>
+                </a>
+            </section>
+        </aside>
+    </div>
+</div>

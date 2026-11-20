@@ -55,17 +55,110 @@
         if (preview) preview.href = config.previewUrl;
     }
 
-    const originalSaveAjax = Vvveb.Builder.saveAjax.bind(Vvveb.Builder);
-    Vvveb.Builder.saveAjax = (data, url, callback, error) => {
-        Object.assign(data, settingsPayload(), {_token: config.csrfToken, document_version: documentVersion});
-        return originalSaveAjax(data, url || config.saveUrl, (response) => {
-            let parsed = response;
-            try { parsed = JSON.parse(response); } catch (_) {}
-            if (parsed?.document_version) documentVersion = parsed.document_version;
-            callback?.(parsed);
-        }, error);
+    Vvveb.Builder.saveAjax = async (data, url, callback, error) => {
+        if (!data.html) {
+            data.html = Vvveb.Builder.getHtml();
+        }
+
+        const payload = Object.assign({}, data, settingsPayload(), {
+            _token: config.csrfToken,
+            document_version: documentVersion,
+        });
+
+        const body = new URLSearchParams();
+        Object.entries(payload).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) body.append(key, value);
+        });
+
+        let response;
+        try {
+            response = await fetch(url || config.saveUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+                credentials: 'same-origin',
+                body,
+            });
+        } catch (networkError) {
+            displayToast('bg-danger', 'Error', 'Network error while saving.');
+            error?.(networkError);
+            return;
+        }
+
+        let parsed = {};
+        try { parsed = await response.json(); } catch (_) {}
+
+        if (!response.ok) {
+            if (response.status === 409) {
+                staleDocument = true;
+                displayToast('bg-warning', 'Reload required', parsed.message || 'This editor is out of date, reload the page.');
+            } else {
+                displayToast('bg-danger', 'Error saving!', parsed.message || 'The page could not be saved.');
+            }
+            error?.(parsed);
+            return;
+        }
+
+        if (parsed.document_version) {
+            documentVersion = parsed.document_version;
+        }
+
+        // Leave inline text editing cleanly so the canvas stays editable.
+        if (Vvveb.WysiwygEditor && Vvveb.WysiwygEditor.isActive) {
+            try { Vvveb.WysiwygEditor.destroy(Vvveb.Builder.texteditEl); } catch (_) {}
+        }
+        Vvveb.Builder.texteditEl = null;
+
+        const selectBox = document.getElementById('select-box');
+        if (selectBox) {
+            selectBox.classList.remove('text-edit');
+            selectBox.style.display = 'none';
+        }
+
+        Vvveb.Undo.reset();
+        document.querySelectorAll('#top-panel .save-btn').forEach(el => el.setAttribute('disabled', 'true'));
+
+        callback?.(parsed);
     };
 
+    /*
+     * Keep the save button usable after the first save: the vendor resets the
+     * undo stack on save, which can leave the button disabled after new edits.
+     */
+    const enableSaveButtons = () => {
+        document.querySelectorAll("#top-panel .save-btn").forEach(el => el.removeAttribute("disabled"));
+    };
+
+    const bindSaveEnablers = () => {
+        const body = Vvveb.Builder.frameBody;
+
+        if (!body || body.__artSaveEnable) return;
+
+        body.__artSaveEnable = true;
+        ["input", "change", "keyup", "paste", "drop", "mouseup"].forEach(type => {
+            body.addEventListener(type, enableSaveButtons, true);
+        });
+
+        /* Keep the element navigator in sync with structural changes. */
+        const refreshNavigatorTree = () => {
+            try { Vvveb.TreeList && Vvveb.TreeList.loadComponents(); } catch (error) {}
+        };
+
+        ["vvveb.undo.add", "vvveb.undo.restore"].forEach(type => {
+            body.addEventListener(type, () => window.setTimeout(refreshNavigatorTree, 60));
+        });
+
+        if (!body.__artTreeObserver && window.MutationObserver) {
+            let timer = null;
+            body.__artTreeObserver = new MutationObserver(() => {
+                window.clearTimeout(timer);
+                timer = window.setTimeout(refreshNavigatorTree, 120);
+            });
+            body.__artTreeObserver.observe(body, {childList: true, subtree: true});
+        }
+    };
+
+    window.addEventListener("vvveb.iframe.loaded", bindSaveEnablers);
+    bindSaveEnablers();
     for (const reusable of config.reusables || []) {
         const key = `site/${reusable.type}-${reusable.id}`;
         const registry = reusable.type === 'section' ? Vvveb.Sections : Vvveb.Blocks;
@@ -336,9 +429,10 @@
         return items.map(item => {
             const children = Array.isArray(item.children) ? item.children : [];
             const label = escapeHtml(item.label || 'Menu item');
+            const icon = item.icon_html || '';
             const link = item.href
-                ? `<a href="${escapeHtml(item.href)}" target="${item.target === '_blank' ? '_blank' : '_self'}">${label}</a>`
-                : `<span class="platform-menu-link">${label}</span>`;
+                ? `<a href="${escapeHtml(item.href)}" target="${item.target === '_blank' ? '_blank' : '_self'}">${icon}${label}</a>`
+                : `<span class="platform-menu-link">${icon}${label}</span>`;
             if (!children.length) return link;
             return `<span class="platform-menu-item platform-menu-item-has-children">${link}<span class="platform-submenu">${children.map(child => frontendMenuPreviewItem(child)).join('')}</span></span>`;
         }).join('');
@@ -347,7 +441,8 @@
     function frontendMenuPreviewItem(item) {
         const children = Array.isArray(item.children) ? item.children : [];
         const label = escapeHtml(item.label || 'Menu item');
-        const link = item.href ? `<a href="${escapeHtml(item.href)}">${label}</a>` : `<span class="platform-menu-link">${label}</span>`;
+        const icon = item.icon_html || '';
+        const link = item.href ? `<a href="${escapeHtml(item.href)}">${icon}${label}</a>` : `<span class="platform-menu-link">${icon}${label}</span>`;
         return children.length
             ? `<span class="platform-menu-item platform-menu-item-has-children">${link}<span class="platform-submenu">${children.map(child => frontendMenuPreviewItem(child)).join('')}</span></span>`
             : link;
@@ -413,5 +508,73 @@
         const div = document.createElement('div');
         div.textContent = String(value);
         return div.innerHTML;
+    }
+})();
+
+/* --------------------------------------------------------------------------
+ * Editor-only preview styles (art-editor-preview-styles).
+ * Applied through adoptedStyleSheets on the canvas document so they are never
+ * serialized into the saved page.
+ * -------------------------------------------------------------------------- */
+(function () {
+    var CSS = [
+        '.art-hero{--art-hero-h:380px !important}',
+        '.art-hero__inner{min-height:380px !important}',
+        '.art-hdr__mobile{display:flex !important;margin-top:8px}',
+        '[data-platform-menu-key]:empty{',
+        '  display:flex;align-items:center;justify-content:center;',
+        '  min-height:46px;padding:6px 10px;border-radius:10px;',
+        '  border:1px dashed rgba(120,132,150,.65);',
+        '  background:repeating-linear-gradient(45deg,rgba(120,132,150,.06) 0 8px,transparent 8px 16px);',
+        '}',
+        '[data-platform-menu-key]:empty::after{',
+        '  content:"";width:26px;height:18px;opacity:.45;background:currentColor;',
+        '  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\'><path d=\'M4 7h16M4 12h16M4 17h10\'/></svg>") center/contain no-repeat;',
+        '  mask:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\'><path d=\'M4 7h16M4 12h16M4 17h10\'/></svg>") center/contain no-repeat;',
+        '}'
+    ].join('');
+
+    function apply() {
+        var frame = document.getElementById('iframe1') || document.querySelector('iframe');
+
+        if (!frame || !frame.contentDocument) {
+            return false;
+        }
+
+        var doc = frame.contentDocument;
+
+        if (doc.__artEditorPreviewStyles) {
+            return true;
+        }
+
+        try {
+            var Sheet = frame.contentWindow.CSSStyleSheet;
+            var sheet = new Sheet();
+            sheet.replaceSync(CSS);
+            doc.adoptedStyleSheets = [].concat(doc.adoptedStyleSheets || [], [sheet]);
+            doc.__artEditorPreviewStyles = true;
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    var attempts = 0;
+    var timer = window.setInterval(function () {
+        attempts++;
+
+        if (apply() || attempts > 60) {
+            window.clearInterval(timer);
+        }
+    }, 400);
+
+    var frame = document.getElementById('iframe1');
+
+    if (frame) {
+        frame.addEventListener('load', function () {
+            attempts = 0;
+            window.setTimeout(apply, 250);
+        });
     }
 })();

@@ -203,6 +203,7 @@
                 });
             })();
         </script>
+        <script src="{{ url('/page-builder-assets/v5/integration/js/hero-slider.js') }}" defer></script>
         @include('platform.plugin-assets', ['scope' => 'frontend', 'kind' => 'scripts'])
     </body>
 </html>

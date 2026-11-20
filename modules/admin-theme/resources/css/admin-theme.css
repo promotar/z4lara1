@@ -326,7 +326,7 @@
     gap: 10px;
 }
 
-.frontend-menu-compact-item-form .frontend-menu-title-field { grid-column: span 3; }
+.frontend-menu-compact-item-form .frontend-menu-title-field { grid-column: span 6; }
 .frontend-menu-compact-item-form .frontend-menu-label-field { grid-column: span 2; }
 .frontend-menu-compact-item-form .frontend-menu-parent-field { grid-column: span 3; }
 .frontend-menu-compact-item-form .frontend-menu-type-field { grid-column: span 2; }
@@ -6768,3 +6768,11 @@ html body:has(nav.z4-admin-nav) nav.z4-admin-nav .z4-admin-sidebar-scroll::-webk
         border-right: 0;
     }
 }
+
+/* z4-frontend-menu-field-fixes */
+.frontend-menu-compact-item-form .z4-i18n-row { flex-wrap: nowrap; }
+.frontend-menu-compact-item-form .z4-i18n-text { min-width: 0; }
+.frontend-menu-compact-item-form .frontend-menu-icon-field, .frontend-menu-compact-item-form .frontend-menu-sort-field { min-width: 56px; }
+
+/* z4-menu-name-field-row */
+.admin-menu-card-edit .admin-menu-form-grid-two > .admin-field:has([data-i18n-field]) { grid-column: 1 / -1; }

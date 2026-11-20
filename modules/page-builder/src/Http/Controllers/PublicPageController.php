@@ -3,9 +3,11 @@
 namespace Modules\PageBuilder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Platform\Core\Localization\PlatformLocale;
 use App\Platform\Core\Services\PluginOwnedPageGuard;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class PublicPageController extends Controller
@@ -24,7 +26,7 @@ class PublicPageController extends Controller
         abort_unless($this->pluginPages->isPageAvailable($page), 404);
 
         $data = [
-            'page' => $page,
+            'page' => $this->localized($page),
             'isPreview' => false,
         ];
 
@@ -40,5 +42,14 @@ class PublicPageController extends Controller
         }
 
         return view('page-builder::public.show', $data);
+    }
+
+    /**
+     * Replace the page content with the published translation for the active
+     * locale. The slug always stays the base one (one URL for every language).
+     */
+    private function localized(object $page): object
+    {
+        return app(\App\Platform\Core\Localization\PageTranslator::class)->localize($page);
     }
 }

@@ -1,0 +1,30 @@
+<section class="spt-collection">
+    <header class="spt-collection__header">
+        <span>Store collection</span>
+        <h2>{{catalog_title}}</h2>
+        <p>{{results_count}} products</p>
+    </header>
+    <div class="spt-products">
+        {{#products}}
+        <article class="spt-product" data-product-id="{{public_id}}">
+            <a class="spt-product__media" href="{{url}}">
+                {{#has_image}}<img src="{{image}}" alt="{{image_alt}}" loading="lazy">{{/has_image}}
+                {{^has_image}}<span class="spt-product__placeholder">Product</span>{{/has_image}}
+                {{#on_sale}}<span class="spt-product__badge store-product-badge">Sale</span>{{/on_sale}}
+            </a>
+            <div class="spt-product__body">
+                <div class="spt-product__meta store-product-meta">
+                    <span>{{brand}}</span>
+                    <span class="spt-product__stock store-product-stock is-{{availability}}">{{availability_label}}</span>
+                </div>
+                <h3><a href="{{url}}">{{name}}</a></h3>
+                <p>{{short_description}}</p>
+                <div class="spt-product__footer">
+                    <strong class="store-product-price">{{price}}</strong>
+                    <a href="{{url}}">View product</a>
+                </div>
+            </div>
+        </article>
+        {{/products}}
+    </div>
+</section>

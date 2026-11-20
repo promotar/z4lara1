@@ -1,0 +1,884 @@
+{
+    "name": "Store",
+    "slug": "store",
+    "identifier": "z4platform.store",
+    "version": "12.10.6",
+    "type": "feature",
+    "status": "stable",
+    "default_state": "installed_inactive",
+    "description": "Independent Z4Platform Store with catalog, cart, Cash on Delivery checkout, fulfillment, and a customer purchase area integrated with the platform account.",
+    "author": "Z4Platform",
+    "provider": "Modules\\Store\\StoreServiceProvider",
+    "provider_file": "src/StoreServiceProvider.php",
+    "platform_version": ">=3.4.4 <4.0.0",
+    "settings": {
+        "label": "Store Settings",
+        "route": "admin.plugins.store.settings.index"
+    },
+    "integrations": {
+        "user_deletion": {
+            "mode": "participant"
+        }
+    },
+    "critical": false,
+    "can_deactivate": true,
+    "can_uninstall": true,
+    "dependencies": [],
+    "optional_dependencies": [],
+    "optional_capabilities": [
+        "media.library",
+        "notifications.dispatch",
+        "search.indexing"
+    ],
+    "provides": [
+        "store.access",
+        "store.manage",
+        "store.settings.view",
+        "store.settings.update",
+        "store.templates.manage",
+        "store.catalog.products.read",
+        "store.catalog.products.manage",
+        "store.catalog.products.publish",
+        "store.integrations.external-sellables.v1",
+        "store.integrations.external-sellable-lifecycle.v1",
+        "store.catalog.variants.read",
+        "store.catalog.variants.manage",
+        "store.categories.read",
+        "store.categories.manage",
+        "store.attributes.read",
+        "store.attributes.manage",
+        "store.media.read",
+        "store.media.associate",
+        "store.pricing.read",
+        "store.pricing.manage",
+        "store.promotions.read",
+        "store.promotions.manage",
+        "store.inventory.read",
+        "store.inventory.manage",
+        "store.inventory.reserve",
+        "store.cart",
+        "store.checkout",
+        "store.orders.create",
+        "store.orders.manage",
+        "store.orders.fulfill",
+        "store.orders.return",
+        "store.orders.notify",
+        "store.customer.account",
+        "store.customer.addresses",
+        "store.coupons.apply",
+        "store.coupons.manage",
+        "store.shipping.quote",
+        "store.shipping.manage",
+        "store.payments.cod"
+    ],
+    "routes": {
+        "admin": {
+            "file": "routes/admin.php",
+            "prefix": "admin/plugins/store",
+            "name": "admin.plugins.store.",
+            "middleware": [
+                "web",
+                "auth",
+                "staff",
+                "permission:store.access"
+            ],
+            "owned_paths": [
+                "/admin/plugins/store",
+                "/admin/plugins/store/*"
+            ]
+        },
+        "web": {
+            "file": "routes/storefront.php",
+            "prefix": "store",
+            "name": "store.",
+            "methods": [
+                "GET",
+                "HEAD",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+            ],
+            "middleware": [
+                "web"
+            ],
+            "owned_paths": [
+                "/store",
+                "/store/*"
+            ]
+        }
+    },
+    "route_ownership": {
+        "admin": [
+            "/admin/plugins/store",
+            "/admin/plugins/store/*"
+        ],
+        "storefront": [
+            "/store",
+            "/store/*"
+        ]
+    },
+    "permissions": [
+        {
+            "name": "store.access",
+            "description": "Access the Store administration area."
+        },
+        {
+            "name": "store.manage",
+            "description": "Manage Store foundation services."
+        },
+        {
+            "name": "store.settings.view",
+            "description": "View Store settings."
+        },
+        {
+            "name": "store.settings.update",
+            "description": "Update Store settings."
+        },
+        {
+            "name": "store.templates.manage",
+            "description": "Create, publish, copy, and remove Store product templates."
+        },
+        {
+            "name": "store.catalog.view",
+            "description": "View products and variants."
+        },
+        {
+            "name": "store.catalog.manage",
+            "description": "Create and manage products and variants."
+        },
+        {
+            "name": "store.catalog.publish",
+            "description": "Publish, delete, and restore products."
+        },
+        {
+            "name": "store.products.view",
+            "description": "View the product catalog and product details."
+        },
+        {
+            "name": "store.products.create",
+            "description": "Create and duplicate products."
+        },
+        {
+            "name": "store.products.update",
+            "description": "Edit product details, media, pricing, inventory, and organization."
+        },
+        {
+            "name": "store.products.publish",
+            "description": "Publish products and change storefront visibility."
+        },
+        {
+            "name": "store.products.archive",
+            "description": "Delete and restore products."
+        },
+        {
+            "name": "store.products.delete",
+            "description": "Permanently purge deleted products through an explicit destructive workflow."
+        },
+        {
+            "name": "store.artworks.sell",
+            "description": "Create and manage artwork products owned by the signed-in seller."
+        },
+        {
+            "name": "store.artworks.review",
+            "description": "Review submitted artwork products and approve Store publication."
+        },
+        {
+            "name": "store.categories.view",
+            "description": "View Store-owned category trees."
+        },
+        {
+            "name": "store.categories.manage",
+            "description": "Manage Store-owned categories."
+        },
+        {
+            "name": "store.brands.view",
+            "description": "View Store-owned brands."
+        },
+        {
+            "name": "store.brands.manage",
+            "description": "Create, edit, and delete Store-owned brands."
+        },
+        {
+            "name": "store.attributes.view",
+            "description": "View Store attributes and options."
+        },
+        {
+            "name": "store.attributes.manage",
+            "description": "Manage typed Store attributes and options."
+        },
+        {
+            "name": "store.media.associate",
+            "description": "Associate validated media with products and variants."
+        },
+        {
+            "name": "store.pricing.view",
+            "description": "View variant price history and effective prices."
+        },
+        {
+            "name": "store.pricing.manage",
+            "description": "Manage regular and scheduled sale prices."
+        },
+        {
+            "name": "store.promotions.view",
+            "description": "View Store promotions."
+        },
+        {
+            "name": "store.promotions.manage",
+            "description": "Manage Store promotion rules and actions."
+        },
+        {
+            "name": "store.shipping.view",
+            "description": "View shipping zones and delivery rules."
+        },
+        {
+            "name": "store.shipping.manage",
+            "description": "Manage shipping zones, costs, free delivery thresholds, and estimates."
+        },
+        {
+            "name": "store.inventory.view",
+            "description": "View inventory balances, reservations, and ledger history."
+        },
+        {
+            "name": "store.inventory.manage",
+            "description": "Adjust and reconcile inventory."
+        },
+        {
+            "name": "store.inventory.reserve",
+            "description": "Reserve, release, and commit inventory atomically."
+        },
+        {
+            "name": "store.orders.view",
+            "description": "View the order queue and fulfillment counts."
+        },
+        {
+            "name": "store.orders.details",
+            "description": "Open complete order details and immutable snapshots."
+        },
+        {
+            "name": "store.orders.update",
+            "description": "Move orders through allowed fulfillment statuses."
+        },
+        {
+            "name": "store.orders.cancel",
+            "description": "Cancel orders with a recorded reason and release inventory."
+        },
+        {
+            "name": "store.orders.delete",
+            "description": "Permanently delete cancelled orders after explicit order-number confirmation."
+        },
+        {
+            "name": "store.orders.return",
+            "description": "Record full-order returns and decide whether stock is restored."
+        },
+        {
+            "name": "store.orders.override",
+            "description": "Perform a supervised non-standard status transition with a mandatory reason."
+        },
+        {
+            "name": "store.orders.notes",
+            "description": "Add internal append-only order notes."
+        },
+        {
+            "name": "store.orders.print",
+            "description": "Print warehouse and delivery summaries."
+        },
+        {
+            "name": "store.orders.customer.view",
+            "description": "View customer contact and delivery information."
+        },
+        {
+            "name": "store.orders.payment",
+            "description": "Record Cash on Delivery collection status."
+        },
+        {
+            "name": "store.orders.notify",
+            "description": "Send or resend Store-owned customer status emails."
+        },
+        {
+            "name": "store.orders.reports",
+            "description": "View order reporting surfaces."
+        }
+    ],
+    "menus": [
+        {
+            "key": "store.admin",
+            "name": "Store",
+            "location": "admin",
+            "description": "Lifecycle-owned Store administration navigation.",
+            "source": "plugin",
+            "sort_order": 70,
+            "items": [
+                {
+                    "title": "Overview",
+                    "label": "Overview",
+                    "type": "route",
+                    "route": "admin.plugins.store.overview",
+                    "icon": "S",
+                    "permission": "store.access",
+                    "admin_group": "Store",
+                    "admin_sort_order": 10,
+                    "sort_order": 1
+                },
+                {
+                    "title": "Products",
+                    "label": "Products",
+                    "type": "route",
+                    "route": "admin.plugins.store.products.index",
+                    "icon": "P",
+                    "permission": "store.products.view",
+                    "admin_group": "Store",
+                    "admin_sort_order": 20,
+                    "sort_order": 2,
+                    "children": [
+                        {
+                            "title": "All Products",
+                            "label": "All Products",
+                            "type": "route",
+                            "route": "admin.plugins.store.products.index",
+                            "icon": "P",
+                            "permission": "store.products.view",
+                            "admin_sort_order": 10,
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Add New Product",
+                            "label": "Add New Product",
+                            "type": "route",
+                            "route": "admin.plugins.store.products.create",
+                            "icon": "+",
+                            "permission": "store.products.create",
+                            "admin_sort_order": 20,
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Deleted Products",
+                            "label": "Deleted Products",
+                            "type": "route",
+                            "route": "admin.plugins.store.products.archived",
+                            "icon": "D",
+                            "permission": "store.products.view",
+                            "admin_sort_order": 30,
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Categories",
+                            "label": "Categories",
+                            "type": "route",
+                            "route": "admin.plugins.store.categories.index",
+                            "icon": "C",
+                            "permission": "store.categories.view",
+                            "admin_sort_order": 40,
+                            "sort_order": 4
+                        },
+                        {
+                            "title": "Brands",
+                            "label": "Brands",
+                            "type": "route",
+                            "route": "admin.plugins.store.brands.index",
+                            "icon": "B",
+                            "permission": "store.brands.view",
+                            "admin_sort_order": 50,
+                            "sort_order": 5
+                        },
+                        {
+                            "title": "Inventory",
+                            "label": "Inventory",
+                            "type": "route",
+                            "route": "admin.plugins.store.inventory.index",
+                            "icon": "I",
+                            "permission": "store.inventory.view",
+                            "admin_sort_order": 60,
+                            "sort_order": 6
+                        }
+                    ]
+                },
+                {
+                    "title": "Product Templates",
+                    "label": "Product Templates",
+                    "type": "route",
+                    "route": "admin.plugins.store.templates.index",
+                    "icon": "T",
+                    "permission": "store.templates.manage",
+                    "admin_group": "Store",
+                    "admin_sort_order": 25,
+                    "sort_order": 3
+                },
+                {
+                    "title": "Orders",
+                    "label": "Orders",
+                    "type": "route",
+                    "route": "admin.plugins.store.orders.index",
+                    "icon": "O",
+                    "permission": "store.orders.view",
+                    "admin_group": "Store",
+                    "admin_sort_order": 30,
+                    "sort_order": 4,
+                    "children": [
+                        {
+                            "title": "All Orders",
+                            "label": "All Orders",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "icon": "O",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 10,
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Pending",
+                            "label": "Pending",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "status": "new"
+                            },
+                            "icon": "P",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 20,
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Processing",
+                            "label": "Processing",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "status": "processing"
+                            },
+                            "icon": "P",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 30,
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Ready",
+                            "label": "Ready",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "status": "ready"
+                            },
+                            "icon": "R",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 40,
+                            "sort_order": 4
+                        },
+                        {
+                            "title": "Completed",
+                            "label": "Completed",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "status": "delivered"
+                            },
+                            "icon": "C",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 50,
+                            "sort_order": 5
+                        },
+                        {
+                            "title": "Cancelled Orders",
+                            "label": "Cancelled Orders",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "status": "cancelled"
+                            },
+                            "icon": "C",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 60,
+                            "sort_order": 6
+                        },
+                        {
+                            "title": "Cancellation Requests",
+                            "label": "Cancellation Requests",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "cancellation_requested": 1
+                            },
+                            "icon": "R",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 70,
+                            "sort_order": 7
+                        },
+                        {
+                            "title": "Return Requests",
+                            "label": "Return Requests",
+                            "type": "route",
+                            "route": "admin.plugins.store.orders.index",
+                            "route_params": {
+                                "return_requested": 1
+                            },
+                            "icon": "R",
+                            "permission": "store.orders.view",
+                            "admin_sort_order": 80,
+                            "sort_order": 8
+                        }
+                    ]
+                },
+                {
+                    "title": "Coupons",
+                    "label": "Coupons",
+                    "type": "route",
+                    "route": "admin.plugins.store.coupons.index",
+                    "icon": "%",
+                    "permission": "store.promotions.view",
+                    "admin_group": "Store",
+                    "admin_sort_order": 40,
+                    "sort_order": 5
+                },
+                {
+                    "title": "Reports",
+                    "label": "Reports",
+                    "type": "route",
+                    "route": "admin.plugins.store.reports.index",
+                    "icon": "R",
+                    "permission": "store.orders.reports",
+                    "admin_group": "Store",
+                    "admin_sort_order": 50,
+                    "sort_order": 6,
+                    "children": [
+                        {
+                            "title": "Sales",
+                            "label": "Sales",
+                            "type": "link",
+                            "url": "/admin/plugins/store/reports#sales",
+                            "icon": "S",
+                            "permission": "store.orders.reports",
+                            "admin_sort_order": 10,
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Orders",
+                            "label": "Orders",
+                            "type": "link",
+                            "url": "/admin/plugins/store/reports#orders",
+                            "icon": "O",
+                            "permission": "store.orders.reports",
+                            "admin_sort_order": 20,
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Products",
+                            "label": "Products",
+                            "type": "link",
+                            "url": "/admin/plugins/store/reports#products",
+                            "icon": "P",
+                            "permission": "store.orders.reports",
+                            "admin_sort_order": 30,
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Inventory",
+                            "label": "Inventory",
+                            "type": "link",
+                            "url": "/admin/plugins/store/reports#inventory",
+                            "icon": "I",
+                            "permission": "store.orders.reports",
+                            "admin_sort_order": 40,
+                            "sort_order": 4
+                        }
+                    ]
+                },
+                {
+                    "title": "Settings",
+                    "label": "Settings",
+                    "type": "route",
+                    "route": "admin.plugins.store.settings.index",
+                    "icon": "C",
+                    "permission": "store.settings.view",
+                    "admin_group": "Store",
+                    "admin_sort_order": 60,
+                    "sort_order": 7,
+                    "children": [
+                        {
+                            "title": "General",
+                            "label": "General",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.index",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 10,
+                            "sort_order": 1
+                        },
+                        {
+                            "title": "Currency & Tax",
+                            "label": "Currency & Tax",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.currency-tax",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 20,
+                            "sort_order": 2
+                        },
+                        {
+                            "title": "Store Pages",
+                            "label": "Store Pages",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.pages",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 30,
+                            "sort_order": 3
+                        },
+                        {
+                            "title": "Inventory Settings",
+                            "label": "Inventory Settings",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.inventory",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 40,
+                            "sort_order": 4
+                        },
+                        {
+                            "title": "Order Settings",
+                            "label": "Order Settings",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.orders",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 50,
+                            "sort_order": 5
+                        },
+                        {
+                            "title": "Shipping Countries",
+                            "label": "Shipping Countries",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.shipping-countries",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 60,
+                            "sort_order": 6
+                        },
+                        {
+                            "title": "Shipping Zones",
+                            "label": "Shipping Zones",
+                            "type": "route",
+                            "route": "admin.plugins.store.shipping-zones.index",
+                            "icon": "",
+                            "permission": "store.shipping.view",
+                            "admin_sort_order": 70,
+                            "sort_order": 7
+                        },
+                        {
+                            "title": "Cash on Delivery",
+                            "label": "Cash on Delivery",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.cash-on-delivery",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 80,
+                            "sort_order": 8
+                        },
+                        {
+                            "title": "Notifications",
+                            "label": "Notifications",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.notifications",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 90,
+                            "sort_order": 9
+                        },
+                        {
+                            "title": "Policies",
+                            "label": "Policies",
+                            "type": "route",
+                            "route": "admin.plugins.store.settings.policies",
+                            "icon": "",
+                            "permission": "store.settings.view",
+                            "admin_sort_order": 100,
+                            "sort_order": 10
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "navigation": {
+        "contributions": [
+            {
+                "menu_key": "platform.frontend",
+                "location": "frontend",
+                "title": "المتجر",
+                "route": "store.index",
+                "sort_order": 70,
+                "lifecycle_owned": true
+            }
+        ]
+    },
+    "frontend": {
+        "owned_pages": [
+            "store"
+        ],
+        "owned_paths": [
+            "/pages/store"
+        ]
+    },
+    "lifecycle": {
+        "file": "src/Infrastructure/Lifecycle/StoreLifecycle.php",
+        "install": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@install",
+        "activate": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@activate",
+        "deactivate": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@deactivate",
+        "reactivate": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@reactivate",
+        "uninstall": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@uninstall",
+        "purge": "Modules\\Store\\Infrastructure\\Lifecycle\\StoreLifecycle@purge"
+    },
+    "migrations": "database/migrations",
+    "migration_ownership": {
+        "table_prefix": "store_",
+        "core_tables_modified": false
+    },
+    "assets": {
+        "source": "resources/assets",
+        "admin": {
+            "styles": [
+                "css/store.css"
+            ],
+            "scripts": [
+                "js/admin-confirm-dialog.js",
+                "js/admin-slug.js",
+                "js/vvveb-store-elements.js",
+                "js/store-template-editor.js"
+            ]
+        },
+        "frontend": {
+            "styles": [
+                "css/store.css"
+            ],
+            "scripts": [
+                "js/storefront.js"
+            ]
+        }
+    },
+    "page_builder": {
+        "widgets": [
+            "store/catalog",
+            "store/products",
+            "store/categories",
+            "store/brands"
+        ]
+    },
+    "events": [
+        "Modules\\Store\\Events\\StoreRuntimeRegistered",
+        "Modules\\Store\\Domain\\Catalog\\Events\\ProductPublished",
+        "Modules\\Store\\Domain\\Catalog\\Events\\ProductArchived",
+        "Modules\\Store\\Domain\\Catalog\\Events\\ProductRestored",
+        "Modules\\Store\\Domain\\Inventory\\Events\\InventoryReserved",
+        "Modules\\Store\\Events\\OrderPlaced",
+        "Modules\\Store\\Events\\OrderStatusChanged",
+        "Modules\\Store\\Events\\ExternalSellableLifecycleChanged"
+    ],
+    "data_policy": {
+        "keep_data_on_deactivate": true,
+        "keep_data_on_uninstall": false,
+        "purge_requires_explicit_request": true
+    },
+    "uninstall": {
+        "tables": [
+            "store_product_templates",
+            "store_artwork_authenticity_reviews",
+            "store_artwork_provenance",
+            "store_artwork_evidence",
+            "store_artwork_authenticity",
+            "store_artwork_media_history",
+            "store_artwork_media",
+            "store_artwork_reviews",
+            "store_artwork_details",
+            "store_external_sellable_lifecycle_events",
+            "store_external_sellable_operations",
+            "store_external_sellables",
+            "store_customer_profiles",
+            "store_product_reviews",
+            "store_setting_audits",
+            "store_shipping_zone_locations",
+            "store_shipping_zones",
+            "store_shipping_addresses",
+            "store_coupon_usages",
+            "store_return_request_events",
+            "store_return_request_attachments",
+            "store_return_requests",
+            "store_order_events",
+            "store_order_items",
+            "store_orders",
+            "store_inventory_reservations",
+            "store_inventory_movements",
+            "store_inventory_items",
+            "store_promotion_actions",
+            "store_promotion_conditions",
+            "store_promotion_targets",
+            "store_promotions",
+            "store_prices",
+            "store_product_media_translations",
+            "store_product_media",
+            "store_media_assets",
+            "store_variant_option_values",
+            "store_product_attribute_values",
+            "store_product_attribute_assignments",
+            "store_attribute_option_translations",
+            "store_attribute_options",
+            "store_attribute_translations",
+            "store_attributes",
+            "store_product_categories",
+            "store_category_translations",
+            "store_categories",
+            "store_product_variants",
+            "store_product_translations",
+            "store_products",
+            "store_brands",
+            "store_settings"
+        ],
+        "settings": [],
+        "storage_paths": [
+            {
+                "disk": "public",
+                "path": "store"
+            },
+            {
+                "disk": "local",
+                "path": "store"
+            }
+        ],
+        "records": [],
+        "columns": [],
+        "operation_target_prefixes": [
+            "store."
+        ]
+    },
+    "seo": {
+        "enabled": true,
+        "sitemap": true,
+        "routes": {
+            "include": [
+                "store.index",
+                "store.products.show",
+                "store.artworks.index"
+            ],
+            "exclude": [
+                "store.search",
+                "store.cart.*",
+                "store.checkout.*",
+                "store.account.*"
+            ]
+        },
+        "schema": [
+            "Product",
+            "Offer",
+            "AggregateRating",
+            "BreadcrumbList"
+        ]
+    },
+    "metadata": {
+        "architecture_document": "STORE-MASTER-00",
+        "phase": "page-builder-storefront-release",
+        "money_storage": "integer_minor_units",
+        "operating_currency": "JOD",
+        "sellable_unit": "product_variant",
+        "payment_default": "cash_on_delivery",
+        "payment_gateway_required": false,
+        "exhibitions_required": false
+    }
+}

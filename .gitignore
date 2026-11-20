@@ -43,12 +43,8 @@ secrets/
 /public/D*VPS*/
 /public/hot
 /public/storage
-/modules/*
-!/modules/.gitkeep
-!/modules/admin-theme/
-!/modules/admin-theme/**
-!/modules/page-builder/
-!/modules/page-builder/**
+# Plugin source ships with the platform release. Binary packages and any
+# per-installation uploads stay out of Git; module code is versioned here.
 /modules/**/*.zip
 /public/platform/plugins/*
 !/public/platform/plugins/art-inpa-admin-pro-theme/

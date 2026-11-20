@@ -1,0 +1,346 @@
+/* ==========================================================================
+   Art INPA hero slider (component)
+   Structure + motion only. Colours come from the platform theme variables
+   (--art-color-accent) and the variables below, which any page can override.
+
+   Without JavaScript (builder canvas / no-JS visitors) the slides are stacked
+   so every slide stays visible and editable. The runtime adds `is-ready` and
+   switches to the crossfade carousel.
+   ========================================================================== */
+
+.art-hero {
+    --art-hero-h: clamp(480px, 72vh, 700px);
+    --art-hero-radius: clamp(14px, 1.7vw, 26px);
+    --art-hero-text: #ffffff;
+    --art-hero-veil-rgb: 7 9 14;
+    --art-hero-veil-strong: .94;
+    --art-hero-veil-mid: .62;
+    --art-hero-veil-soft: .18;
+    /* Matches the site container so the copy lines up with page content. */
+    --art-hero-container: 1320px;
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+.art-hero__frame {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: var(--art-hero-h);
+    border-radius: 0;
+    background: rgb(var(--art-hero-veil-rgb));
+}
+
+/* Stacked by default (editor canvas / no JS). */
+.art-hero__slides {
+    position: relative;
+}
+
+.art-hero__slide {
+    position: relative;
+    min-height: var(--art-hero-h);
+}
+
+.art-hero.is-ready .art-hero__slides {
+    position: absolute;
+    inset: 0;
+}
+
+.art-hero.is-ready .art-hero__slide {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .85s ease, visibility .85s;
+}
+
+.art-hero.is-ready .art-hero__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.art-hero__media {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.art-hero__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.06);
+    transition: transform 9s linear;
+}
+
+.art-hero.is-ready .art-hero__slide.is-active .art-hero__media img {
+    transform: scale(1);
+}
+
+.art-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        270deg,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-strong)) 0%,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-mid)) 40%,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-soft)) 66%,
+        transparent 88%
+    );
+}
+
+html[dir="ltr"] .art-hero__scrim {
+    background: linear-gradient(
+        90deg,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-strong)) 0%,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-mid)) 40%,
+        rgb(var(--art-hero-veil-rgb) / var(--art-hero-veil-soft)) 66%,
+        transparent 88%
+    );
+}
+
+.art-hero__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        85% 75% at 100% 0%,
+        color-mix(in srgb, var(--art-color-accent, #e33446) 60%, transparent),
+        transparent 62%
+    );
+    mix-blend-mode: soft-light;
+    opacity: .85;
+    pointer-events: none;
+}
+
+.art-hero__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    max-width: var(--art-hero-container);
+    margin-inline: auto;
+    min-height: var(--art-hero-h);
+    padding: clamp(24px, 4vw, 56px) 12px;
+}
+
+.art-hero__content {
+    max-width: min(640px, 94%);
+}
+
+.art-hero__title {
+    margin: 0 0 14px;
+    color: var(--art-hero-text);
+    font-size: clamp(2rem, 4.4vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.14;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    text-shadow: 0 2px 32px rgba(0, 0, 0, .35);
+}
+
+.art-hero__text {
+    max-width: 56ch;
+    margin: 0 0 26px;
+    color: color-mix(in srgb, var(--art-hero-text) 88%, transparent);
+    font-size: clamp(1rem, 1.35vw, 1.22rem);
+    line-height: 1.9;
+}
+
+.art-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    background: var(--art-color-accent, #e33446);
+    color: #ffffff;
+    font-size: clamp(.95rem, 1.1vw, 1.05rem);
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 18px 36px -18px color-mix(in srgb, var(--art-color-accent, #e33446) 80%, transparent);
+    transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.art-hero__cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: 0 24px 46px -20px color-mix(in srgb, var(--art-color-accent, #e33446) 85%, transparent);
+}
+
+.art-hero__cta:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--art-color-accent, #e33446) 35%, transparent);
+}
+
+.art-hero__cta svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+}
+
+.art-hero__controls {
+    position: absolute;
+    z-index: 3;
+    inset-inline-end: max(12px, calc((100% - var(--art-hero-container)) / 2));
+    bottom: clamp(18px, 3vw, 34px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.art-hero__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, .38);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.art-hero__nav:hover,
+.art-hero__nav:focus-visible {
+    background: var(--art-color-accent, #e33446);
+    border-color: transparent;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.art-hero__nav svg {
+    width: 20px;
+    height: 20px;
+}
+
+html[dir="rtl"] .art-hero__nav svg {
+    transform: scaleX(-1);
+}
+
+.art-hero__dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.art-hero__dot {
+    width: 26px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .38);
+    cursor: pointer;
+    transition: width .22s ease, background-color .22s ease;
+}
+
+.art-hero__dot.is-active {
+    width: 40px;
+    background: var(--art-color-accent, #e33446);
+}
+
+.art-hero__dot:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+/* Entrance motion (runtime only) */
+@keyframes art-hero-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+}
+
+.art-hero.is-ready .art-hero__slide.is-active .art-hero__content > * {
+    animation: art-hero-in .75s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+.art-hero.is-ready .art-hero__slide.is-active .art-hero__content > *:nth-child(2) {
+    animation-delay: .12s;
+}
+
+.art-hero.is-ready .art-hero__slide.is-active .art-hero__content > *:nth-child(3) {
+    animation-delay: .24s;
+}
+
+@media (max-width: 1399.98px) {
+    .art-hero { --art-hero-container: 1140px; }
+}
+
+@media (max-width: 1199.98px) {
+    .art-hero { --art-hero-container: 960px; }
+}
+
+@media (max-width: 991.98px) {
+    .art-hero { --art-hero-container: 720px; }
+}
+
+@media (max-width: 767.98px) {
+    .art-hero { --art-hero-container: 540px; }
+}
+
+@media (max-width: 575.98px) {
+    .art-hero { --art-hero-container: 100%; }
+}
+
+@media (max-width: 860px) {
+    .art-hero {
+        --art-hero-h: min(76vh, 620px);
+    }
+
+    .art-hero__inner {
+        padding: 22px 12px 78px;
+        align-items: flex-end;
+    }
+
+    .art-hero__controls {
+        inset-inline: 0;
+        justify-content: center;
+        bottom: 16px;
+    }
+
+    .art-hero__nav {
+        display: none;
+    }
+
+    .art-hero__text {
+        font-size: 1rem;
+        line-height: 1.85;
+    }
+
+    .art-hero__title {
+        text-shadow: 0 2px 24px rgba(0, 0, 0, .45);
+    }
+}
+
+@media (max-width: 480px) {
+    .art-hero { --art-hero-h: 74vh; }
+    .art-hero__cta { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .art-hero.is-ready .art-hero__slide,
+    .art-hero__media img,
+    .art-hero__cta,
+    .art-hero__nav,
+    .art-hero__dot {
+        transition: none !important;
+    }
+
+    .art-hero.is-ready .art-hero__slide.is-active .art-hero__content > * {
+        animation: none !important;
+    }
+
+    .art-hero__media img { transform: none; }
+}

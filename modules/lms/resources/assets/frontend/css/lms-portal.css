@@ -1,0 +1,205 @@
+:root{--ainpa-primary:var(--art-color-accent, #9a0000);--ainpa-primary-dark:color-mix(in srgb, var(--art-color-accent, #790000) 78%, #000);--ainpa-accent:var(--art-color-accent, #ff4200);--ainpa-bg:var(--art-color-background, #f7f5f4);--ainpa-border:color-mix(in srgb, var(--art-color-text, #eadfdb) 12%, transparent);--ainpa-text:var(--art-color-text, #182032);--ainpa-muted:var(--art-color-muted, #697386)}.ainpa-portal,.ainpa-invitation{box-sizing:border-box;background:var(--ainpa-bg);min-height:calc(100vh - 70px);color:var(--ainpa-text);font-family:inherit}.ainpa-portal *,.ainpa-invitation *{box-sizing:border-box}.ainpa-portal-nav{min-height:74px;padding:0 max(24px,calc((100vw - 1280px)/2));display:flex;align-items:center;gap:32px;background:#fff;border-bottom:1px solid var(--ainpa-border);position:sticky;top:0;z-index:45}.ainpa-portal-brand{display:inline-flex;align-items:center;gap:9px;color:var(--ainpa-text);text-decoration:none;white-space:nowrap}.ainpa-portal-brand>span{width:34px;height:34px;border-radius:10px;background:var(--ainpa-primary);color:#fff;display:grid;place-items:center;font-weight:850}.ainpa-portal-brand strong{font-size:15px;letter-spacing:.06em}.ainpa-portal-links{display:flex;align-self:stretch;gap:4px;flex:1}.ainpa-portal-links a{display:flex;align-items:center;padding:0 15px;color:#5f6878;text-decoration:none;font-size:14px;font-weight:650;border-bottom:3px solid transparent}.ainpa-portal-links a:hover{color:var(--ainpa-primary);background:#fff8f5}.ainpa-portal-links a.is-active{color:var(--ainpa-primary);border-bottom-color:var(--ainpa-accent)}.ainpa-portal-account{display:flex;align-items:center;gap:9px}.ainpa-portal-account>span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--art-color-accent, #fff0eb) 10%, #fff);color:var(--ainpa-primary);font-weight:800}.ainpa-portal-account b{font-size:13px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ainpa-portal-account button{border:0;background:transparent;color:var(--ainpa-primary);font:inherit;font-size:12px;font-weight:700;cursor:pointer}.ainpa-portal-wrap{max-width:1280px;margin:0 auto;padding:42px 24px 74px}.ainpa-settings-wrap{max-width:980px}.ainpa-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}.ainpa-page-heading>div>span{color:var(--ainpa-primary);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.ainpa-page-heading h1{font-size:34px;line-height:1.13;margin:5px 0 7px}.ainpa-page-heading p{margin:0;color:var(--ainpa-muted)}.ainpa-compact-stats{display:flex;gap:10px}.ainpa-compact-stats span{background:#fff;border:1px solid var(--ainpa-border);border-radius:12px;padding:12px 15px;color:var(--ainpa-muted);font-size:12px}.ainpa-compact-stats strong{display:block;color:var(--ainpa-primary);font-size:19px}.ainpa-btn{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:10px 17px;border-radius:10px;border:1px solid transparent;text-decoration:none;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.ainpa-btn-primary{background:linear-gradient(135deg,var(--ainpa-primary),var(--ainpa-primary-dark));color:#fff;box-shadow:0 8px 20px rgba(154,0,0,.16)}.ainpa-btn-primary:hover{background:var(--ainpa-primary-dark);transform:translateY(-1px)}.ainpa-btn-secondary{background:#fff;color:var(--ainpa-primary);border-color:#e2c8c0}.ainpa-continue-card{display:grid;grid-template-columns:minmax(250px,390px) 1fr;background:#fff;border:1px solid var(--ainpa-border);border-radius:20px;overflow:hidden;box-shadow:0 15px 38px rgba(71,27,15,.07);margin-bottom:38px}.ainpa-course-image{min-height:240px;background:linear-gradient(135deg,color-mix(in srgb, var(--art-color-accent, #790000) 78%, #000),var(--art-color-accent, #ff4200));display:grid;place-items:center;color:#fff;font-size:48px;font-weight:850}.ainpa-course-image img{width:100%;height:100%;object-fit:cover}.ainpa-continue-copy{padding:32px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.ainpa-continue-copy>small,.ainpa-course-card-body>small,.ainpa-instructor-course-list article>div:nth-child(2)>small{color:var(--ainpa-accent);font-weight:750;text-transform:uppercase;letter-spacing:.06em}.ainpa-continue-copy h2{font-size:26px;margin:8px 0}.ainpa-continue-copy p{margin:0 0 20px;color:var(--ainpa-muted)}.ainpa-progress{width:100%;display:flex;align-items:center;gap:10px;margin-bottom:20px}.ainpa-progress>span{height:8px;flex:1;background:#eee5e1;border-radius:99px;overflow:hidden}.ainpa-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--ainpa-primary),var(--ainpa-accent));border-radius:inherit}.ainpa-progress b{font-size:13px}.ainpa-section{margin-top:34px}.ainpa-section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}.ainpa-section-head h2{margin:0 0 4px;font-size:22px}.ainpa-section-head p{margin:0;color:var(--ainpa-muted);font-size:13px}.ainpa-section-head a{color:var(--ainpa-primary);font-weight:750;text-decoration:none}.ainpa-course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.ainpa-course-card{background:#fff;border:1px solid var(--ainpa-border);border-radius:16px;overflow:hidden;box-shadow:0 8px 25px rgba(70,25,12,.05);transition:.18s ease}.ainpa-course-card:hover{transform:translateY(-3px);box-shadow:0 15px 32px rgba(70,25,12,.09)}.ainpa-course-card-image{height:170px;background:linear-gradient(135deg,color-mix(in srgb, var(--art-color-accent, #790000) 78%, #000),var(--art-color-accent, #ff4200));display:grid;place-items:center;position:relative;color:#fff;font-size:30px;font-weight:850}.ainpa-course-card-image img{width:100%;height:100%;object-fit:cover}.ainpa-course-card-image em{position:absolute;left:12px;top:12px;padding:6px 9px;border-radius:99px;background:rgba(255,255,255,.93);color:var(--ainpa-primary);font-size:11px;font-style:normal;font-weight:750}.ainpa-course-card-body{padding:18px}.ainpa-course-card-body h3{font-size:17px;line-height:1.35;margin:6px 0}.ainpa-course-card-body>p{color:var(--ainpa-muted);font-size:13px;margin:0 0 18px}.ainpa-course-card-body .ainpa-progress{margin-bottom:12px}.ainpa-course-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}.ainpa-course-meta span{color:var(--ainpa-muted)}.ainpa-course-meta a{color:var(--ainpa-primary);text-decoration:none;font-weight:800}.ainpa-empty{padding:60px 24px;text-align:center;background:#fff;border:1px dashed #dcbfb6;border-radius:18px}.ainpa-empty>span{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin:0 auto 14px;background:color-mix(in srgb, var(--art-color-accent, #fff0eb) 10%, #fff);color:var(--ainpa-primary);font-size:23px}.ainpa-empty h2{margin:0 0 7px}.ainpa-empty p{margin:0 auto 18px;color:var(--ainpa-muted);max-width:460px}.ainpa-filter-tabs{display:flex;gap:7px;margin-bottom:20px;overflow:auto}.ainpa-filter-tabs a{padding:9px 14px;border:1px solid var(--ainpa-border);background:#fff;border-radius:99px;text-decoration:none;color:#596273;font-size:13px;font-weight:700;white-space:nowrap}.ainpa-filter-tabs a.is-active{background:var(--ainpa-primary);color:#fff;border-color:var(--ainpa-primary)}.ainpa-settings-form{background:#fff;border:1px solid var(--ainpa-border);border-radius:18px;box-shadow:0 12px 36px rgba(70,25,12,.055)}.ainpa-settings-form>section{padding:28px}.ainpa-settings-form>section+section{border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent)}.ainpa-settings-form section>header{display:flex;gap:12px;margin-bottom:22px}.ainpa-settings-form section>header>span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--ainpa-primary);color:#fff;font-weight:800;flex:0 0 auto}.ainpa-settings-form h2{font-size:18px;margin:0 0 4px}.ainpa-settings-form header p{font-size:13px;color:var(--ainpa-muted);margin:0}.ainpa-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.ainpa-form-grid label>span,.ainpa-settings-form>section>div>label>span{display:block;font-size:13px;font-weight:700;margin-bottom:8px}.ainpa-form-grid input,.ainpa-form-grid select,.ainpa-form-grid textarea,.ainpa-settings-form>section>div>label>input,.ainpa-settings-form>section>div>label>textarea{width:100%;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:10px;padding:12px 13px;background:#fff;color:var(--ainpa-text);font:inherit}.ainpa-form-grid input:focus,.ainpa-form-grid select:focus,.ainpa-form-grid textarea:focus,.ainpa-settings-form input:focus,.ainpa-settings-form textarea:focus{outline:3px solid rgba(255,66,0,.13);border-color:var(--ainpa-primary)}.ainpa-field-full{grid-column:1/-1}.ainpa-settings-form>footer{padding:20px 28px;border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);display:flex;justify-content:flex-end;gap:10px}.ainpa-portal-alert{padding:13px 16px;border:1px solid #b8dfc7;background:#ecf9f1;color:#17653f;border-radius:11px;margin-bottom:18px}.ainpa-portal-alert.is-error{border-color:#edc2bb;background:#fff1ef;color:#8d1616}.ainpa-instructor-course-list{display:grid;gap:14px}.ainpa-instructor-course-list article{display:grid;grid-template-columns:180px 1fr auto;gap:20px;align-items:center;padding:14px;background:#fff;border:1px solid var(--ainpa-border);border-radius:16px}.ainpa-instructor-course-image{height:112px;border-radius:11px;background:linear-gradient(135deg,color-mix(in srgb, var(--art-color-accent, #790000) 78%, #000),var(--art-color-accent, #ff4200));display:grid;place-items:center;color:#fff;font-size:26px;font-weight:850;overflow:hidden}.ainpa-instructor-course-image img{width:100%;height:100%;object-fit:cover}.ainpa-instructor-course-list h2{margin:5px 0 10px;font-size:19px}.ainpa-instructor-course-list p{display:flex;flex-wrap:wrap;gap:15px;margin:0;color:var(--ainpa-muted);font-size:12px}.ainpa-course-updated{display:flex;align-items:flex-end;flex-direction:column;gap:5px}.ainpa-course-updated small{color:var(--ainpa-muted)}.ainpa-course-updated .ainpa-btn{margin-top:7px}.ainpa-portal-filters{display:grid;grid-template-columns:minmax(240px,1fr) minmax(190px,260px) minmax(150px,190px) auto;gap:10px;padding:15px;background:#fff;border:1px solid var(--ainpa-border);border-radius:14px;margin-bottom:17px}.ainpa-portal-filters input,.ainpa-portal-filters select{min-height:43px;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:10px;padding:0 12px;background:#fff}.ainpa-portal-table{background:#fff;border:1px solid var(--ainpa-border);border-radius:16px;overflow:hidden}.ainpa-table-scroll{overflow-x:auto}.ainpa-portal-table table{width:100%;border-collapse:collapse}.ainpa-portal-table th{padding:14px 16px;background:#fff3ef;color:#6f271c;font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:left;white-space:nowrap}.ainpa-portal-table td{padding:16px;border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);color:#4d5666;font-size:13px}.ainpa-portal-table td>strong,.ainpa-portal-table td>small{display:block}.ainpa-portal-table td>small{color:var(--ainpa-muted);margin-top:4px}.ainpa-portal-table td>a{color:var(--ainpa-primary);font-weight:750}.ainpa-portal-table>footer{padding:14px 16px;border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent)}.ainpa-type-pill,.ainpa-status{display:inline-flex;padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800}.ainpa-type-pill{background:color-mix(in srgb, var(--art-color-accent, #fff0eb) 10%, #fff);color:var(--ainpa-primary)}.ainpa-status-published{background:#eaf8ef;color:#1b7549}.ainpa-status-draft{background:#fff6df;color:#926400}.ainpa-table-person{display:flex;align-items:center;gap:10px}.ainpa-table-person>i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--art-color-accent, #fff0eb) 10%, #fff);color:var(--ainpa-primary);font-style:normal;font-weight:800}.ainpa-table-person span{display:flex;flex-direction:column}.ainpa-table-person small{color:var(--ainpa-muted)}.ainpa-table-progress{display:flex;align-items:center;gap:8px}.ainpa-table-progress>i{width:80px;height:7px;background:color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);border-radius:99px;overflow:hidden}.ainpa-table-progress b{display:block;height:100%;background:linear-gradient(90deg,var(--ainpa-primary),var(--ainpa-accent))}.ainpa-type-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.ainpa-type-tabs input{position:absolute;opacity:0}.ainpa-type-tabs span{display:block;padding:15px;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:11px;text-align:center;font-weight:750;cursor:pointer}.ainpa-type-tabs input:checked+span{border-color:var(--ainpa-primary);background:#fff2ee;color:var(--ainpa-primary)}.ainpa-settings-form [data-lesson-panel]{padding:17px;border:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);border-radius:12px}.ainpa-settings-form [data-lesson-panel][hidden]{display:none}.ainpa-duration-fields{display:flex!important;align-items:center;gap:7px;margin:0!important}.ainpa-duration-fields input{max-width:80px}.ainpa-duration-fields em{font-style:normal;color:var(--ainpa-muted);font-size:12px}.ainpa-back-link{display:inline-block;color:var(--ainpa-primary);font-size:13px;font-weight:750;text-decoration:none;margin-bottom:6px}.ainpa-invitation{display:grid;place-items:center;padding:50px 18px}.ainpa-invitation>section{width:min(680px,100%);background:#fff;border:1px solid var(--ainpa-border);border-radius:22px;padding:36px;box-shadow:0 22px 55px rgba(72,25,12,.1)}.ainpa-invite-icon{width:52px;height:52px;display:grid;place-items:center;background:color-mix(in srgb, var(--art-color-accent, #fff0eb) 10%, #fff);color:var(--ainpa-primary);border-radius:15px;font-size:23px;margin-top:32px}.ainpa-invitation>section>small{display:block;color:var(--ainpa-accent);font-weight:800;margin-top:15px}.ainpa-invitation h1{font-size:30px;margin:6px 0 9px}.ainpa-invitation>section>p{color:var(--ainpa-muted);line-height:1.65;margin:0 0 22px}.ainpa-invitation form>.ainpa-btn{width:100%;margin-top:20px}.ainpa-invitation>section>footer{text-align:center;color:var(--ainpa-muted);font-size:12px;margin-top:18px}
+@media(max-width:980px){.ainpa-portal-nav{padding:12px 18px;flex-wrap:wrap;gap:10px}.ainpa-portal-links{order:3;width:100%;overflow:auto}.ainpa-portal-links a{padding:12px 14px}.ainpa-portal-account{margin-left:auto}.ainpa-course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ainpa-portal-filters{grid-template-columns:1fr 1fr}.ainpa-instructor-course-list article{grid-template-columns:150px 1fr}.ainpa-course-updated{grid-column:1/-1;align-items:flex-start;flex-direction:row;justify-content:flex-end}}
+@media(max-width:700px){.ainpa-portal-wrap{padding:28px 13px 58px}.ainpa-portal-account b{display:none}.ainpa-page-heading{align-items:flex-start;flex-direction:column}.ainpa-page-heading h1{font-size:28px}.ainpa-compact-stats{width:100%}.ainpa-compact-stats span{flex:1}.ainpa-continue-card{grid-template-columns:1fr}.ainpa-course-image{min-height:190px}.ainpa-continue-copy{padding:23px 18px}.ainpa-course-grid,.ainpa-form-grid,.ainpa-portal-filters{grid-template-columns:1fr}.ainpa-field-full{grid-column:auto}.ainpa-instructor-course-list article{grid-template-columns:1fr}.ainpa-instructor-course-image{height:175px}.ainpa-course-updated{grid-column:auto;flex-wrap:wrap}.ainpa-portal-table thead{display:none}.ainpa-portal-table table,.ainpa-portal-table tbody,.ainpa-portal-table tr,.ainpa-portal-table td{display:block;width:100%}.ainpa-portal-table tr{padding:14px;border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent)}.ainpa-portal-table td{display:flex;justify-content:space-between;align-items:center;gap:16px;border:0;padding:7px 0;text-align:right}.ainpa-portal-table td:before{content:attr(data-label);color:var(--ainpa-muted);font-size:11px;text-align:left}.ainpa-portal-table td:first-child{align-items:flex-start}.ainpa-settings-form>section{padding:22px 16px}.ainpa-settings-form>footer{padding:17px 16px}.ainpa-type-tabs{grid-template-columns:1fr}.ainpa-invitation>section{padding:26px 18px}}
+
+/* Student course-card normalization */
+.ainpa-course-grid{align-items:stretch}
+.ainpa-course-card{display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden}
+.ainpa-course-card-image{height:auto;aspect-ratio:16/9;min-height:0;flex:0 0 auto;overflow:hidden}
+.ainpa-course-card-image img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.ainpa-course-card-body{display:flex;flex:1;min-width:0;flex-direction:column;padding:18px}
+.ainpa-course-card-body h3{min-height:46px;overflow:hidden}
+.ainpa-course-card-body>p{min-height:20px;margin-bottom:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ainpa-course-card-body .ainpa-progress{margin-top:auto}
+.ainpa-course-meta{align-items:center;margin-top:2px}
+.ainpa-course-meta a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 10px;border:1px solid var(--art-color-accent, #9a0000);border-radius:8px}
+@media(max-width:700px){.ainpa-course-card-body h3{min-height:auto}.ainpa-course-card-body>p{min-height:auto}}
+
+.ainpa-course-search{display:flex;gap:10px;margin:0 0 16px}.ainpa-course-search input{flex:1;min-height:43px;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:10px;padding:0 13px;font:inherit}@media(max-width:700px){.ainpa-course-search{flex-direction:column}}
+
+/* Final student dashboard refinements */
+.ainpa-course-grid{align-items:stretch}
+.ainpa-course-card{display:flex!important;flex-direction:column!important;min-width:0;overflow:hidden;height:100%}
+.ainpa-course-card-image{aspect-ratio:16/9!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;overflow:hidden}
+.ainpa-course-card-image img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center}
+.ainpa-course-card-body{display:flex!important;flex:1;flex-direction:column;min-height:0;padding:18px!important;background:#fff}
+.ainpa-course-card-body h3{margin:6px 0!important;min-height:46px;overflow:hidden}
+.ainpa-course-card-body>p{min-height:20px;margin:0 0 14px!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ainpa-course-card-body .ainpa-progress{margin-top:auto}
+.ainpa-course-meta a{border:1px solid var(--art-color-accent, #9a0000);border-radius:8px;padding:7px 10px}
+.ainpa-overview-stats{margin:0 0 22px}
+.ainpa-page-heading h1+ p[dir=auto]{margin:0 0 6px!important;color:var(--art-color-text, #182032);font-size:16px;text-align:left}
+.ainpa-continue-card{grid-template-columns:minmax(230px,32%) 1fr!important}
+.ainpa-course-image{min-height:0!important;aspect-ratio:4/3;overflow:hidden}
+.ainpa-course-image img{display:block;width:100%;height:100%;object-fit:cover}
+.ainpa-continue-copy{padding:26px!important}
+.ainpa-course-search{display:flex;gap:10px;margin:0 0 16px;max-width:600px}
+.ainpa-course-search input{flex:1;min-height:43px;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:10px;padding:0 13px;font:inherit}
+.ainpa-settings-form input[readonly]{background:#f4f1ef;color:var(--art-color-muted, #697386);cursor:not-allowed}
+.ainpa-password-wrap{position:relative}.ainpa-password-wrap input{padding-right:48px!important}.ainpa-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--art-color-accent, #9a0000);font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+@media(max-width:700px){.ainpa-course-card-body h3{min-height:auto}.ainpa-course-card-body>p{min-height:auto}.ainpa-course-search{flex-direction:column}.ainpa-continue-card{grid-template-columns:1fr!important}.ainpa-course-image{aspect-ratio:16/9}.ainpa-continue-copy{padding:20px!important}}
+
+
+.ainpa-course-card-image img{object-position:center top!important}
+.ainpa-course-card-body h3,.ainpa-continue-copy p[dir=auto]{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+
+.ainpa-continue-card .ainpa-course-image{height:100%;aspect-ratio:auto}
+@media(max-width:700px){.ainpa-continue-card .ainpa-course-image{height:auto;aspect-ratio:16/9}}
+
+.ainpa-compact-stats a{display:block;background:#fff;border:1px solid var(--ainpa-border);border-radius:12px;padding:12px 15px;color:var(--ainpa-muted);font-size:12px;text-decoration:none;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.ainpa-compact-stats a strong{display:block;color:var(--ainpa-primary);font-size:19px}
+.ainpa-compact-stats a:hover,.ainpa-compact-stats a:focus-visible{border-color:var(--ainpa-primary);box-shadow:0 8px 18px rgba(154,0,0,.10);outline:none;transform:translateY(-2px)}
+
+/* Student dashboard responsive hardening. */
+.ainpa-portal {
+    overflow-x: clip;
+}
+
+.ainpa-portal-nav,
+.ainpa-portal-wrap,
+.ainpa-continue-copy,
+.ainpa-course-card-body {
+    min-width: 0;
+}
+
+.ainpa-overview-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ainpa-overview-stats a {
+    min-width: 0;
+}
+
+.ainpa-continue-copy h2,
+.ainpa-course-card-body h3 {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 980px) {
+    .ainpa-portal-links {
+        order: 3;
+        flex: 0 0 calc(100% + 36px);
+        width: auto;
+        min-width: 0;
+        margin: 2px -18px -12px;
+        padding: 0 18px;
+        align-self: auto;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ainpa-portal-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ainpa-portal-links a {
+        flex: 0 0 auto;
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 700px) {
+    .ainpa-portal-nav {
+        padding-inline: 13px;
+    }
+
+    .ainpa-portal-links {
+        flex-basis: calc(100% + 26px);
+        margin-inline: -13px;
+        padding-inline: 13px;
+    }
+
+    .ainpa-continue-copy h2 {
+        font-size: clamp(21px, 7vw, 24px);
+        line-height: 1.2;
+    }
+
+    .ainpa-continue-copy p {
+        margin-bottom: 12px;
+    }
+
+    .ainpa-continue-copy .ainpa-btn {
+        width: 100%;
+    }
+}
+
+/* Instructor authoring and access workflow. */
+.ainpa-editor-wrap{max-width:1080px}.ainpa-inline-actions{display:flex;gap:8px;flex-wrap:wrap}.ainpa-review-pending{color:#9a6300!important;font-size:11px!important;font-weight:800}.ainpa-review-note{align-items:flex-start;background:#fff7df;border:1px solid #ead395;border-radius:10px;color:#7e5700;display:flex;flex-direction:column;gap:4px;padding:12px 14px}.ainpa-review-note span{font-size:12px}.ainpa-field-label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}.ainpa-course-media-preview{height:130px;width:180px}.ainpa-repeat-group{border:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);border-radius:13px;margin-top:16px;padding:16px}.ainpa-repeat-group:first-of-type{margin-top:0}.ainpa-repeat-heading{align-items:center;display:flex;gap:14px;justify-content:space-between;margin-bottom:12px}.ainpa-repeat-heading strong{font-size:14px}.ainpa-repeat-row{align-items:center;display:grid;gap:8px;grid-template-columns:1fr auto;margin-top:8px}.ainpa-repeat-row input,.ainpa-faq-row input,.ainpa-faq-row textarea{background:#fff;border:1px solid color-mix(in srgb, var(--art-color-text, #e1d6d2) 12%, transparent);border-radius:10px;color:var(--ainpa-text);font:inherit;padding:11px 12px;width:100%}.ainpa-repeat-row>button,.ainpa-faq-row>button{align-items:center;background:#fff3ef;border:1px solid #eacdc5;border-radius:9px;color:var(--ainpa-primary);cursor:pointer;display:flex;font-size:20px;height:42px;justify-content:center;width:42px}.ainpa-faq-row{align-items:start;display:grid;gap:8px;grid-template-columns:minmax(180px,.75fr) 1.25fr auto;margin-top:10px}.ainpa-request-status{background:#fff;border:1px solid var(--ainpa-border);border-radius:18px;box-shadow:0 12px 36px rgba(70,25,12,.055);padding:28px}.ainpa-request-status h2{margin:12px 0 6px}.ainpa-request-status>p{color:var(--ainpa-muted);margin:0 0 22px}.ainpa-request-status dl{display:grid;gap:12px;margin:0}.ainpa-request-status dl>div{border-top:1px solid color-mix(in srgb, var(--art-color-text, #eee4e0) 8%, transparent);padding-top:12px}.ainpa-request-status dt{color:var(--ainpa-muted);font-size:11px;font-weight:800;text-transform:uppercase}.ainpa-request-status dd{line-height:1.6;margin:4px 0 0}.lms-account-actions{margin-top:24px}.lms-account-actions-start{gap:10px;justify-content:flex-start}.lms-account-action-disabled{cursor:not-allowed;opacity:.58}.ainpa-lms-public-page{background:#f8f6f5;min-height:100vh}.ainpa-lms-teach-action{display:flex;justify-content:flex-start;margin:0 auto;max-width:1280px;padding:18px 24px 0}.ainpa-lms-teach-action a{background:#fff;border:1px solid #e2c8c0;border-radius:9px;color:var(--art-color-accent, #9a0000);font-size:13px;font-weight:750;padding:9px 13px;text-decoration:none}
+@media(max-width:700px){.ainpa-faq-row{grid-template-columns:1fr}.ainpa-faq-row>button{justify-self:end}.ainpa-repeat-heading{align-items:flex-start;flex-direction:column}.ainpa-repeat-heading .ainpa-btn{width:100%}.ainpa-lms-teach-action{padding-inline:13px}.ainpa-lms-teach-action a{width:100%;text-align:center}}
+
+@media (max-width: 420px) {
+    .ainpa-overview-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ainpa-overview-stats a:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+
+    .ainpa-section-head {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .ainpa-section-head a {
+        flex: 0 0 auto;
+        font-size: 13px;
+    }
+}
+
+/* Student mobile navigation layout v2. */
+@media (max-width: 700px) {
+    .ainpa-portal-nav {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "brand account"
+            "links links";
+        align-items: center;
+        gap: 0 12px;
+        min-height: 0;
+        padding: 10px 13px 0 !important;
+    }
+
+    .ainpa-portal-brand {
+        grid-area: brand;
+        min-width: 0;
+    }
+
+    .ainpa-portal-account {
+        grid-area: account;
+        min-width: 0;
+        margin-left: 0 !important;
+    }
+
+    .ainpa-portal-links {
+        grid-area: links;
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: calc(100% + 26px) !important;
+        min-width: 0;
+        margin: 8px -13px 0 !important;
+        padding: 0 13px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ainpa-portal-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ainpa-portal-links a {
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 0 12px;
+    }
+}
+
+.ainpa-student-main-account .ainpa-form-grid {
+    margin-bottom: 16px;
+}

@@ -246,3 +246,41 @@
         flex-direction: column;
     }
 }
+
+/* ============================================================
+   Off-canvas glass — the panel is translucent and blurs the page
+   behind it. Colours inherit the menu variables (site settings).
+   ============================================================ */
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface {
+    background: color-mix(in srgb, var(--platform-menu-submenu-background, #ffffff) 76%, transparent);
+    border-inline-start: 1px solid color-mix(in srgb, var(--platform-menu-color, #111827) 12%, transparent);
+    box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--platform-menu-color, #111827) 55%, transparent);
+    -webkit-backdrop-filter: blur(22px) saturate(155%);
+    backdrop-filter: blur(22px) saturate(155%);
+    border-start-start-radius: 16px;
+    border-end-start-radius: 16px;
+    inset-block: 8px;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    [data-platform-menu-layout="offcanvas"] .platform-menu-surface {
+        background: var(--platform-menu-submenu-background, #ffffff);
+    }
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-overlay {
+    background: color-mix(in srgb, var(--platform-menu-color, #111827) 32%, transparent);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface a,
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface .platform-menu-link {
+    font-weight: 700;
+    min-height: 46px;
+    width: 100%;
+}
+
+[data-platform-menu-layout="offcanvas"] .platform-menu-surface > .platform-menu-items > .platform-menu-item {
+    width: 100%;
+}

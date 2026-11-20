@@ -1,0 +1,1217 @@
+/* Loaded only by the LMS Overview route. */
+.lms-overview-page {
+    background: #f7f5f4;
+    color: #2d2524;
+    min-width: 0;
+    padding: 48px 0 40px !important;
+}
+
+.lms-overview-page,
+.lms-overview-page * {
+    box-sizing: border-box;
+}
+
+.lms-overview-page .lms-course-container {
+    margin: 0 auto;
+    max-width: 1440px;
+    padding: 0 28px;
+}
+
+.lms-overview-page .lms-overview-heading {
+    align-items: flex-start;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.lms-overview-page .lms-overview-heading h1 {
+    color: #2a1f1e;
+    font-size: clamp(1.7rem, 2vw, 2rem);
+    font-weight: 750;
+    letter-spacing: -.025em;
+    line-height: 1.15;
+    margin: 0 0 7px;
+}
+
+.lms-overview-page .lms-overview-heading p,
+.lms-overview-page .lms-overview-chart-heading p {
+    color: #786e6b;
+    font-size: .9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.lms-overview-page .lms-overview-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn {
+    align-items: center;
+    border-radius: 10px;
+    display: inline-flex;
+    font-size: .875rem;
+    font-weight: 700;
+    gap: 8px;
+    justify-content: center;
+    min-height: 42px;
+    padding: 9px 14px;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-primary {
+    background: var(--ainpa-admin-accent, #9a0000);
+    border-color: var(--ainpa-admin-accent, #9a0000);
+    box-shadow: 0 6px 14px rgba(121, 0, 0, .14);
+    color: #fff;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-primary:hover {
+    background: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+    border-color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-ghost,
+.lms-overview-page .lms-overview-wide-btn {
+    background: #fff;
+    border: 1px solid #ded6d2;
+    color: #4c3d3a;
+}
+
+.lms-overview-page a:focus-visible,
+.lms-overview-page select:focus-visible {
+    outline: 3px solid rgba(255, 66, 0, .35);
+    outline-offset: 2px;
+}
+
+.lms-overview-page .lms-stat-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 16px;
+}
+
+.lms-overview-page .lms-stat-card {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e6dedb;
+    border-radius: 12px;
+    display: flex;
+    gap: 13px;
+    min-height: 122px;
+    padding: 18px;
+}
+
+.lms-overview-page .lms-stat-card > div:last-child {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.lms-overview-page .lms-stat-card > div:last-child > span {
+    color: #756b68;
+    font-size: .78rem;
+    font-weight: 650;
+    line-height: 1.3;
+}
+
+.lms-overview-page .lms-stat-card strong {
+    color: #281f1d;
+    font-size: 1.65rem;
+    font-weight: 760;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+}
+
+.lms-overview-page .lms-stat-card small {
+    color: #998d88;
+    font-size: .72rem;
+    line-height: 1.35;
+}
+
+.lms-overview-page .lms-stat-icon {
+    align-items: center;
+    border-radius: 10px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+}
+
+.lms-overview-page .lms-stat-icon .lms-overview-icon {
+    height: 23px;
+    width: 23px;
+}
+
+.lms-overview-page .lms-stat-purple {
+    background: #f1effd;
+    color: #5c4bb5;
+}
+
+.lms-overview-page .lms-stat-green {
+    background: #eaf7ee;
+    color: #197341;
+}
+
+.lms-overview-page .lms-stat-blue {
+    background: #edf4fb;
+    color: #2f6f9d;
+}
+
+.lms-overview-page .lms-stat-orange {
+    background: #fff0e9;
+    color: #d84716;
+}
+
+.lms-overview-page .lms-overview-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.lms-overview-page .lms-overview-card {
+    background: #fff;
+    border: 1px solid #e6dedb;
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(57, 38, 32, .045);
+    min-width: 0;
+    padding: 20px;
+}
+
+.lms-overview-page .lms-overview-card h2 {
+    color: #2a1f1e;
+    font-size: .98rem;
+    font-weight: 750;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.lms-overview-page .lms-card-title-row {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    margin-bottom: 17px;
+}
+
+.lms-overview-page .lms-card-title-row > a {
+    color: var(--ainpa-admin-accent, #9a0000);
+    font-size: .78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.lms-overview-page .lms-card-title-row > a:hover {
+    color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+    text-decoration: underline;
+}
+
+.lms-overview-page .lms-overview-enrollment-card {
+    grid-column: span 8;
+}
+
+.lms-overview-page .lms-overview-status-card {
+    grid-column: span 4;
+}
+
+.lms-overview-page .lms-top-courses-card {
+    grid-column: span 8;
+}
+
+.lms-overview-page .lms-recent-enrollments-card {
+    grid-column: span 4;
+}
+
+.lms-overview-page .lms-overview-live-card {
+    grid-column: span 4;
+}
+
+.lms-overview-page .lms-activity-card {
+    grid-column: span 5;
+}
+
+.lms-overview-page .lms-quick-actions-card {
+    grid-column: span 3;
+}
+
+.lms-overview-page .lms-overview-chart-heading {
+    align-items: flex-start;
+}
+
+.lms-overview-page .lms-range-tabs {
+    background: #f7f5f4;
+    border: 1px solid #e4dcda;
+    border-radius: 9px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+}
+
+.lms-overview-page .lms-range-tabs a {
+    border-radius: 6px;
+    color: #736865;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 6px 8px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.lms-overview-page .lms-range-tabs a.active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(57, 38, 32, .11);
+    color: var(--ainpa-admin-accent, #9a0000);
+}
+
+.lms-overview-page .lms-line-chart {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    height: 238px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.lms-overview-page .lms-chart-axis {
+    color: #948985;
+    display: flex;
+    flex-direction: column;
+    font-size: .68rem;
+    justify-content: space-between;
+    padding: 18px 8px 34px 0;
+    text-align: right;
+}
+
+.lms-overview-page .lms-line-chart svg {
+    display: block;
+    height: 100%;
+    min-width: 0;
+    width: 100%;
+}
+
+.lms-overview-page .lms-grid-lines line {
+    stroke: #ebe4e1;
+    stroke-dasharray: 3 5;
+    stroke-width: 1;
+}
+
+.lms-overview-page .lms-line-chart polyline {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3.5;
+}
+
+.lms-overview-page .lms-line-purple {
+    stroke: #6555ba;
+}
+
+.lms-overview-page .lms-line-green {
+    stroke: #21834b;
+}
+
+.lms-overview-page .lms-chart-labels {
+    color: #948985;
+    display: flex;
+    font-size: .68rem;
+    justify-content: space-between;
+    margin-top: -19px;
+    padding-left: 40px;
+}
+
+.lms-overview-page .lms-chart-labels span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lms-overview-page .lms-chart-legend {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    justify-content: center;
+    margin-top: 17px;
+}
+
+.lms-overview-page .lms-chart-legend span {
+    align-items: center;
+    color: #665b58;
+    display: inline-flex;
+    font-size: .74rem;
+    gap: 7px;
+}
+
+.lms-overview-page .lms-chart-legend i,
+.lms-overview-page .lms-status-dot {
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+
+.lms-overview-page .lms-chart-legend i {
+    height: 8px;
+    width: 8px;
+}
+
+.lms-overview-page .lms-chart-legend i.purple {
+    background: #6555ba;
+}
+
+.lms-overview-page .lms-chart-legend i.green {
+    background: #21834b;
+}
+
+.lms-overview-page .lms-course-status-layout {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 14px 0 18px;
+}
+
+.lms-overview-page .lms-donut {
+    border-radius: 50%;
+    display: grid;
+    flex: 0 0 auto;
+    height: 142px;
+    place-items: center;
+    width: 142px;
+}
+
+.lms-overview-page .lms-donut > div {
+    align-content: center;
+    background: #fff;
+    border-radius: 50%;
+    display: grid;
+    height: 82px;
+    justify-items: center;
+    padding: 9px;
+    text-align: center;
+    width: 82px;
+}
+
+.lms-overview-page .lms-donut strong {
+    color: #2a1f1e;
+    font-size: 1.5rem;
+    letter-spacing: -.03em;
+    line-height: 1;
+}
+
+.lms-overview-page .lms-donut span {
+    color: #8e827e;
+    font-size: .64rem;
+    line-height: 1.25;
+    margin-top: 4px;
+}
+
+.lms-overview-page .lms-status-list {
+    display: grid;
+    gap: 9px;
+    min-width: 132px;
+}
+
+.lms-overview-page .lms-status-list > div {
+    align-items: center;
+    display: grid;
+    gap: 0 7px;
+    grid-template-columns: 8px minmax(0, 1fr);
+}
+
+.lms-overview-page .lms-status-dot {
+    height: 8px;
+    width: 8px;
+}
+
+.lms-overview-page .lms-status-list p,
+.lms-overview-page .lms-status-list strong {
+    margin: 0;
+}
+
+.lms-overview-page .lms-status-list p {
+    color: #554945;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.lms-overview-page .lms-status-list strong {
+    color: #958984;
+    font-size: .68rem;
+    font-weight: 600;
+    grid-column: 2;
+    line-height: 1.35;
+}
+
+.lms-overview-page .lms-overview-wide-btn {
+    align-items: center;
+    border-radius: 9px;
+    display: inline-flex;
+    font-size: .78rem;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 38px;
+    text-decoration: none;
+    width: 100%;
+}
+
+.lms-overview-page .lms-overview-wide-btn:hover {
+    border-color: #c9bbb6;
+    color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+}
+
+.lms-overview-page .lms-overview-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+}
+
+.lms-overview-page .lms-overview-table {
+    border-collapse: collapse;
+    min-width: 700px;
+    width: 100%;
+}
+
+.lms-overview-page .lms-overview-table th,
+.lms-overview-page .lms-overview-table td {
+    border-bottom: 1px solid #eee7e4;
+    color: #4a3e3b;
+    font-size: .77rem;
+    padding: 13px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.lms-overview-page .lms-overview-table th {
+    color: #897d79;
+    font-size: .66rem;
+    font-weight: 750;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+}
+
+.lms-overview-page .lms-overview-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.lms-overview-page .lms-overview-course-cell {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    min-width: 180px;
+}
+
+.lms-overview-page .lms-overview-course-cell img,
+.lms-overview-page .lms-overview-course-cell > span {
+    border-radius: 9px;
+    flex: 0 0 auto;
+    height: 38px;
+    object-fit: cover;
+    width: 38px;
+}
+
+.lms-overview-page .lms-overview-course-cell > span {
+    align-items: center;
+    background: #f3eeec;
+    color: var(--ainpa-admin-accent, #9a0000);
+    display: inline-flex;
+    font-size: .86rem;
+    font-weight: 750;
+    justify-content: center;
+}
+
+.lms-overview-page .lms-overview-course-cell strong {
+    color: #352925;
+    display: -webkit-box;
+    font-size: .78rem;
+    font-weight: 750;
+    line-height: 1.35;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.lms-overview-page .lms-overview-course-cell small {
+    color: #9a8d88;
+    display: block;
+    font-size: .67rem;
+    margin-top: 3px;
+}
+
+.lms-overview-page .lms-progress {
+    background: #eee7e4;
+    border-radius: 999px;
+    height: 6px;
+    overflow: hidden;
+    width: 88px;
+}
+
+.lms-overview-page .lms-progress span {
+    background: var(--ainpa-admin-accent, #9a0000);
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+}
+
+.lms-overview-page .lms-row-action {
+    align-items: center;
+    border: 1px solid #dfd6d3;
+    border-radius: 8px;
+    color: #675955;
+    display: inline-flex;
+    font-size: 1.2rem;
+    font-weight: 700;
+    height: 34px;
+    justify-content: center;
+    text-decoration: none;
+    width: 34px;
+}
+
+.lms-overview-page .lms-row-action:hover {
+    background: #fff5f2;
+    border-color: #e3b4a5;
+    color: var(--ainpa-admin-accent, #9a0000);
+}
+
+.lms-overview-page .lms-enrollment-list,
+.lms-overview-page .lms-live-list,
+.lms-overview-page .lms-quick-actions-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.lms-overview-page .lms-enrollment-list article {
+    align-items: center;
+    display: grid;
+    gap: 9px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    padding: 4px 0;
+}
+
+.lms-overview-page .lms-enrollment-list img,
+.lms-overview-page .lms-enrollment-list article > span {
+    border-radius: 50%;
+    height: 34px;
+    object-fit: cover;
+    width: 34px;
+}
+
+.lms-overview-page .lms-enrollment-list article > span {
+    align-items: center;
+    background: #f4eeec;
+    color: var(--ainpa-admin-accent, #9a0000);
+    display: inline-flex;
+    font-size: .76rem;
+    font-weight: 750;
+    justify-content: center;
+}
+
+.lms-overview-page .lms-enrollment-list article > div {
+    min-width: 0;
+}
+
+.lms-overview-page .lms-enrollment-list strong,
+.lms-overview-page .lms-enrollment-list small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lms-overview-page .lms-enrollment-list strong {
+    color: #403330;
+    font-size: .75rem;
+    font-weight: 750;
+}
+
+.lms-overview-page .lms-enrollment-list small {
+    color: #958983;
+    font-size: .68rem;
+    margin-top: 2px;
+}
+
+.lms-overview-page .lms-enrollment-list p {
+    color: #958983;
+    font-size: .67rem;
+    grid-column: 2;
+    margin: -4px 0 0;
+}
+
+.lms-overview-page .lms-enrollment-list .lms-status-badge {
+    align-self: center;
+    font-size: .64rem;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+}
+
+.lms-overview-page .lms-live-list article {
+    align-items: flex-start;
+    border-bottom: 1px solid #eee7e4;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    padding: 0 0 12px;
+}
+
+.lms-overview-page .lms-live-list article:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.lms-overview-page .lms-live-icon,
+.lms-overview-page .lms-activity-icon {
+    align-items: center;
+    border-radius: 9px;
+    display: inline-flex;
+    height: 36px;
+    justify-content: center;
+    width: 36px;
+}
+
+.lms-overview-page .lms-live-icon {
+    background: #fff0e9;
+    color: #c94317;
+}
+
+.lms-overview-page .lms-live-icon .lms-overview-icon,
+.lms-overview-page .lms-activity-icon .lms-overview-icon {
+    height: 18px;
+    width: 18px;
+}
+
+.lms-overview-page .lms-live-list article > div:nth-child(2) {
+    min-width: 0;
+}
+
+.lms-overview-page .lms-live-list h3 {
+    color: #403330;
+    font-size: .76rem;
+    font-weight: 750;
+    line-height: 1.35;
+    margin: 0 0 3px;
+    overflow-wrap: anywhere;
+}
+
+.lms-overview-page .lms-live-list p,
+.lms-overview-page .lms-live-list small {
+    color: #968984;
+    display: block;
+    font-size: .67rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.lms-overview-page .lms-live-list .lms-btn {
+    font-size: .68rem;
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 1px;
+    min-height: 30px;
+    padding: 5px 9px;
+}
+
+.lms-overview-page .lms-activity-strip {
+    display: grid;
+    gap: 10px;
+}
+
+.lms-overview-page .lms-activity-strip article {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.lms-overview-page .lms-activity-strip strong {
+    color: #443633;
+    font-size: .75rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.lms-overview-page .lms-activity-strip small {
+    color: #958984;
+    font-size: .67rem;
+    grid-column: 2;
+    line-height: 1.3;
+    margin-top: -8px;
+}
+
+.lms-overview-page .lms-activity-green {
+    background: #eaf7ee;
+    color: #197341;
+}
+
+.lms-overview-page .lms-activity-blue {
+    background: #edf4fb;
+    color: #2f6f9d;
+}
+
+.lms-overview-page .lms-activity-purple {
+    background: #f1effd;
+    color: #5c4bb5;
+}
+
+.lms-overview-page .lms-quick-actions-card h2 {
+    margin-bottom: 16px;
+}
+
+.lms-overview-page .lms-quick-actions-grid a {
+    align-items: center;
+    border: 1px solid #e7dfdc;
+    border-radius: 9px;
+    color: #4a3d39;
+    display: grid;
+    font-size: .74rem;
+    font-weight: 700;
+    gap: 8px;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    min-height: 46px;
+    padding: 8px;
+    text-decoration: none;
+}
+
+.lms-overview-page .lms-quick-actions-grid a:hover {
+    background: #fff8f6;
+    border-color: #e6b6a7;
+    color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+}
+
+.lms-overview-page .lms-quick-actions-grid span {
+    align-items: center;
+    background: #fff0e9;
+    border-radius: 7px;
+    color: #c94317;
+    display: inline-flex;
+    height: 28px;
+    justify-content: center;
+    width: 28px;
+}
+
+.lms-overview-page .lms-quick-actions-grid span .lms-overview-icon {
+    height: 16px;
+    width: 16px;
+}
+
+.lms-overview-page .lms-quick-actions-grid b {
+    color: #a09490;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.lms-overview-page .lms-empty-state {
+    align-items: center;
+    background: #fbf9f8;
+    border: 1px dashed #d9cdca;
+    border-radius: 10px;
+    color: #8c807c;
+    display: flex;
+    font-size: .78rem;
+    justify-content: center;
+    min-height: 74px;
+    padding: 16px;
+    text-align: center;
+}
+
+@media (max-width: 1180px) {
+    .lms-overview-page .lms-overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lms-overview-page .lms-overview-enrollment-card,
+    .lms-overview-page .lms-overview-status-card,
+    .lms-overview-page .lms-top-courses-card {
+        grid-column: 1 / -1;
+    }
+
+    .lms-overview-page .lms-recent-enrollments-card,
+    .lms-overview-page .lms-overview-live-card,
+    .lms-overview-page .lms-activity-card,
+    .lms-overview-page .lms-quick-actions-card {
+        grid-column: auto;
+    }
+
+    .lms-overview-page .lms-quick-actions-card {
+        grid-column: span 2;
+    }
+
+    .lms-overview-page .lms-quick-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .lms-overview-page .lms-course-container {
+        padding: 0 20px;
+    }
+
+    .lms-overview-page .lms-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .lms-overview-page {
+        padding-top: 20px;
+    }
+
+    .lms-overview-page .lms-course-container {
+        padding: 0 14px;
+    }
+
+    .lms-overview-page .lms-overview-heading,
+    .lms-overview-page .lms-card-title-row,
+    .lms-overview-page .lms-course-status-layout {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .lms-overview-page .lms-overview-actions {
+        justify-content: stretch;
+    }
+
+    .lms-overview-page .lms-overview-actions .lms-btn {
+        flex: 1 1 180px;
+    }
+
+    .lms-overview-page .lms-overview-grid,
+    .lms-overview-page .lms-quick-actions-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lms-overview-page .lms-recent-enrollments-card,
+    .lms-overview-page .lms-overview-live-card,
+    .lms-overview-page .lms-activity-card,
+    .lms-overview-page .lms-quick-actions-card {
+        grid-column: auto;
+    }
+
+    .lms-overview-page .lms-range-tabs {
+        align-self: flex-start;
+    }
+
+    .lms-overview-page .lms-course-status-layout {
+        align-items: center;
+    }
+
+    .lms-overview-page .lms-status-list {
+        width: min(100%, 240px);
+    }
+
+    .lms-overview-page .lms-chart-labels {
+        display: none;
+    }
+
+    .lms-overview-page .lms-line-chart {
+        height: 210px;
+    }
+}
+
+@media (max-width: 430px) {
+    .lms-overview-page .lms-stat-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lms-overview-page .lms-overview-card {
+        padding: 16px;
+    }
+
+    .lms-overview-page .lms-overview-actions .lms-btn {
+        flex-basis: 100%;
+    }
+
+    .lms-overview-page .lms-range-tabs a {
+        padding-inline: 7px;
+    }
+
+    .lms-overview-page .lms-enrollment-list article {
+        grid-template-columns: 32px minmax(0, 1fr);
+    }
+
+    .lms-overview-page .lms-enrollment-list .lms-status-badge {
+        grid-column: 2;
+        grid-row: auto;
+        justify-self: start;
+    }
+}
+
+/* Overview visual QA corrections: scoped to this page only. */
+.lms-overview-page .lms-overview-actions .lms-btn {
+    align-items: center;
+    line-height: 1.25;
+    min-height: 42px;
+    padding: 10px 15px 11px;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-primary,
+.lms-overview-page .lms-overview-actions .lms-btn-primary:visited {
+    background-color: var(--ainpa-admin-accent, #9a0000);
+    border-color: var(--ainpa-admin-accent, #9a0000);
+    color: #fff !important;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-primary:hover {
+    background-color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+    border-color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+    color: #fff !important;
+}
+
+.lms-overview-page .lms-overview-actions .lms-btn-primary[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: .56;
+    pointer-events: none;
+}
+
+.lms-overview-page .lms-overview-grid {
+    align-items: start;
+}
+
+.lms-overview-page .lms-overview-card {
+    align-self: start;
+    height: auto;
+    min-height: 0;
+}
+
+.lms-overview-page .lms-overview-live-card {
+    align-self: start;
+    height: auto;
+    min-height: 0;
+}
+
+.lms-overview-page .lms-top-courses-card--full,
+.lms-overview-page .lms-activity-card {
+    grid-column: 1 / -1;
+}
+
+.lms-overview-page .lms-recent-enrollments-card {
+    grid-column: span 8;
+}
+
+.lms-overview-page .lms-quick-actions-card {
+    grid-column: span 4;
+}
+
+.lms-overview-page .lms-overview-table {
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.lms-overview-page .lms-overview-table th:nth-child(1) {
+    width: 36%;
+}
+
+.lms-overview-page .lms-overview-table th:nth-child(2) {
+    width: 20%;
+}
+
+.lms-overview-page .lms-overview-table th:nth-child(3) {
+    width: 10%;
+}
+
+.lms-overview-page .lms-overview-table th:nth-child(4) {
+    width: 15%;
+}
+
+.lms-overview-page .lms-overview-table th:nth-child(5) {
+    width: 12%;
+}
+
+.lms-overview-page .lms-overview-table th:last-child {
+    width: 48px;
+}
+
+.lms-overview-page .lms-overview-course-cell,
+.lms-overview-page .lms-overview-course-cell > div {
+    min-width: 0;
+}
+
+.lms-overview-page .lms-overview-course-cell {
+    min-width: 0;
+}
+
+.lms-overview-page .lms-overview-course-cell strong {
+    overflow-wrap: break-word;
+    text-align: start;
+    unicode-bidi: plaintext;
+    word-break: normal;
+}
+
+.lms-overview-page .lms-enrollment-list small {
+    display: -webkit-box;
+    line-height: 1.35;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-overflow: clip;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    word-break: normal;
+}
+
+.lms-overview-page .lms-enrollment-list small[dir="auto"] {
+    text-align: start;
+    unicode-bidi: plaintext;
+}
+
+.lms-overview-page .lms-enrollment-list .lms-status-badge {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.lms-overview-page .lms-activity-strip,
+.lms-overview-page .lms-activity-strip article {
+    min-width: 0;
+}
+
+.lms-overview-page .lms-activity-strip article {
+    align-items: start;
+}
+
+.lms-overview-page .lms-activity-strip strong,
+.lms-overview-page .lms-activity-strip small {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.lms-overview-page .lms-quick-actions-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.lms-overview-page .lms-quick-actions-grid a {
+    grid-template-columns: 28px minmax(0, 1fr) 14px;
+    min-width: 0;
+    width: 100%;
+}
+
+@media (max-width: 1180px) {
+    .lms-overview-page .lms-overview-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lms-overview-page .lms-overview-enrollment-card,
+    .lms-overview-page .lms-overview-status-card,
+    .lms-overview-page .lms-overview-live-card,
+    .lms-overview-page .lms-top-courses-card,
+    .lms-overview-page .lms-recent-enrollments-card,
+    .lms-overview-page .lms-activity-card,
+    .lms-overview-page .lms-quick-actions-card {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 900px) {
+    .lms-overview-page .lms-overview-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .lms-overview-page .lms-overview-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .lms-overview-page .lms-overview-table {
+        min-width: 640px;
+        table-layout: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .lms-overview-page {
+        padding-top: 28px !important;
+    }
+}
+
+/* Course action menu on the Overview table. */
+.lms-overview-page .lms-row-menu {
+    display: inline-block;
+    position: relative;
+}
+
+.lms-overview-page .lms-row-menu > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.lms-overview-page .lms-row-menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.lms-overview-page .lms-row-menu[open] .lms-row-action {
+    background: #fff5f2;
+    border-color: #e3b4a5;
+    color: var(--ainpa-admin-accent, #9a0000);
+}
+
+.lms-overview-page .lms-row-menu-panel {
+    background: #fff;
+    border: 1px solid #e0d6d2;
+    border-radius: 9px;
+    box-shadow: 0 10px 24px rgba(57, 38, 32, .14);
+    display: grid;
+    gap: 2px;
+    min-width: 132px;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 30;
+}
+
+.lms-overview-page .lms-row-menu-panel a {
+    border-radius: 6px;
+    color: #4a3d39;
+    font-size: .75rem;
+    font-weight: 650;
+    padding: 8px 9px;
+    text-align: start;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.lms-overview-page .lms-row-menu-panel a:hover,
+.lms-overview-page .lms-row-menu-panel a:focus-visible {
+    background: #fff2ed;
+    color: color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);
+}
+
+@media (min-width: 761px) {
+    .lms-overview-page .lms-overview-table-wrap {
+        overflow: visible;
+    }
+}
+.lms-course-title-list {
+    display: grid;
+    gap: .3rem;
+    min-width: 12rem;
+}
+
+.lms-course-title-list > span {
+    width: fit-content;
+    max-width: 20rem;
+    padding: .2rem .48rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #fff0f0;
+    color: #6f1111;
+    font-size: .72rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lms-course-title-list > span.is-muted,
+.lms-course-title-list > small {
+    background: transparent;
+    color: #667085;
+    font-size: .7rem;
+    font-weight: 600;
+}

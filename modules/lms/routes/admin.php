@@ -1,0 +1,77 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Modules\Lms\Http\Controllers\Admin\LmsAdminController;
+use Modules\Lms\Http\Controllers\Admin\LmsPeopleController;
+use Modules\Lms\Http\Controllers\Admin\TemplateController;
+
+Route::get('/', [LmsAdminController::class, 'overview'])->name('overview');
+Route::get('/overview/export', [LmsAdminController::class, 'exportOverview'])->name('overview.export');
+Route::get('/overview/styles.css', [LmsAdminController::class, 'overviewStyles'])->name('overview.styles');
+Route::get('/media-studio', [LmsAdminController::class, 'mediaIndex'])->middleware('permission:lms.settings.manage')->name('media.index');
+Route::post('/media-studio', [LmsAdminController::class, 'mediaStore'])->middleware('permission:lms.settings.manage')->name('media.store');
+Route::delete('/media-studio', [LmsAdminController::class, 'mediaDelete'])->middleware('permission:lms.settings.manage')->name('media.destroy');
+Route::get('/courses', [LmsAdminController::class, 'courses'])->name('courses');
+Route::get('/courses/create', [LmsAdminController::class, 'createCourse'])->middleware('permission:lms.settings.manage')->name('courses.create');
+Route::post('/courses', [LmsAdminController::class, 'storeCourse'])->middleware('permission:lms.settings.manage')->name('courses.store');
+Route::post('/courses/bulk', [LmsAdminController::class, 'bulkCourses'])->middleware('permission:lms.settings.manage')->name('courses.bulk');
+Route::get('/courses/codes', [LmsAdminController::class, 'courseCodes'])->middleware('permission:lms.settings.manage|lms.codes.generate')->name('courses.codes');
+Route::post('/courses/codes', [LmsAdminController::class, 'generateCourseCodes'])->middleware('permission:lms.settings.manage|lms.codes.generate')->name('courses.codes.store');
+Route::get('/courses/codes/export', [LmsAdminController::class, 'exportCourseCodes'])->middleware('permission:lms.settings.manage|lms.codes.generate')->name('courses.codes.export');
+Route::get('/courses/codes/issuers/search', [LmsAdminController::class, 'codeIssuerSearch'])->middleware('permission:lms.settings.manage')->name('courses.codes.issuers.search');
+Route::post('/courses/codes/issuers', [LmsAdminController::class, 'grantCodeIssuer'])->middleware('permission:lms.settings.manage')->name('courses.codes.issuers.store');
+Route::delete('/courses/codes/issuers/{user}', [LmsAdminController::class, 'revokeCodeIssuer'])->middleware('permission:lms.settings.manage')->name('courses.codes.issuers.destroy');
+Route::get('/courses/{course}/edit', [LmsAdminController::class, 'editCourse'])->middleware('permission:lms.settings.manage')->name('courses.edit');
+Route::put('/courses/{course}', [LmsAdminController::class, 'updateCourse'])->middleware('permission:lms.settings.manage')->name('courses.update');
+Route::put('/courses/{course}/curriculum', [LmsAdminController::class, 'updateCourseCurriculum'])->middleware('permission:lms.settings.manage')->name('courses.curriculum');
+Route::get('/courses/{course}/preview', [LmsAdminController::class, 'previewCourse'])->name('courses.preview');
+Route::patch('/courses/{course}/status', [LmsAdminController::class, 'updateCourseStatus'])->middleware('permission:lms.settings.manage')->name('courses.status');
+Route::delete('/courses/{course}', [LmsAdminController::class, 'deleteCourse'])->middleware('permission:lms.settings.manage')->name('courses.destroy');
+Route::get('/lessons', [LmsAdminController::class, 'lessons'])->name('lessons');
+Route::get('/lessons/create', [LmsAdminController::class, 'createLesson'])->middleware('permission:lms.settings.manage')->name('lessons.create');
+Route::get('/lessons/drafts', [LmsAdminController::class, 'draftLessons'])->name('lessons.drafts');
+Route::post('/lessons', [LmsAdminController::class, 'storeLesson'])->middleware('permission:lms.settings.manage')->name('lessons.store');
+Route::post('/lessons/bulk', [LmsAdminController::class, 'bulkLessons'])->middleware('permission:lms.settings.manage')->name('lessons.bulk');
+Route::get('/lessons/{lesson}/edit', [LmsAdminController::class, 'editLesson'])->middleware('permission:lms.settings.manage')->name('lessons.edit');
+Route::put('/lessons/{lesson}', [LmsAdminController::class, 'updateLesson'])->middleware('permission:lms.settings.manage')->name('lessons.update');
+Route::get('/lessons/{lesson}/preview', [LmsAdminController::class, 'previewLesson'])->name('lessons.preview');
+Route::patch('/lessons/{lesson}/status', [LmsAdminController::class, 'updateLessonStatus'])->middleware('permission:lms.settings.manage')->name('lessons.status');
+Route::delete('/lessons/{lesson}', [LmsAdminController::class, 'deleteLesson'])->middleware('permission:lms.settings.manage')->name('lessons.destroy');
+Route::get('/students', [LmsPeopleController::class, 'students'])->middleware('permission:lms.students.view')->name('students');
+Route::get('/students/invite', [LmsPeopleController::class, 'inviteStudent'])->middleware('permission:lms.students.invite')->name('students.create');
+Route::post('/students/invite', [LmsPeopleController::class, 'sendStudentInvitation'])->middleware('permission:lms.students.invite')->name('students.store');
+Route::post('/students/bulk', [LmsAdminController::class, 'bulkStudents'])->middleware('permission:lms.settings.manage')->name('students.bulk');
+Route::get('/students/export', [LmsAdminController::class, 'exportStudents'])->name('students.export');
+Route::get('/students/{student}', [LmsPeopleController::class, 'showStudent'])->middleware('permission:lms.students.view')->name('students.show');
+Route::get('/students/{student}/courses', [LmsPeopleController::class, 'studentCourses'])->middleware('permission:lms.students.view')->name('students.courses');
+Route::get('/students/{student}/edit', [LmsAdminController::class, 'editStudent'])->middleware('permission:lms.settings.manage')->name('students.edit');
+Route::put('/students/{student}', [LmsAdminController::class, 'updateStudent'])->middleware('permission:lms.settings.manage')->name('students.update');
+Route::patch('/students/{student}/status', [LmsPeopleController::class, 'updateStudentStatus'])->middleware('permission:lms.settings.manage')->name('students.status');
+Route::post('/students/{student}/temporary-password', [LmsPeopleController::class, 'setStudentTemporaryPassword'])->middleware('permission:lms.settings.manage')->name('students.temporary-password');
+Route::delete('/students/{student}', [LmsAdminController::class, 'deleteStudent'])->middleware('permission:lms.settings.manage')->name('students.destroy');
+Route::delete('/students/{student}/enrollments/{enrollment}', [LmsPeopleController::class, 'removeEnrollment'])->middleware('permission:lms.settings.manage')->name('students.enrollments.destroy');
+Route::post('/invitations/{invitation}/resend', [LmsPeopleController::class, 'resendInvitation'])->middleware('permission:lms.students.invite')->name('invitations.resend');
+
+Route::get('/instructors', [LmsPeopleController::class, 'instructors'])->middleware('permission:lms.instructors.view')->name('instructors');
+Route::get('/instructor-requests', [LmsPeopleController::class, 'instructorRequests'])->middleware('permission:lms.instructors.manage')->name('instructor-requests.index');
+Route::patch('/instructor-requests/{instructorRequest}/approve', [LmsPeopleController::class, 'approveInstructorRequest'])->middleware('permission:lms.instructors.manage')->name('instructor-requests.approve');
+Route::patch('/instructor-requests/{instructorRequest}/reject', [LmsPeopleController::class, 'rejectInstructorRequest'])->middleware('permission:lms.instructors.manage')->name('instructor-requests.reject');
+Route::get('/instructor-users', [LmsPeopleController::class, 'instructorUsers'])->middleware('permission:lms.instructors.manage')->name('instructor-users');
+Route::get('/instructors/create', [LmsPeopleController::class, 'createInstructor'])->middleware('permission:lms.instructors.manage')->name('instructors.create');
+Route::post('/instructors', [LmsPeopleController::class, 'storeInstructor'])->middleware('permission:lms.instructors.manage')->name('instructors.store');
+Route::get('/instructors/{instructor}', [LmsPeopleController::class, 'showInstructor'])->middleware('permission:lms.instructors.view')->name('instructors.show');
+Route::get('/instructors/{instructor}/edit', [LmsPeopleController::class, 'editInstructor'])->middleware('permission:lms.instructors.manage')->name('instructors.edit');
+Route::put('/instructors/{instructor}', [LmsPeopleController::class, 'updateInstructor'])->middleware('permission:lms.instructors.manage')->name('instructors.update');
+Route::patch('/instructors/{instructor}/status', [LmsPeopleController::class, 'updateInstructorStatus'])->middleware('permission:lms.instructors.manage')->name('instructors.status');
+Route::delete('/instructors/{instructor}', [LmsPeopleController::class, 'deleteInstructor'])->middleware('permission:lms.instructors.manage')->name('instructors.destroy');
+Route::get('/notifications', [LmsPeopleController::class, 'notifications'])->name('notifications');
+
+Route::middleware('permission:lms.settings.manage')->group(function (): void {
+    Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
+    Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
+    Route::get('/templates/{template}/edit', [TemplateController::class, 'edit'])->name('templates.edit');
+    Route::match(['put', 'patch'], '/templates/{template}', [TemplateController::class, 'update'])->name('templates.update');
+    Route::delete('/templates/{template}', [TemplateController::class, 'destroy'])->name('templates.destroy');
+    Route::post('/templates/{template}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate');
+    Route::post('/templates/{template}/default', [TemplateController::class, 'setDefault'])->name('templates.default');
+});

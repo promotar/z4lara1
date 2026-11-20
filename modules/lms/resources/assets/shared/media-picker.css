@@ -1,0 +1,33 @@
+body.lms-shared-media-open{overflow:hidden}
+.lms-media-field-label{color:var(--ainpa-admin-muted, #7b8494);display:inline-block;font-size:12px;margin-inline-start:9px}
+.lms-media-field-preview{border:1px solid #e7d9d4;border-radius:10px;display:block;height:82px;margin-top:10px;object-fit:cover;width:82px}
+.lms-media-field-preview[hidden]{display:none!important}
+.lms-shared-media-modal{align-items:flex-start;background:rgba(15,23,42,.64);inset:0;justify-content:center;overflow:auto;padding:28px;position:fixed;z-index:100000}
+.lms-shared-media-modal:not([hidden]){display:flex}
+.lms-shared-media-dialog{background:#fff;border:1px solid #eadfdb;border-radius:18px;box-shadow:0 28px 80px rgba(15,23,42,.3);margin:auto;max-width:1080px;overflow:hidden;width:100%}
+.lms-shared-media-dialog>header{align-items:flex-start;border-bottom:1px solid #eee4e0;display:flex;gap:20px;justify-content:space-between;padding:20px 22px}
+.lms-shared-media-dialog h2{color:var(--ainpa-admin-text, #172033);font-size:20px;font-weight:750;margin:0 0 4px}
+.lms-shared-media-dialog header p{color:#6b7280;font-size:13px;margin:0}
+.lms-shared-media-close{background:#fff;border:1px solid #e7d9d4;border-radius:9px;color:color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);cursor:pointer;font-size:25px;height:38px;line-height:1;width:38px}
+.lms-shared-media-toolbar{align-items:center;display:flex;gap:12px;justify-content:space-between;padding:14px 22px}
+.lms-shared-media-toolbar input,.lms-shared-media-upload input,.lms-shared-media-upload textarea{background:#fff;border:1px solid #e4d9d5;border-radius:9px;color:var(--ainpa-admin-text, #172033);min-height:40px;padding:9px 11px;width:100%}
+.lms-shared-media-toolbar input{max-width:360px}
+.lms-shared-media-toolbar span{color:var(--ainpa-admin-muted, #7b8494);font-size:12px}
+.lms-shared-media-upload{align-items:end;background:#fff8f5;border-block:1px solid #f0ded8;display:grid;gap:10px;grid-template-columns:1.2fr repeat(3,minmax(120px,1fr)) auto;padding:14px 22px}
+.lms-shared-media-upload-head{grid-column:1/-1}
+.lms-shared-media-upload-head strong,.lms-shared-media-upload-head span,.lms-shared-media-upload label>span{display:block}
+.lms-shared-media-upload-head span,.lms-shared-media-upload label>span{color:var(--ainpa-admin-muted, #7b8494);font-size:12px;margin-bottom:5px}
+.lms-shared-media-upload .is-wide{grid-column:1/-2}
+.lms-shared-media-primary{background:var(--ainpa-admin-accent, #9a0000);border:0;border-radius:9px;color:#fff;cursor:pointer;font-weight:700;min-height:40px;padding:9px 15px}
+.lms-shared-media-upload [data-media-status]{color:color-mix(in srgb, var(--ainpa-admin-accent, #790000) 78%, #000);font-size:12px;grid-column:1/-1;margin:0}
+.lms-shared-media-items{max-height:48vh;min-height:220px;overflow:auto;padding:20px 22px}
+.lms-shared-media-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.lms-shared-media-grid button{background:#fff;border:1px solid #e8dcd8;border-radius:12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0;padding:9px;text-align:left}
+.lms-shared-media-grid button:hover{border-color:var(--ainpa-admin-accent, #9a0000);box-shadow:0 8px 22px rgba(80,24,12,.08)}
+.lms-shared-media-grid img,.lms-shared-media-file-icon{background:#f5efec;border-radius:8px;height:96px;object-fit:cover;width:100%}
+.lms-shared-media-file-icon{align-items:center;color:var(--ainpa-admin-accent, #9a0000);display:flex;font-size:12px;font-weight:800;justify-content:center}
+.lms-shared-media-grid strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+.lms-shared-media-grid small{color:var(--ainpa-admin-muted, #7b8494)}
+.lms-shared-media-empty{color:var(--ainpa-admin-muted, #7b8494);padding:48px 16px;text-align:center}
+@media(max-width:820px){.lms-shared-media-modal{padding:10px}.lms-shared-media-upload{grid-template-columns:1fr 1fr}.lms-shared-media-upload .is-wide{grid-column:1/-1}}
+@media(max-width:560px){.lms-shared-media-upload{grid-template-columns:1fr}.lms-shared-media-upload>*{grid-column:1!important}}

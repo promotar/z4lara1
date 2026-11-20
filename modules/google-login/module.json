@@ -1,0 +1,156 @@
+{
+  "name": "Google Login",
+  "slug": "google-login",
+  "version": "1.0.2",
+  "type": "feature",
+    "platform_version": ">=3.4.4 <4.0.0",
+  "description": "Adds secure Google OpenID Connect sign-in to the platform login page while preserving the complete classic email and password login flow.",
+  "author": "Art INPA",
+  "provider": "Modules\\GoogleLogin\\GoogleLoginServiceProvider",
+    "provider_file": "src/GoogleLoginServiceProvider.php",
+    "integrations": {
+        "user_deletion": {
+            "mode": "participant"
+        }
+    },
+  "routes": {
+    "admin": {
+      "file": "routes/admin.php",
+      "prefix": "admin/plugins/google-login",
+      "name": "admin.plugins.google-login.",
+      "middleware": [
+        "web",
+        "auth",
+        "staff",
+        "permission:google-login.manage"
+      ]
+    },
+    "web": {
+      "file": "routes/web.php",
+      "prefix": "",
+      "name": "google-login.",
+      "middleware": [
+        "web",
+        "guest",
+        "throttle:20,1"
+      ]
+    }
+  },
+  "assets": {
+    "source": "resources/assets",
+    "admin": {
+      "styles": [
+        "admin/google-login.css"
+      ]
+    },
+    "guest": {
+      "styles": [
+        "guest/google-login.css"
+      ]
+    }
+  },
+  "migrations": "database/migrations",
+  "uninstall": {
+    "tables": [
+      "google_login_accounts",
+      "google_login_settings"
+    ],
+    "settings": [],
+    "storage_paths": [],
+    "records": [],
+    "columns": [],
+    "operation_target_prefixes": [
+      "google-login."
+    ]
+  },
+  "settings": {
+    "label": "Google Login Settings",
+    "route": "admin.plugins.google-login.settings.edit"
+  },
+  "permissions": [
+    "google-login.manage"
+  ],
+  "menus": [
+    {
+      "key": "google-login.admin",
+      "name": "Google Login",
+      "location": "admin",
+      "description": "Google authentication settings.",
+      "items": [
+        {
+          "title": "Google Login",
+          "label": "Google Login",
+          "route": "admin.plugins.google-login.settings.edit",
+          "permission": "google-login.manage",
+          "icon": "G",
+          "admin_group": "System",
+          "admin_sort_order": 75,
+          "sort_order": 75
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "google-login.admin.settings": {
+      "description": "Configure Google OAuth credentials and account registration policy without exposing the stored client secret."
+    },
+    "google-login.auth.redirect": {
+      "description": "Start a state- and nonce-protected Google OpenID Connect authorization request."
+    },
+    "google-login.auth.callback": {
+      "description": "Verify the Google ID token signature and claims, link or create the local user, and establish the platform session."
+    },
+    "google-login.auth.login-view": {
+      "description": "Override only the core login view while the plugin is active so Google is primary and classic login remains available."
+    }
+  },
+  "registry": {
+    "routes": {
+      "admin.plugins.google-login.settings.edit": {
+        "uri": "admin/plugins/google-login/settings",
+        "methods": [
+          "GET",
+          "HEAD"
+        ],
+        "controller": "Modules\\GoogleLogin\\Http\\Controllers\\Admin\\GoogleLoginSettingsController@edit",
+        "description": "Open Google Login settings."
+      },
+      "admin.plugins.google-login.settings.update": {
+        "uri": "admin/plugins/google-login/settings",
+        "methods": [
+          "PUT",
+          "PATCH"
+        ],
+        "controller": "Modules\\GoogleLogin\\Http\\Controllers\\Admin\\GoogleLoginSettingsController@update",
+        "description": "Update Google Login settings."
+      },
+      "google-login.auth.redirect": {
+        "uri": "auth/google",
+        "methods": [
+          "GET",
+          "HEAD"
+        ],
+        "controller": "Modules\\GoogleLogin\\Http\\Controllers\\Auth\\GoogleLoginController@redirect",
+        "description": "Redirect a guest to Google authentication."
+      },
+      "google-login.auth.callback": {
+        "uri": "auth/google/callback",
+        "methods": [
+          "GET",
+          "HEAD"
+        ],
+        "controller": "Modules\\GoogleLogin\\Http\\Controllers\\Auth\\GoogleLoginController@callback",
+        "description": "Complete Google authentication."
+      }
+    },
+    "controllers": {
+      "Modules\\GoogleLogin\\Http\\Controllers\\Admin\\GoogleLoginSettingsController": {
+        "description": "Google Login credential and policy settings controller."
+      },
+      "Modules\\GoogleLogin\\Http\\Controllers\\Auth\\GoogleLoginController": {
+        "description": "Google OpenID Connect authorization controller."
+      }
+    }
+  },
+  "docs": "docs/plugin.md"
+}

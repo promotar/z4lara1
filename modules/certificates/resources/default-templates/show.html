@@ -1,0 +1,18 @@
+<article class="cert-card">
+    <header class="cert-card__head">
+        <span class="cert-card__eyebrow">{{eyebrow_label}}</span>
+        <h1 class="cert-card__name">{{name}}</h1>
+        <div class="cert-card__meta">
+            <div class="cert-chip">
+                <span class="cert-chip__label">{{number_label}}</span>
+                <span class="cert-chip__value" dir="ltr">{{slug}}</span>
+            </div>
+            <div class="cert-chip">
+                <span class="cert-chip__label">{{date_label}}</span>
+                <span class="cert-chip__value"><time datetime="{{date_iso}}">{{date}}</time></span>
+            </div>
+        </div>
+    </header>
+    <div class="cert-card__media">{{{image_tag}}}</div>
+    <a class="cert-card__back" href="{{search_url}}">{{search_label}}</a>
+</article>

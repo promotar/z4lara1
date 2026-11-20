@@ -1,0 +1,64 @@
+<section class="z4-courses" data-lms-catalog-template data-filtered="{{has_active_filters}}">
+    <div class="z4-courses__utility">
+        <a href="{{teach_url}}">Want to publish a course? Apply to become an instructor</a>
+    </div>
+
+    <div class="z4-courses__shell">
+        <header class="z4-courses__header">
+            <nav class="z4-courses__breadcrumb" aria-label="Breadcrumb">
+                <a href="{{home_url}}">Home</a><span aria-hidden="true">/</span><span>Courses</span>
+            </nav>
+            <div class="z4-courses__heading-row">
+                <div>
+                    <span class="z4-courses__eyebrow">Learn at your pace</span>
+                    <h1>{{catalog_title}}</h1>
+                    <p>{{catalog_description}}</p>
+                </div>
+                <div class="z4-courses__stat" aria-label="Available courses">
+                    <strong>{{results_count}}</strong><span>courses available</span>
+                </div>
+            </div>
+        </header>
+
+        <form class="z4-courses__filters" action="{{courses_url}}" method="GET" data-catalog-filter-form>
+            <label class="z4-courses__search">
+                <span>Search courses</span>
+                <span class="z4-courses__search-control">
+                    <input type="search" name="search" value="{{search_query}}" placeholder="Title, instructor, or topic" autocomplete="off" data-catalog-search>
+                </span>
+            </label>
+            <label><span>Category</span><select name="category" data-catalog-select>{{{category_options}}}</select></label>
+            <label><span>Level</span><select name="level" data-catalog-select>{{{level_options}}}</select></label>
+            <label><span>Sort by</span><select name="sort" data-catalog-select>{{{sort_options}}}</select></label>
+            <button type="submit">Apply filters</button>
+        </form>
+
+        <div class="z4-courses__results-bar" aria-live="polite">
+            <p><strong>{{results_count}}</strong> courses found</p>
+            <a href="{{courses_url}}">Clear filters</a>
+        </div>
+
+        <div class="z4-courses__grid" aria-label="Courses">
+            {{#courses}}
+            <article class="z4-course-card">
+                <a class="z4-course-card__media" href="{{url}}" aria-label="View {{title}}">
+                    <img src="{{image_url}}" alt="{{title}}" loading="lazy">
+                </a>
+                <div class="z4-course-card__content">
+                    <span class="z4-course-card__category">{{category}}</span>
+                    <h2 dir="auto"><a href="{{url}}">{{title}}</a></h2>
+                    <p class="z4-course-card__instructor">{{instructor_name}}</p>
+                    <div class="z4-course-card__meta"><span>{{lesson_count}} lessons</span><span>{{level}}</span></div>
+                    <footer>
+                        <strong>{{price_label}}</strong>
+                        <a href="{{url}}">View course</a>
+                    </footer>
+                </div>
+            </article>
+            {{/courses}}
+        </div>
+
+        {{{empty_state}}}
+        {{{pagination_html}}}
+    </div>
+</section>

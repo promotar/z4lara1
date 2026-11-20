@@ -1,0 +1,263 @@
+.google-login-settings {
+    color: #1f2937;
+    margin: 0 auto;
+    max-width: 1240px;
+    padding: 34px 24px 70px;
+}
+
+.google-login-settings *,
+.google-login-settings *::before,
+.google-login-settings *::after {
+    box-sizing: border-box;
+}
+
+.google-login-settings__header {
+    align-items: flex-end;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.google-login-settings__header > div > span {
+    color: #9a0000;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.google-login-settings__header h1 {
+    font-size: 31px;
+    line-height: 1.15;
+    margin: 6px 0;
+}
+
+.google-login-settings__header p {
+    color: #697386;
+    margin: 0;
+}
+
+.google-login-status {
+    background: #fff5e5;
+    border: 1px solid #ecd49a;
+    border-radius: 999px;
+    color: #8a5a00;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 7px 11px;
+    white-space: nowrap;
+}
+
+.google-login-status.is-ready {
+    background: #ebf8f0;
+    border-color: #b8dfc7;
+    color: #17653f;
+}
+
+.google-login-settings__grid {
+    align-items: start;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: minmax(0, 1fr) 380px;
+}
+
+.google-login-settings__card {
+    background: #fff;
+    border: 1px solid #eadfdb;
+    border-radius: 16px;
+    box-shadow: 0 12px 34px rgba(64, 24, 16, .06);
+    overflow: hidden;
+}
+
+.google-login-settings__card section {
+    padding: 24px;
+}
+
+.google-login-settings__card section + section {
+    border-top: 1px solid #eee5e1;
+}
+
+.google-login-settings__card h2 {
+    color: #172033;
+    font-size: 18px;
+    margin: 0 0 5px;
+}
+
+.google-login-settings__card section > p,
+.google-login-setup > p {
+    color: #747e8e;
+    font-size: 13px;
+    margin: 0 0 20px;
+}
+
+.google-login-settings__card label {
+    display: block;
+    margin-top: 16px;
+}
+
+.google-login-settings__card label > span:first-child {
+    color: #273244;
+    display: block;
+    font-size: 13px;
+    font-weight: 750;
+    margin-bottom: 7px;
+}
+
+.google-login-settings__card label > span small,
+.google-login-settings__card label > small {
+    color: #7c8695;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.google-login-settings__card input[type="text"],
+.google-login-settings__card input[type="password"] {
+    background: #fff;
+    border: 1px solid #d9dfe8;
+    border-radius: 9px;
+    color: #172033;
+    min-height: 45px;
+    padding: 10px 12px;
+    width: 100%;
+}
+
+.google-login-settings__card input:focus {
+    border-color: #9a0000;
+    box-shadow: 0 0 0 3px rgba(154, 0, 0, .1);
+    outline: none;
+}
+
+.google-login-check {
+    align-items: flex-start;
+    background: #fafbfc;
+    border: 1px solid #e0e5ec;
+    border-radius: 10px;
+    display: flex !important;
+    gap: 10px;
+    padding: 12px;
+}
+
+.google-login-check input {
+    accent-color: #9a0000;
+    margin-top: 2px;
+}
+
+.google-login-check span {
+    margin: 0 !important;
+}
+
+.google-login-check.is-primary {
+    background: #fff5f3;
+    border-color: #e9c4bd;
+}
+
+.google-login-check.is-danger {
+    color: #9a0000;
+}
+
+.google-login-settings__card footer {
+    border-top: 1px solid #eee5e1;
+    display: flex;
+    justify-content: flex-end;
+    padding: 18px 24px;
+}
+
+.google-login-settings__card footer button,
+.google-login-copy-row button {
+    background: #9a0000;
+    border: 1px solid #9a0000;
+    border-radius: 9px;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    min-height: 40px;
+    padding: 9px 15px;
+}
+
+.google-login-setup {
+    padding: 24px;
+}
+
+.google-login-setup ol {
+    color: #5f6979;
+    display: grid;
+    font-size: 13px;
+    gap: 12px;
+    line-height: 1.55;
+    margin: 18px 0 24px;
+    padding-left: 20px;
+}
+
+.google-login-copy-row {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.google-login-copy-row input {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+}
+
+.google-login-security-note {
+    background: #f2f7ff;
+    border: 1px solid #cfddf0;
+    border-radius: 11px;
+    margin-top: 24px;
+    padding: 14px;
+}
+
+.google-login-security-note strong {
+    color: #174d91;
+    font-size: 13px;
+}
+
+.google-login-security-note p {
+    color: #5d6d82;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 5px 0 0;
+}
+
+.google-login-notice {
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+}
+
+.google-login-notice.is-success {
+    background: #ecf9f1;
+    border: 1px solid #b8dfc7;
+    color: #17653f;
+}
+
+.google-login-notice.is-error {
+    background: #fff1ef;
+    border: 1px solid #edc2bb;
+    color: #8d1616;
+}
+
+@media (max-width: 920px) {
+    .google-login-settings__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .google-login-settings {
+        padding: 24px 12px 50px;
+    }
+
+    .google-login-settings__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .google-login-copy-row {
+        grid-template-columns: 1fr;
+    }
+}
