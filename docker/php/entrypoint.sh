@@ -343,4 +343,14 @@ fi
 
 php artisan package:discover --ansi >/dev/null
 
+# Start PHP-FPM for Apache mpm_event + proxy_fcgi. The pool listens on a unix
+# socket so Apache workers stay lightweight and PHP concurrency is bounded by
+# pm.max_children instead of MaxRequestWorkers. Images built from the Apache
+# module have no PHP-FPM binary, so the guard keeps this a no-op there.
+if [ -x /usr/local/sbin/php-fpm ] && [ -f /usr/local/etc/php-fpm.conf ]; then
+    mkdir -p /run/php
+    chown www-data:www-data /run/php
+    /usr/local/sbin/php-fpm --daemonize --fpm-config /usr/local/etc/php-fpm.conf
+fi
+
 exec "$@"
