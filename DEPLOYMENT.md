@@ -118,6 +118,26 @@ volumes. `docker/php/entrypoint.sh` seeds a new volume from the image only for
 entries that do not exist yet, never overwrites an existing plugin or media
 file, and keeps `admin-theme` and `page-builder` in sync with the release.
 
+### Module synchronisation rule
+
+The `modules` volume is authoritative once a module is installed. On every
+container start the entrypoint compares the `version` field of the module
+manifest in the image with the one on the volume:
+
+| Image version | Installed version | Action |
+|---|---|---|
+| any | missing or empty directory | seed the module from the image |
+| newer | older | upgrade the module from the image |
+| equal | equal | keep the installed files |
+| older | newer | keep the installed files |
+| unreadable | any | keep the installed files |
+
+A release that ships a module fix must therefore bump that module's
+`module.json` version; otherwise the container keeps the installed copy. This
+keeps a restart or redeploy from rolling back changes that are already running
+in production.
+
+
 ## Rollback
 
 Redeploy the previous image or Git revision. Database rollback is unnecessary
