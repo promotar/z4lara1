@@ -139,6 +139,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
         Route::post('/backups', [BackupController::class, 'store'])->name('backups.store');
         Route::get('/backups/{backup}/location', [BackupController::class, 'showLocation'])->name('backups.location');
+        Route::get('/backups/{backup}/download/{type}', [BackupController::class, 'download'])->where('type', 'db|code')->name('backups.download');
         Route::post('/backups/{backup}/restore', [BackupController::class, 'restore'])->name('backups.restore');
         Route::delete('/backups/{backup}', [BackupController::class, 'destroy'])->name('backups.destroy');
 
