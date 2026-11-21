@@ -61,6 +61,12 @@
     <label class="admin-field frontend-menu-destination-field" x-show="itemType === 'link'">
         <span class="admin-field-label">{{ __('core.menus.field_url') }}</span>
         <input name="url" value="{{ old('url', $item->url ?? '') }}" placeholder="/pages/example" class="admin-input">
+
+        <span class="admin-field-label">Route parameters (JSON)</span>
+        <input name="route_params" value="{{ old('route_params', is_array($item->route_params ?? null) ? json_encode($item->route_params, JSON_UNESCAPED_SLASHES) : '') }}"
+               placeholder='{"locale":"ar"}' class="admin-input" autocomplete="off">
+        <p class="admin-help">For routes that need parameters, e.g. the language switcher:<br>
+            <code>{"locale":"ar"}</code> or <code>{"locale":"en"}</code> — leave it empty and the system fills the other site language automatically.</p>
     </label>
 
     <div class="admin-menu-note admin-menu-note-warning frontend-menu-destination-field" x-show="itemType === 'header'" data-i18n="core.menus.parent_label_hint">

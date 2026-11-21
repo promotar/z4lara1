@@ -857,14 +857,58 @@ CSS;
     /**
      * @param  array<string, mixed>  $item
      */
+    /**
+     * Which language a switch link targets: derived from the item label
+     * ("العربية" → ar, "English" → en), otherwise the other site language.
+     *
+     * @param  array<string, mixed>  $item
+     */
+    private function localeParamFor(array $item): string
+    {
+        $label = mb_strtolower(trim((string) ($item['label'] ?? $item['title'] ?? '')));
+        $current = app()->getLocale();
+
+        try {
+            $languages = app(\App\Platform\Core\Localization\PlatformLocale::class)->languages();
+
+            foreach ($languages as $code => $name) {
+                $code = mb_strtolower((string) $code);
+                $name = mb_strtolower(trim((string) $name));
+
+                if ($label !== '' && ($label === $name || $label === $code || str_contains($label, $name))) {
+                    return $code;
+                }
+            }
+
+            foreach (array_keys($languages) as $code) {
+                if ((string) $code !== $current) {
+                    return (string) $code;
+                }
+            }
+        } catch (\Throwable) {
+            // fall through
+        }
+
+        return $current === 'ar' ? 'en' : 'ar';
+    }
+
     private function menuItemHref(array $item): ?string
     {
         $routeName = $item['route_name'] ?? null;
         $url = $item['url'] ?? null;
 
         if (is_string($routeName) && Route::has($routeName)) {
+            $params = is_array($item['route_params'] ?? null) ? $item['route_params'] : [];
+
+            // A language link is a route with a required locale parameter.
+            // Fill it with the other site language so the item renders even
+            // when the editor did not type route parameters by hand.
+            if ($routeName === 'locale.switch' && ! isset($params['locale'])) {
+                $params['locale'] = $this->localeParamFor($item);
+            }
+
             try {
-                return route($routeName, $item['route_params'] ?? []);
+                return route($routeName, $params);
             } catch (\Throwable) {
                 // A menu item that misses a required route parameter must not
                 // break the page; fall back to the explicit URL below.

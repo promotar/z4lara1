@@ -303,6 +303,7 @@ class MenuSettingsController extends Controller
             'type' => ['required', 'in:link,route,header'],
             'url' => ['nullable', 'string', 'max:255'],
             'route_name' => ['nullable', 'string', 'max:255'],
+            'route_params' => ['nullable', 'string', 'max:2000'],
             'icon' => ['nullable', 'string', 'max:24'],
             'target' => ['nullable', 'in:_self,_blank'],
             'permission' => ['nullable', 'string', 'exists:permissions,name'],
@@ -361,6 +362,57 @@ class MenuSettingsController extends Controller
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
+    /**
+     * Route parameters typed as JSON in the menu item form.
+     *
+     * @return array<string, string>|null
+     */
+    private function routeParams(array $data): ?array
+    {
+        $routeName = trim((string) ($data['route_name'] ?? ''));
+        $raw = trim((string) ($data['route_params'] ?? ''));
+        $params = [];
+
+        if ($raw !== '') {
+            $decoded = json_decode($raw, true);
+
+            if (is_array($decoded)) {
+                foreach ($decoded as $key => $value) {
+                    if (is_string($key) && is_scalar($value)) {
+                        $params[$key] = (string) $value;
+                    }
+                }
+            }
+        }
+
+        if ($routeName === 'locale.switch' && ! isset($params['locale'])) {
+            $label = mb_strtolower(trim((string) ($data['title'] ?? '')));
+
+            try {
+                $languages = app(\App\Platform\Core\Localization\PlatformLocale::class)->languages();
+
+                foreach ($languages as $code => $name) {
+                    $code = mb_strtolower((string) $code);
+                    $name = mb_strtolower(trim((string) $name));
+
+                    if ($label !== '' && ($label === $name || $label === $code || str_contains($label, $name))) {
+                        $params['locale'] = $code;
+                        break;
+                    }
+                }
+
+                if (! isset($params['locale'])) {
+                    $params['locale'] = collect(array_keys($languages))
+                        ->first(fn ($code): bool => (string) $code !== app()->getLocale()) ?: 'en';
+                }
+            } catch (\Throwable) {
+                $params['locale'] = app()->getLocale() === 'ar' ? 'en' : 'ar';
+            }
+        }
+
+        return $params === [] ? null : $params;
+    }
+
     private function itemPayload(array $data, Menu $menu, ?MenuItem $item = null): array
     {
         $type = (string) $data['type'];
@@ -384,6 +436,7 @@ class MenuSettingsController extends Controller
             'type' => $type,
             'url' => $type === 'link' ? ($data['url'] ?? null) : null,
             'route_name' => $type === 'route' ? ($data['route_name'] ?? null) : null,
+            'route_params' => $type === 'route' ? $this->routeParams($data) : null,
             'icon' => $data['icon'] ?? null,
             'target' => $data['target'] ?? '_self',
             'permission' => $data['permission'] ?? null,
