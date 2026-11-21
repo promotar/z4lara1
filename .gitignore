@@ -51,6 +51,8 @@ secrets/
 !/public/platform/plugins/art-inpa-admin-pro-theme/**
 !/public/platform/plugins/page-builder/
 !/public/platform/plugins/page-builder/**
+!/public/platform/plugins/exhibitions/
+!/public/platform/plugins/exhibitions/**
 /public/platform/plugins/**/*.bak
 /public/platform/plugins/**/*.bak-*
 /public/platform/plugins/**/*.backup-*
