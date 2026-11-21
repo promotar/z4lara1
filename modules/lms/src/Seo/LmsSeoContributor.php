@@ -67,11 +67,11 @@ final class LmsSeoContributor implements SeoContributor
             ? (string) $courseParameter->getRawOriginal('slug')
             : (string) ($courseParameter ?: $request->segment(2));
         $locale = app()->getLocale();
-        $isDefaultLocale = $locale === PlatformLocale::DEFAULT;
+        $isDefaultLocale = $locale === app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
         $course = null;
         $translation = null;
 
-        if ($locale !== PlatformLocale::DEFAULT) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             $translation = CourseTranslation::query()
                 ->where('locale', $locale)
                 ->where('slug', $slug)

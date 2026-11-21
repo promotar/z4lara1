@@ -191,7 +191,7 @@ class LmsAdminController extends Controller
     {
         $locales = app(PlatformLocale::class)->languages();
         $settingsLocale = (string) app()->getLocale();
-        $locale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : PlatformLocale::DEFAULT;
+        $locale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
 
         return view('lms::admin.courses.create', [
             'course' => null,
@@ -250,7 +250,7 @@ class LmsAdminController extends Controller
         $course->loadMissing('translations');
         $locales = app(PlatformLocale::class)->languages();
         $settingsLocale = (string) app()->getLocale();
-        $defaultLocale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : PlatformLocale::DEFAULT;
+        $defaultLocale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
         $locale = (string) $request->query('locale', $defaultLocale);
 
         if (! array_key_exists($locale, $locales)) {
@@ -261,7 +261,7 @@ class LmsAdminController extends Controller
         $translation = null;
         $display = $course;
 
-        if ($locale !== PlatformLocale::DEFAULT) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             $translation = CourseTranslation::resolve($course, $locale);
             $display = clone $course;
 
@@ -290,10 +290,10 @@ class LmsAdminController extends Controller
 
     public function updateCourse(Request $request, Course $course): RedirectResponse|JsonResponse
     {
-        $locale = (string) $request->input('locale', PlatformLocale::DEFAULT);
+        $locale = (string) $request->input('locale', app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode());
         $locales = app(PlatformLocale::class)->languages();
 
-        if ($locale !== PlatformLocale::DEFAULT && array_key_exists($locale, $locales)) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode() && array_key_exists($locale, $locales)) {
             return $this->updateCourseTranslation($request, $course, $locale);
         }
 
@@ -1204,7 +1204,7 @@ class LmsAdminController extends Controller
     {
         $locales = app(PlatformLocale::class)->languages();
         $settingsLocale = (string) app()->getLocale();
-        $locale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : PlatformLocale::DEFAULT;
+        $locale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
 
         return view('lms::admin.lessons.create', [
             'lesson' => null,
@@ -1399,7 +1399,7 @@ class LmsAdminController extends Controller
         $lesson->loadMissing('translations');
         $locales = app(PlatformLocale::class)->languages();
         $settingsLocale = (string) app()->getLocale();
-        $defaultLocale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : PlatformLocale::DEFAULT;
+        $defaultLocale = array_key_exists($settingsLocale, $locales) ? $settingsLocale : app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
         $locale = (string) $request->query('locale', $defaultLocale);
         if (! array_key_exists($locale, $locales)) {
             $locale = $defaultLocale;
@@ -1408,7 +1408,7 @@ class LmsAdminController extends Controller
         $translation = null;
         $display = $lesson;
 
-        if ($locale !== PlatformLocale::DEFAULT) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             $translation = LessonTranslation::resolve($lesson, $locale);
             $display = clone $lesson;
             $display->title = $translation?->title ?? $lesson->title;
@@ -1432,8 +1432,8 @@ class LmsAdminController extends Controller
     public function updateLesson(Request $request, Lesson $lesson): RedirectResponse|JsonResponse
     {
         $this->prepareLessonContentType($request);
-        $locale = (string) $request->input('locale', PlatformLocale::DEFAULT);
-        if ($locale !== PlatformLocale::DEFAULT && array_key_exists($locale, app(PlatformLocale::class)->languages())) {
+        $locale = (string) $request->input('locale', app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode());
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode() && array_key_exists($locale, app(PlatformLocale::class)->languages())) {
             return $this->updateLessonTranslation($request, $lesson, $locale);
         }
         $action = (string) $request->input('action', 'draft');

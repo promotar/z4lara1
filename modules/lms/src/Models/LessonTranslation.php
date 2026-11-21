@@ -24,7 +24,7 @@ class LessonTranslation extends Model
 
     public static function resolve(Lesson $lesson, string $locale): ?self
     {
-        if ($locale === '' || $locale === PlatformLocale::DEFAULT) {
+        if ($locale === '' || $locale === app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             return null;
         }
 

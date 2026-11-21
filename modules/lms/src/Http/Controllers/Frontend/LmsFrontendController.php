@@ -268,7 +268,7 @@ class LmsFrontendController extends Controller
             ->where('course_id', $course->id)
             ->pluck('slug', 'locale');
 
-        $seoAlternates = [PlatformLocale::DEFAULT => route('lms.front.courses.show', ['course' => $baseSlug], false)];
+        $seoAlternates = [app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode() => route('lms.front.courses.show', ['course' => $baseSlug], false)];
         foreach ($courseTranslations as $code => $translatedSlug) {
             $seoAlternates[$code] = route('lms.front.courses.show', ['course' => $translatedSlug], false).'?lang='.urlencode($code);
         }
@@ -813,7 +813,7 @@ class LmsFrontendController extends Controller
     {
         $locale = app()->getLocale();
 
-        if ($locale === PlatformLocale::DEFAULT) {
+        if ($locale === app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             return;
         }
 

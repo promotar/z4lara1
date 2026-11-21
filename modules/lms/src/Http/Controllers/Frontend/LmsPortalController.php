@@ -491,7 +491,7 @@ class LmsPortalController extends Controller
         $translation = null;
         $display = $course;
 
-        if ($locale !== PlatformLocale::DEFAULT) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             $translation = CourseTranslation::resolve($course, $locale);
             $display = clone $course;
             $display->title = $translation?->title ?? $course->title;
@@ -526,9 +526,9 @@ class LmsPortalController extends Controller
         $this->authorizeInstructorCourse($instructor, $course);
         $this->normalizeCategoryInput($request);
 
-        $locale = (string) $request->input('locale', PlatformLocale::DEFAULT);
+        $locale = (string) $request->input('locale', app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode());
 
-        if ($locale !== PlatformLocale::DEFAULT
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()
             && array_key_exists($locale, app(PlatformLocale::class)->languages())
         ) {
             $this->saveInstructorCourseTranslation($request, $course, $locale);
@@ -835,7 +835,7 @@ class LmsPortalController extends Controller
         $translation = null;
         $display = $lesson;
 
-        if ($locale !== PlatformLocale::DEFAULT) {
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
             $translation = LessonTranslation::resolve($lesson, $locale);
             $display = clone $lesson;
             $display->title = $translation?->title ?? $lesson->title;
@@ -865,9 +865,9 @@ class LmsPortalController extends Controller
         $this->authorizeInstructorLesson($instructor, $lesson);
         $this->prepareInstructorLessonContentType($request);
 
-        $locale = (string) $request->input('locale', PlatformLocale::DEFAULT);
+        $locale = (string) $request->input('locale', app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode());
 
-        if ($locale !== PlatformLocale::DEFAULT
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()
             && array_key_exists($locale, app(PlatformLocale::class)->languages())
         ) {
             $this->saveInstructorLessonTranslation($request, $lesson, $locale);
@@ -1445,7 +1445,7 @@ class LmsPortalController extends Controller
     private function editorLocale(array $locales, string $requested = ''): string
     {
         $current = (string) app()->getLocale();
-        $default = array_key_exists($current, $locales) ? $current : PlatformLocale::DEFAULT;
+        $default = array_key_exists($current, $locales) ? $current : app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode();
         $locale = $requested !== '' ? $requested : $default;
 
         return array_key_exists($locale, $locales) ? $locale : $default;
