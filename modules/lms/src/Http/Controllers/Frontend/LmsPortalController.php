@@ -29,7 +29,6 @@ use Modules\Lms\Models\LessonTranslation;
 use Modules\Lms\Models\LmsNotification;
 use Modules\Lms\Models\Student;
 use Modules\Lms\Services\LmsNotificationService;
-use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\ResolvesPlatformMedia;
 use Spatie\Permission\Models\Role;
 
@@ -651,8 +650,6 @@ class LmsPortalController extends Controller
             'units.*.title' => ['required', 'string', 'max:160'],
             'units.*.previous_title' => ['nullable', 'string', 'max:160'],
             'units.*.order' => ['required', 'integer', 'min:1', 'max:10000'],
-            'units.*.translations' => ['nullable', 'array'],
-            'units.*.translations.*' => ['nullable', 'string', 'max:160'],
             'lessons' => ['sometimes', 'array', 'max:2000'],
             'lessons.*.id' => ['required', 'integer', 'distinct'],
             'lessons.*.module_title' => ['required', 'string', 'max:160'],
@@ -660,14 +657,11 @@ class LmsPortalController extends Controller
             'lessons.*.lesson_order' => ['required', 'integer', 'min:1', 'max:10000'],
         ]);
 
-        $storedUnits = CurriculumSections::index($course->curriculum_units);
-
         $units = collect($validated['units'])
             ->map(fn (array $unit): array => [
                 'key' => trim($unit['key']),
                 'title' => trim($unit['title']),
                 'order' => (int) $unit['order'],
-                'translations' => CurriculumSections::resolveForSave($unit, $storedUnits['byKey'], $storedUnits['byTitle']),
             ])
             ->sortBy('order')
             ->values()
@@ -1731,7 +1725,6 @@ class LmsPortalController extends Controller
                 'key' => (string) ($unit['key'] ?? 'unit-'.($index + 1)),
                 'title' => trim((string) $unit['title']),
                 'order' => max(1, (int) ($unit['order'] ?? ($index + 1))),
-                'translations' => CurriculumSections::normalize($unit['translations'] ?? [], trim((string) $unit['title'])),
             ]);
         $lessonUnits = $lessons
             ->groupBy(fn (Lesson $lesson): string => trim((string) $lesson->module_title) ?: 'Module 1')
@@ -1742,7 +1735,6 @@ class LmsPortalController extends Controller
                     'key' => 'module-'.Str::slug($title).'-'.((int) ($first?->module_order ?: 1)),
                     'title' => $title,
                     'order' => max(1, (int) ($first?->module_order ?: 1)),
-                    'translations' => [],
                 ];
             });
         $units = $storedUnits

@@ -1,13 +1,15 @@
 <x-frontend-layout>
     <x-slot name="head">
         <!-- blog-seo:start -->
-        <title>{{ __('blog::ui.art-inpa') }}</title>
-        <meta name="description" content="آخر أخبار ومقالات Art INPA والتغطيات الفنية والثقافية.">
+        @php($blogIndexDescription = __('blog::ui.index-description'))
+        @php($blogIndexTitle = __('blog::ui.news-and-articles').' | '.config('app.name'))
+        <title>{{ $blogIndexTitle }}</title>
+        <meta name="description" content="{{ $blogIndexDescription }}">
         @php($robotsEmpty = isset($posts) && method_exists($posts, 'isEmpty') && $posts->isEmpty())
         <meta name="robots" content="{{ $robotsEmpty ? 'noindex, follow' : 'index, follow' }}">
         <link rel="canonical" href="{{ route('blog.index') }}">
-        <meta property="og:type" content="website"><meta property="og:title" content="الأخبار والمقالات | Art INPA"><meta property="og:description" content="آخر أخبار ومقالات Art INPA والتغطيات الفنية والثقافية."><meta property="og:url" content="{{ route('blog.index') }}">
-        <script type="application/ld+json">{!! json_encode(['@'.'context' => 'https://schema.org', '@'.'type' => 'CollectionPage', 'name' => 'الأخبار والمقالات | Art INPA', 'description' => 'آخر أخبار ومقالات Art INPA والتغطيات الفنية والثقافية.', 'url' => route('blog.index'), 'inLanguage' => str_replace('_', '-', app()->getLocale())], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        <meta property="og:type" content="website"><meta property="og:title" content="{{ $blogIndexTitle }}"><meta property="og:description" content="{{ $blogIndexDescription }}"><meta property="og:url" content="{{ route('blog.index') }}">
+        <script type="application/ld+json">{!! json_encode(['@'.'context' => 'https://schema.org', '@'.'type' => 'CollectionPage', 'name' => $blogIndexTitle, 'description' => $blogIndexDescription, 'url' => route('blog.index'), 'inLanguage' => str_replace('_', '-', app()->getLocale())], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
         <!-- blog-seo:end -->
         @include('blog::frontend.partials.styles')
     </x-slot>

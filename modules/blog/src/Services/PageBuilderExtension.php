@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Modules\Blog\Models\Category;
+use Modules\Blog\Models\CategoryTranslation;
 use Modules\Blog\Models\Post;
+use Modules\Blog\Models\PostTranslation;
 use Modules\Blog\Models\Tag;
 use Modules\Blog\Models\Template;
+use Modules\Blog\Support\BlogLocale;
 
 class PageBuilderExtension
 {
@@ -108,27 +111,44 @@ class PageBuilderExtension
         }
         $limit = max(1, min(24, (int) ($attributes['data-blog-template-limit'] ?? 6)));
         $query = $this->postsQuery();
-        $title = 'Latest posts';
+        $title = __('blog::ui.pb_latest_posts');
 
         if ($source === 'single') {
             $limit = 1;
-            $query->when($value !== '', fn (Builder $query) => $query->where('slug', $value));
-            $title = 'Post';
+            $query->when($value !== '', function (Builder $query) use ($value): void {
+                $locale = app()->getLocale();
+                $translation = BlogLocale::isDefault($locale)
+                    ? null
+                    : PostTranslation::query()->where('locale', $locale)->where('slug', $value)->first();
+
+                $translation
+                    ? $query->whereKey($translation->post_id)
+                    : $query->where('slug', $value);
+            });
+            $title = __('blog::ui.pb_post');
         } elseif ($source === 'category') {
             $query->where(function (Builder $query) use ($value): void {
                 $query
                     ->whereHas('category', fn (Builder $category) => $category->where('slug', $value))
                     ->orWhereHas('categories', fn (Builder $categories) => $categories->where('blog_categories.slug', $value));
             });
-            $title = Category::query()->where('slug', $value)->value('name') ?: 'Category';
+            $category = Category::query()->where('slug', $value)->first();
+
+            if ($category) {
+                CategoryTranslation::resolve($category, app()->getLocale())?->applyTo($category);
+            }
+
+            $title = $category?->name ?: __('blog::ui.pb_category');
         } elseif ($source === 'tag') {
             $query->whereHas('tags', fn (Builder $tags) => $tags->where('blog_tags.slug', $value));
-            $title = Tag::query()->where('slug', $value)->value('name') ?: 'Tag';
+            $title = Tag::query()->where('slug', $value)->value('name') ?: __('blog::ui.pb_tag');
         } elseif ($source === 'search') {
             $query->where(function (Builder $query) use ($value): void {
                 $query->where('title', 'like', '%'.$value.'%')->orWhere('content', 'like', '%'.$value.'%');
             });
-            $title = $value === '' ? 'Search results' : 'Search results for '.$value;
+            $title = $value === ''
+                ? __('blog::ui.pb_search_results')
+                : __('blog::ui.pb_search_results_for', ['term' => $value]);
         }
 
         if ($template->category === 'single') {

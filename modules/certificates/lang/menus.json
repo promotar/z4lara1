@@ -1,0 +1,10 @@
+{
+  "menus": {
+    "certificates.admin": { "ar": "الشهادات" }
+  },
+  "items": {
+    "admin.plugins.certificates.index": { "ar": "الشهادات" },
+    "admin.plugins.certificates.issuers.index": { "ar": "الجهات المُصدِرة" },
+    "admin.plugins.certificates.templates.index": { "ar": "قوالب الشهادات" }
+  }
+}

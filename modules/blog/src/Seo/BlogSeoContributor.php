@@ -10,9 +10,11 @@ use App\Platform\Core\Seo\SeoData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Modules\Blog\Models\Category;
+use Modules\Blog\Models\CategoryTranslation;
 use Modules\Blog\Models\Post;
 use Modules\Blog\Models\PostTranslation;
 use Modules\Blog\Models\Tag;
+use Modules\Blog\Support\BlogLocale;
 use Throwable;
 
 /**
@@ -45,8 +47,8 @@ final class BlogSeoContributor implements SeoContributor
         try {
             match ($request->route()?->getName()) {
                 'blog.show' => $this->post($seo, $request),
-                'blog.index' => $this->archive($seo, 'Blog', 'Latest articles, stories and insights from ART INPA.'),
-                'blog.categories' => $this->archive($seo, 'Blog Categories', 'Browse every category on the ART INPA journal.'),
+                'blog.index' => $this->archive($seo, __('blog::ui.news-and-articles'), __('blog::ui.index-description')),
+                'blog.categories' => $this->archive($seo, __('blog::ui.categories-title'), __('blog::ui.categories-description')),
                 'blog.category' => $this->category($seo, $request),
                 'blog.tag' => $this->tag($seo, $request),
                 'blog.search' => $this->search($seo, $request),
@@ -153,14 +155,28 @@ final class BlogSeoContributor implements SeoContributor
     private function category(SeoData $seo, Request $request): void
     {
         $slug = (string) ($request->route('slug') ?: $request->segment(2));
-        $category = Category::query()->where('slug', $slug)->first();
+        $locale = app()->getLocale();
+        $translation = BlogLocale::isDefault($locale)
+            ? null
+            : CategoryTranslation::query()->where('locale', $locale)->where('slug', $slug)->first();
+
+        $category = $translation
+            ? Category::query()->find($translation->category_id)
+            : Category::query()->where('slug', $slug)->first();
 
         if ($category === null) {
             return;
         }
 
-        $title = trim((string) $category->name) ?: 'Blog Category';
-        $description = $this->text($category->description ?? 'Articles filed under '.$title.'.', 160);
+        if (! BlogLocale::isDefault($locale)) {
+            ($translation ?? CategoryTranslation::resolve($category, $locale))?->applyTo($category);
+        }
+
+        $title = trim((string) ($category->seo_title ?: $category->name)) ?: 'Blog Category';
+        $description = $this->text(
+            $category->seo_description ?: $category->description ?: 'Articles filed under '.$title.'.',
+            160,
+        );
 
         $this->archive($seo, $title, $description);
         $seo->schema[] = $this->breadcrumbSchemaFor(

@@ -1,7 +1,7 @@
 <x-frontend-layout>
     @php
-        $categoryTitle = $category->seo_title ?: $category->name.' | أخبار Art INPA';
-        $categoryDescription = $category->seo_description ?: $category->description ?: 'المقالات والتحديثات المنشورة ضمن هذا التصنيف.';
+        $categoryTitle = $category->seo_title ?: $category->name.' | '.__('blog::ui.category-title-suffix');
+        $categoryDescription = $category->seo_description ?: $category->description ?: __('blog::ui.category-description');
         $categoryUrl = route('blog.category', $category->slug);
         $categoryImage = $category->image ? (str_starts_with($category->image, 'http') ? $category->image : url($category->image)) : null;
         $categorySchema = ['@'.'context' => 'https://schema.org', '@'.'type' => 'CollectionPage', 'name' => $categoryTitle, 'description' => $categoryDescription, 'url' => $categoryUrl, 'inLanguage' => str_replace('_', '-', app()->getLocale()), 'primaryImageOfPage' => $categoryImage ? ['@'.'type' => 'ImageObject', 'url' => $categoryImage] : null];

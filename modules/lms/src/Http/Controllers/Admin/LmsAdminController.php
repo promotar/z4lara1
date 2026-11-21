@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Modules\Lms\Models\Course;
+use Modules\Lms\Models\CourseCategoryTranslation;
 use Modules\Lms\Models\CourseCode;
 use Modules\Lms\Models\CourseEnrollment;
 use Modules\Lms\Models\CourseTranslation;
@@ -28,7 +29,6 @@ use Modules\Lms\Models\LessonTranslation;
 use Modules\Lms\Models\Student;
 use Modules\Lms\Services\LmsNotificationService;
 use Modules\Lms\Services\LmsPublicationService;
-use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\ResolvesPlatformMedia;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -285,6 +285,9 @@ class LmsAdminController extends Controller
             'locales' => $locales,
             'translation' => $translation,
             'baseCourse' => $course,
+            'categoryTranslation' => $translation
+                ? (CourseCategoryTranslation::forSource((string) $course->category)[$locale] ?? '')
+                : '',
             ...$this->courseEditorData($display),
         ]);
     }
@@ -345,6 +348,7 @@ class LmsAdminController extends Controller
             'faqs' => ['nullable', 'array'],
             'faqs.*.question' => ['nullable', 'string', 'max:255'],
             'faqs.*.answer' => ['nullable', 'string', 'max:1000'],
+            'category_translation' => ['nullable', 'string', 'max:120'],
         ]);
 
         $translation = CourseTranslation::query()->firstOrNew([
@@ -374,6 +378,13 @@ class LmsAdminController extends Controller
 
         $translation->save();
 
+        if ($request->exists('category_translation')) {
+            CourseCategoryTranslation::sync(
+                (string) $course->category,
+                [$locale => (string) $request->input('category_translation', '')],
+            );
+        }
+
         if ($request->expectsJson()) {
             return response()->json([
                 'ok' => true,
@@ -396,8 +407,6 @@ class LmsAdminController extends Controller
             'units.*.title' => ['required', 'string', 'max:160'],
             'units.*.previous_title' => ['nullable', 'string', 'max:160'],
             'units.*.order' => ['required', 'integer', 'min:1', 'max:10000'],
-            'units.*.translations' => ['nullable', 'array'],
-            'units.*.translations.*' => ['nullable', 'string', 'max:160'],
             'lessons' => ['sometimes', 'array', 'max:2000'],
             'lessons.*.id' => ['required', 'integer', 'distinct'],
             'lessons.*.module_title' => ['required', 'string', 'max:160'],
@@ -405,14 +414,11 @@ class LmsAdminController extends Controller
             'lessons.*.lesson_order' => ['required', 'integer', 'min:1', 'max:10000'],
         ]);
 
-        $storedUnits = CurriculumSections::index($course->curriculum_units);
-
         $units = collect($validated['units'])
             ->map(fn (array $unit): array => [
                 'key' => trim($unit['key']),
                 'title' => trim($unit['title']),
                 'order' => (int) $unit['order'],
-                'translations' => CurriculumSections::resolveForSave($unit, $storedUnits['byKey'], $storedUnits['byTitle']),
             ])
             ->sortBy('order')
             ->values()
@@ -2702,7 +2708,6 @@ class LmsAdminController extends Controller
                 'key' => (string) ($unit['key'] ?? 'unit-'.($index + 1)),
                 'title' => trim((string) $unit['title']),
                 'order' => max(1, (int) ($unit['order'] ?? ($index + 1))),
-                'translations' => CurriculumSections::normalize($unit['translations'] ?? [], trim((string) $unit['title'])),
             ]);
 
         $lessonUnits = $lessons
@@ -2714,7 +2719,6 @@ class LmsAdminController extends Controller
                     'key' => 'module-'.Str::slug($title).'-'.((int) ($first?->module_order ?: 1)),
                     'title' => $title,
                     'order' => max(1, (int) ($first?->module_order ?: 1)),
-                    'translations' => [],
                 ];
             });
 

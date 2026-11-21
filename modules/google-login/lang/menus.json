@@ -1,0 +1,8 @@
+{
+  "menus": {
+    "google-login.admin": { "ar": "تسجيل الدخول بجوجل" }
+  },
+  "items": {
+    "admin.plugins.google-login.settings.edit": { "ar": "إعدادات جوجل" }
+  }
+}

@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Platform\Core\Localization\PlatformLocale;
 use Modules\Lms\Models\Course;
+use Modules\Lms\Models\CourseCategoryTranslation;
+use Modules\Lms\Models\CourseTranslation;
 
 final class LmsCourseCardsPageBuilderExtension
 {
@@ -51,6 +54,8 @@ final class LmsCourseCardsPageBuilderExtension
             if ($courses->isEmpty()) {
                 return '';
             }
+
+            $this->localizeCourses($courses);
 
             $instance = $this->instance($attributes);
 
@@ -121,6 +126,33 @@ final class LmsCourseCardsPageBuilderExtension
             ]);
     }
 
+    /**
+     * Page-builder slots query courses directly, so the rendering layer applies
+     * the active-locale course translation (title, slug, subtitle…) itself.
+     *
+     * @param  Collection<int, Course>  $courses
+     */
+    private function localizeCourses(Collection $courses): void
+    {
+        $locale = app()->getLocale();
+
+        if ($locale !== app(PlatformLocale::class)->defaultCode()) {
+            $translations = CourseTranslation::query()
+                ->where('locale', $locale)
+                ->whereIn('course_id', $courses->pluck('id')->all())
+                ->get()
+                ->keyBy('course_id');
+
+            foreach ($courses as $course) {
+                $translations->get($course->id)?->applyTo($course);
+            }
+        }
+
+        foreach ($courses as $course) {
+            $course->category = CourseCategoryTranslation::translate($course->category);
+        }
+    }
+
     /** @param Collection<int, Course> $courses */
     private function cardsHtml(Collection $courses): string
     {
@@ -135,11 +167,11 @@ final class LmsCourseCardsPageBuilderExtension
             return '<article class="lms-course-card" data-course-category="'.e((string) $course->category).'" data-course-level="'.e((string) $course->level).'" data-course-title="'.e(Str::lower((string) $course->title)).'" data-course-price="'.e((string) $this->effectivePrice($course)).'" data-course-published="'.e((string) ($course->published_at?->timestamp ?? 0)).'">'
                 .'<a class="lms-course-card-image" href="'.e($url).'">'.$visual.'</a>'
                 .'<div class="lms-course-card-body">'
-                .'<p class="lms-course-card-category">'.e((string) ($course->category ?: $this->label('دورة تدريبية', 'Course'))).'</p>'
+                .'<p class="lms-course-card-category">'.e((string) ($course->category ?: __('lms::ui.card_fallback_course'))).'</p>'
                 .'<h3><a href="'.e($url).'">'.e((string) $course->title).'</a></h3>'
                 .'<p class="lms-course-card-instructor">'.e((string) ($course->instructor_name ?: \Modules\Lms\Support\PlatformBrand::name())).'</p>'
-                .'<div class="lms-course-card-meta"><span class="lms-course-card-lessons">'.e((string) ($course->published_lessons_count ?? 0)).' '.$this->label('دروس', 'lessons').'</span><span class="lms-course-card-level">'.e((string) ($course->level ?: $this->label('جميع المستويات', 'All levels'))).'</span></div>'
-                .'<div class="lms-course-card-footer"><strong class="lms-course-card-price">'.e($price).'</strong><a href="'.e($url).'">'.$this->label('عرض الدورة', 'View course').'</a></div>'
+                .'<div class="lms-course-card-meta"><span class="lms-course-card-lessons">'.e((string) ($course->published_lessons_count ?? 0)).' '.__('lms::ui.card_lessons').'</span><span class="lms-course-card-level">'.e((string) ($course->level ?: __('lms::ui.card_all_levels'))).'</span></div>'
+                .'<div class="lms-course-card-footer"><strong class="lms-course-card-price">'.e($price).'</strong><a href="'.e($url).'">'.__('lms::ui.card_view_course').'</a></div>'
                 .'</div></article>';
         })->implode('');
     }
@@ -180,16 +212,16 @@ final class LmsCourseCardsPageBuilderExtension
         }
 
         $links = $paginator->onFirstPage()
-            ? '<span class="is-disabled">'.$this->label('السابق', 'Previous').'</span>'
-            : '<a href="'.e((string) $paginator->previousPageUrl()).'">'.$this->label('السابق', 'Previous').'</a>';
+            ? '<span class="is-disabled">'.__('lms::ui.card_previous').'</span>'
+            : '<a href="'.e((string) $paginator->previousPageUrl()).'">'.__('lms::ui.card_previous').'</a>';
         foreach ($paginator->getUrlRange(1, $paginator->lastPage()) as $page => $url) {
             $links .= $page === $paginator->currentPage()
                 ? '<span class="is-current">'.e((string) $page).'</span>'
                 : '<a href="'.e($url).'">'.e((string) $page).'</a>';
         }
         $links .= $paginator->hasMorePages()
-            ? '<a href="'.e((string) $paginator->nextPageUrl()).'">'.$this->label('التالي', 'Next').'</a>'
-            : '<span class="is-disabled">'.$this->label('التالي', 'Next').'</span>';
+            ? '<a href="'.e((string) $paginator->nextPageUrl()).'">'.__('lms::ui.card_next').'</a>'
+            : '<span class="is-disabled">'.__('lms::ui.card_next').'</span>';
 
         return '<nav class="lms-course-cards-pagination" data-lms-course-cards-pagination="'.e($instance).'"><style>.lms-course-cards-pagination{display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:1.5rem 0}.lms-course-cards-pagination a,.lms-course-cards-pagination span{display:inline-flex;min-width:2.3rem;height:2.3rem;align-items:center;justify-content:center;border:1px solid #e5d4d4;border-radius:.5rem;padding:0 .7rem;text-decoration:none}.lms-course-cards-pagination .is-current{background:#991b1b;color:#fff}.lms-course-cards-pagination .is-disabled{opacity:.45}</style>'.$links.'</nav>';
     }
@@ -240,17 +272,12 @@ final class LmsCourseCardsPageBuilderExtension
     {
         $price = $this->effectivePrice($course);
 
-        return $price > 0 ? number_format($price, 2).' '.strtoupper((string) ($course->currency ?: 'USD')) : $this->label('مجاني', 'Free');
+        return $price > 0 ? number_format($price, 2).' '.strtoupper((string) ($course->currency ?: 'USD')) : __('lms::ui.card_free');
     }
 
     private function number(array $attributes, string $key, int $fallback, int $min, int $max): int
     {
         return max($min, min($max, (int) ($attributes[$key] ?? $fallback)));
-    }
-
-    private function label(string $arabic, string $english): string
-    {
-        return app()->getLocale() === 'ar' ? $arabic : $english;
     }
 
     private function isReady(): bool

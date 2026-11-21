@@ -1,0 +1,39 @@
+{
+  "menus": {
+    "exhibitions.admin": { "ar": "المعارض" },
+    "exhibitions.frontend": { "ar": "قائمة المعارض" }
+  },
+  "items": {
+    "admin.plugins.exhibitions.overview": { "ar": "لوحة التشغيل" },
+    "admin.plugins.exhibitions.agreements.index": { "ar": "اتفاقيات الفنانين" },
+    "Artists": { "ar": "الفنانون" },
+    "admin.plugins.exhibitions.applications.index": { "ar": "طلبات الفنانين" },
+    "admin.plugins.exhibitions.artists.create": { "ar": "إضافة مستخدم موجود" },
+    "Artworks": { "ar": "الأعمال الفنية" },
+    "admin.plugins.exhibitions.workspace|Active Artists": { "ar": "الفنانون النشطون" },
+    "admin.plugins.exhibitions.workspace|All Artworks": { "ar": "كل الأعمال" },
+    "admin.plugins.exhibitions.workspace|Published Artworks": { "ar": "الأعمال المنشورة" },
+    "admin.plugins.exhibitions.workspace|Archived Artworks": { "ar": "الأعمال المؤرشفة" },
+    "admin.plugins.exhibitions.workspace": { "ar": "مساحة العمل" },
+    "admin.plugins.exhibitions.artworks.create": { "ar": "إضافة عمل فني" },
+    "admin.plugins.exhibitions.artworks.import": { "ar": "استيراد الأعمال" },
+    "admin.plugins.exhibitions.artworks.review.index": { "ar": "قائمة مراجعة الأعمال" },
+    "Virtual Exhibition": { "ar": "المعرض الافتراضي" },
+    "admin.plugins.exhibitions.virtual.rooms.index": { "ar": "القاعات الافتراضية" },
+    "admin.plugins.exhibitions.virtual.artworks.index": { "ar": "الأعمال المنشورة" },
+    "admin.plugins.exhibitions.virtual.requests.index": { "ar": "طلبات العرض" },
+    "Sales and Payouts": { "ar": "المبيعات والمدفوعات" },
+    "admin.plugins.exhibitions.sales.index": { "ar": "مبيعات الأعمال" },
+    "admin.plugins.exhibitions.settlements.index": { "ar": "مستحقات الفنانين" },
+    "Exhibitions Settings": { "ar": "إعدادات المعارض" },
+    "admin.plugins.exhibitions.settings.commission": { "ar": "العمولات والأرباح" },
+    "admin.plugins.exhibitions.settings.payout-policy": { "ar": "سياسة الدفع للفنانين" },
+    "admin.plugins.exhibitions.settings.artwork-rules": { "ar": "قواعد الأعمال الفنية" },
+    "admin.plugins.exhibitions.settings.notifications": { "ar": "إشعارات المعارض" },
+    "exhibitions.artworks.index": { "ar": "الأعمال الفنية" },
+    "exhibitions.virtual.index": { "ar": "المعرض الافتراضي" },
+    "exhibitions.artist.register": { "ar": "كن فنانًا" },
+    "exhibitions.dashboard.overview": { "ar": "لوحة الفنان" },
+    "exhibitions.dashboard.virtual.index": { "ar": "المعرض الافتراضي" }
+  }
+}

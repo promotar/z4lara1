@@ -3,8 +3,11 @@
 namespace Modules\Blog\Services;
 
 use Illuminate\Support\Enumerable;
+use Modules\Blog\Models\CategoryTranslation;
 use Modules\Blog\Models\Post;
+use Modules\Blog\Models\PostTranslation;
 use Modules\Blog\Models\Template;
+use Modules\Blog\Support\BlogLocale;
 
 class TemplateRenderer
 {
@@ -19,6 +22,7 @@ class TemplateRenderer
     public function render(Template $template, iterable $posts, array $globals = [], array $options = []): string
     {
         $items = $posts instanceof Enumerable ? $posts->values() : collect($posts)->values();
+        $this->localizePosts($items);
         $markup = (string) $template->html_code;
 
         $markup = preg_replace_callback(
@@ -41,7 +45,7 @@ class TemplateRenderer
 
         $markup = $this->replaceTokens($markup, array_merge([
             'site_name' => (string) config('app.name', 'Art Z'),
-            'archive_title' => 'All Posts',
+            'archive_title' => __('blog::ui.all_posts'),
             'results_count' => (string) $items->count(),
         ], $globals));
 
@@ -56,6 +60,51 @@ class TemplateRenderer
         }
 
         return $output;
+    }
+
+    /**
+     * Page-builder slots query posts directly, so the rendering layer applies
+     * the active-locale translations itself (titles, slugs, excerpts and
+     * category names) before any template token is replaced.
+     *
+     * @param  iterable<int, Post>  $posts
+     */
+    private function localizePosts(iterable $posts): void
+    {
+        $locale = app()->getLocale();
+        $posts = collect($posts);
+
+        if ($posts->isEmpty() || $locale === '' || BlogLocale::isDefault($locale)) {
+            return;
+        }
+
+        $translations = PostTranslation::mapForPosts($posts, $locale);
+        $categories = collect();
+
+        foreach ($posts as $post) {
+            if (isset($translations[$post->id])) {
+                $translations[$post->id]->applyTo($post);
+            }
+
+            $post->loadMissing(['category', 'categories']);
+            $categories = $categories
+                ->merge([$post->category])
+                ->merge($post->categories);
+        }
+
+        $categories = $categories->filter()->unique('id')->values();
+
+        if ($categories->isEmpty()) {
+            return;
+        }
+
+        $categoryTranslations = CategoryTranslation::mapForCategories($categories, $locale);
+
+        foreach ($categories as $category) {
+            if (isset($categoryTranslations[$category->id])) {
+                $categoryTranslations[$category->id]->applyTo($category);
+            }
+        }
     }
 
     /** @return array<string, string> */
@@ -75,7 +124,7 @@ class TemplateRenderer
             'url' => e(route('blog.show', $post->slug, false)),
             'featured_image' => e((string) ($post->featuredImageUrl() ?: '')),
             'featured_image_alt' => e((string) $post->featured_image_alt),
-            'category' => e((string) ($post->category?->name ?: 'Uncategorized')),
+            'category' => e((string) ($post->category?->name ?: __('blog::ui.uncategorized'))),
             'category_slug' => e((string) $post->category?->slug),
             'category_url' => $post->category ? e(route('blog.category', $post->category->slug, false)) : '',
             'categories' => e($categories->pluck('name')->implode(', ')),

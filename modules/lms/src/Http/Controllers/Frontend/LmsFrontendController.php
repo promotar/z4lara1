@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Modules\Lms\Models\Course;
+use Modules\Lms\Models\CourseCategoryTranslation;
 use Modules\Lms\Models\CourseCode;
 use Modules\Lms\Models\CourseEnrollment;
 use Modules\Lms\Models\CourseTranslation;
@@ -26,7 +27,6 @@ use Modules\Lms\Models\Template;
 use Modules\Lms\Services\CourseTemplateRenderer;
 use Modules\Lms\Services\LessonAvailabilityService;
 use Modules\Lms\Services\TemplateSettings;
-use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\VideoEmbedResolver;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -76,7 +76,14 @@ class LmsFrontendController extends Controller
                 'teach_url' => e(route('lms.front.instructor-request.create', [], false)),
                 'search_query' => e((string) $request->query('search', '')),
                 'has_active_filters' => $hasActiveFilters ? '1' : '0',
-                'category_options' => $this->catalogSelectOptions($filters['categories'], 'All Categories', $selectedCategory),
+                'category_options' => $this->catalogSelectOptions(
+                    collect($filters['categories'])->map(fn ($category): array => [
+                        'value' => (string) $category,
+                        'label' => CourseCategoryTranslation::translate((string) $category),
+                    ])->all(),
+                    'All Categories',
+                    $selectedCategory
+                ),
                 'level_options' => $this->catalogSelectOptions($filters['levels'], 'All Levels', $selectedLevel),
                 'sort_options' => $this->catalogSelectOptions($filters['sorts'], null, $selectedSort),
                 'empty_state' => $courses->isEmpty()
@@ -264,6 +271,7 @@ class LmsFrontendController extends Controller
         $baseSlug = (string) $course->getRawOriginal('slug');
         $translation = CourseTranslation::resolve($course, app()->getLocale());
         $translation?->applyTo($course);
+        $course->category = CourseCategoryTranslation::translate($course->category);
 
         $courseTranslations = CourseTranslation::query()
             ->where('course_id', $course->id)
@@ -283,8 +291,6 @@ class LmsFrontendController extends Controller
                 $builder->whereNull('status')->orWhereIn('status', ['published', 'draft']);
             })
             ->get();
-
-        CurriculumSections::apply($lessons, $course->curriculum_units);
 
         $previewLesson = $lessons->first(fn (Lesson $lesson): bool => (bool) $lesson->free_preview)
             ?: $lessons->first(fn (Lesson $lesson): bool => (bool) $lesson->video_url)
@@ -422,8 +428,6 @@ class LmsFrontendController extends Controller
 
         $lessons = collect([$lesson]);
 
-        CurriculumSections::apply($lessons, $course->curriculum_units);
-
         return view('lms::frontend.course-player', [
             'course' => $course,
             'lessons' => $lessons,
@@ -462,8 +466,6 @@ class LmsFrontendController extends Controller
             ->whereNull('deleted_at')
             ->where('status', 'published')
             ->get();
-
-        CurriculumSections::apply($lessons, $course->curriculum_units);
 
         if ($lessons->isEmpty()) {
             return redirect()
@@ -820,16 +822,18 @@ class LmsFrontendController extends Controller
     {
         $locale = app()->getLocale();
 
-        if ($locale === app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
-            return;
+        if ($locale !== app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()) {
+            $map = CourseTranslation::mapForCourses($courses, $locale);
+
+            foreach ($courses as $course) {
+                if (isset($map[$course->id])) {
+                    $map[$course->id]->applyTo($course);
+                }
+            }
         }
 
-        $map = CourseTranslation::mapForCourses($courses, $locale);
-
         foreach ($courses as $course) {
-            if (isset($map[$course->id])) {
-                $map[$course->id]->applyTo($course);
-            }
+            $course->category = CourseCategoryTranslation::translate($course->category);
         }
     }
 
@@ -848,14 +852,14 @@ class LmsFrontendController extends Controller
             'slug' => (string) $course->slug,
             'subtitle' => (string) ($course->subtitle ?: $course->short_description ?: ''),
             'description' => Str::limit(strip_tags((string) ($course->short_description ?: $course->description ?: '')), $compact ? 80 : 140),
-            'category' => (string) ($course->category ?: 'عام'),
-            'level' => (string) ($course->level ?: 'مبتدئ'),
+            'category' => (string) (CourseCategoryTranslation::translate($course->category) ?: __('lms::ui.course_fallback')),
+            'level' => (string) ($course->level ?: 'Ù…Ø¨ØªØ¯Ø¦'),
             'pricing_type' => (string) ($course->pricing_type ?: 'free'),
             'price' => $course->pricing_type === 'free' ? null : ($price !== null ? number_format((float) $price, 0) : null),
             'currency' => $currency,
             'image_url' => $this->imageUrl($course),
             'instructor_name' => (string) ($course->instructor_name ?: \Modules\Lms\Support\PlatformBrand::name()),
-            'instructor_title' => (string) ($course->instructor_title ?: 'مدرب'),
+            'instructor_title' => (string) ($course->instructor_title ?: 'Ù…Ø¯Ø±Ø¨'),
             'rating' => $this->rating($course),
             'students' => $this->studentCount($course),
             'lessons' => $this->lessonCount($course),
@@ -1294,15 +1298,15 @@ class LmsFrontendController extends Controller
         $badges = [];
 
         if ($course->created_at && $course->created_at->greaterThan(now()->subDays(30))) {
-            $badges[] = 'جديد';
+            $badges[] = 'Ø¬Ø¯ÙŠØ¯';
         }
 
         if ((int) $course->id % 3 === 0) {
-            $badges[] = 'الأكثر طلباً';
+            $badges[] = 'Ø§Ù„Ø£ÙƒØ«Ø± Ø·Ù„Ø¨Ø§Ù‹';
         }
 
         if ($course->pricing_type === 'free') {
-            $badges[] = 'مجاني';
+            $badges[] = 'Ù…Ø¬Ø§Ù†ÙŠ';
         }
 
         return $badges;

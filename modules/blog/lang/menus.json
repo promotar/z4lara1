@@ -1,0 +1,17 @@
+{
+  "menus": {
+    "blog.admin": { "ar": "المدونة" },
+    "blog.frontend": { "ar": "قائمة المدونة" }
+  },
+  "items": {
+    "admin.plugins.blog.posts.index": { "ar": "المقالات" },
+    "admin.plugins.blog.posts.create": { "ar": "إضافة مقال" },
+    "admin.plugins.blog.categories.index": { "ar": "التصنيفات" },
+    "admin.plugins.blog.tags.index": { "ar": "الوسوم" },
+    "admin.plugins.blog.templates.index": { "ar": "قوالب المقالات" },
+    "admin.plugins.blog.authors.index": { "ar": "الكتّاب" },
+    "admin.plugins.blog.settings.edit": { "ar": "إعدادات المدونة" },
+    "blog.index": { "ar": "المدونة" },
+    "blog.categories": { "ar": "التصنيفات" }
+  }
+}

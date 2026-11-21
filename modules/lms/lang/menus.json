@@ -1,0 +1,21 @@
+{
+  "menus": {
+    "lms.admin": { "ar": "نظام إدارة التعليم" },
+    "lms.frontend": { "ar": "قائمة التعليم" }
+  },
+  "items": {
+    "admin.plugins.lms.overview": { "ar": "نظرة عامة" },
+    "admin.plugins.lms.courses": { "ar": "الدورات" },
+    "admin.plugins.lms.courses.codes": { "ar": "أكواد الدورات" },
+    "admin.plugins.lms.templates.index": { "ar": "قوالب الدورات" },
+    "admin.plugins.lms.lessons": { "ar": "الدروس" },
+    "admin.plugins.lms.lessons.drafts": { "ar": "الدروس المسوّدة" },
+    "admin.plugins.lms.students": { "ar": "الطلاب" },
+    "admin.plugins.lms.students.create": { "ar": "دعوة طالب" },
+    "admin.plugins.lms.instructors": { "ar": "المدرّبون" },
+    "admin.plugins.lms.instructors.create": { "ar": "إضافة مدرّب" },
+    "admin.plugins.lms.instructor-requests.index": { "ar": "طلبات المدرّبين" },
+    "admin.plugins.lms.notifications": { "ar": "الإشعارات" },
+    "lms.front.courses": { "ar": "الدورات" }
+  }
+}

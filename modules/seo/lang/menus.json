@@ -1,0 +1,13 @@
+{
+  "menus": {
+    "seo.admin": { "ar": "تحسين محركات البحث" }
+  },
+  "items": {
+    "admin.plugins.seo.dashboard": { "ar": "لوحة SEO" },
+    "admin.plugins.seo.settings.edit": { "ar": "إعدادات SEO" },
+    "admin.plugins.seo.modules.index": { "ar": "الوحدات" },
+    "admin.plugins.seo.sitemap.index": { "ar": "خريطة الموقع" },
+    "admin.plugins.seo.redirects.index": { "ar": "إعادة التوجيه" },
+    "admin.plugins.seo.audit.index": { "ar": "تدقيق SEO" }
+  }
+}

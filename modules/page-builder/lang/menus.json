@@ -1,0 +1,9 @@
+{
+  "menus": {
+    "page-builder.admin": { "ar": "منشئ الصفحات" }
+  },
+  "items": {
+    "admin.pages.index": { "ar": "منشئ الصفحات" },
+    "admin.vvveb.layout": { "ar": "تخطيط القالب" }
+  }
+}
