@@ -55,6 +55,14 @@ secrets/
 !/public/platform/plugins/exhibitions/**
 !/public/platform/plugins/lms/
 !/public/platform/plugins/lms/**
+!/public/platform/plugins/blog/
+!/public/platform/plugins/blog/**
+!/public/platform/plugins/certificates/
+!/public/platform/plugins/certificates/**
+!/public/platform/plugins/google-login/
+!/public/platform/plugins/google-login/**
+!/public/platform/plugins/store/
+!/public/platform/plugins/store/**
 /public/platform/plugins/**/*.bak
 /public/platform/plugins/**/*.bak-*
 /public/platform/plugins/**/*.backup-*
