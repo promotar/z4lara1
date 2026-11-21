@@ -29,6 +29,7 @@ use Modules\Lms\Models\LessonTranslation;
 use Modules\Lms\Models\LmsNotification;
 use Modules\Lms\Models\Student;
 use Modules\Lms\Services\LmsNotificationService;
+use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\ResolvesPlatformMedia;
 use Spatie\Permission\Models\Role;
 
@@ -646,10 +647,12 @@ class LmsPortalController extends Controller
 
         $validated = $request->validate([
             'units' => ['present', 'array', 'max:250'],
-            'units.*.key' => ['required', 'string', 'max:80'],
+            'units.*.key' => ['required', 'string', 'max:191'],
             'units.*.title' => ['required', 'string', 'max:160'],
             'units.*.previous_title' => ['nullable', 'string', 'max:160'],
             'units.*.order' => ['required', 'integer', 'min:1', 'max:10000'],
+            'units.*.translations' => ['nullable', 'array'],
+            'units.*.translations.*' => ['nullable', 'string', 'max:160'],
             'lessons' => ['sometimes', 'array', 'max:2000'],
             'lessons.*.id' => ['required', 'integer', 'distinct'],
             'lessons.*.module_title' => ['required', 'string', 'max:160'],
@@ -657,11 +660,14 @@ class LmsPortalController extends Controller
             'lessons.*.lesson_order' => ['required', 'integer', 'min:1', 'max:10000'],
         ]);
 
+        $storedUnits = CurriculumSections::index($course->curriculum_units);
+
         $units = collect($validated['units'])
             ->map(fn (array $unit): array => [
                 'key' => trim($unit['key']),
                 'title' => trim($unit['title']),
                 'order' => (int) $unit['order'],
+                'translations' => CurriculumSections::resolveForSave($unit, $storedUnits['byKey'], $storedUnits['byTitle']),
             ])
             ->sortBy('order')
             ->values()
@@ -1105,7 +1111,7 @@ class LmsPortalController extends Controller
         });
 
         return redirect(url('/account').'?section=codes')
-            ->with('status', 'تم توليد '.$created.' كوداً للدورة '.$course->title.'.');
+            ->with('status', 'ØªÙ… ØªÙˆÙ„ÙŠØ¯ '.$created.' ÙƒÙˆØ¯Ø§Ù‹ Ù„Ù„Ø¯ÙˆØ±Ø© '.$course->title.'.');
     }
 
     public function exportCourseCodes(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
@@ -1725,6 +1731,7 @@ class LmsPortalController extends Controller
                 'key' => (string) ($unit['key'] ?? 'unit-'.($index + 1)),
                 'title' => trim((string) $unit['title']),
                 'order' => max(1, (int) ($unit['order'] ?? ($index + 1))),
+                'translations' => CurriculumSections::normalize($unit['translations'] ?? [], trim((string) $unit['title'])),
             ]);
         $lessonUnits = $lessons
             ->groupBy(fn (Lesson $lesson): string => trim((string) $lesson->module_title) ?: 'Module 1')
@@ -1735,6 +1742,7 @@ class LmsPortalController extends Controller
                     'key' => 'module-'.Str::slug($title).'-'.((int) ($first?->module_order ?: 1)),
                     'title' => $title,
                     'order' => max(1, (int) ($first?->module_order ?: 1)),
+                    'translations' => [],
                 ];
             });
         $units = $storedUnits
@@ -1870,9 +1878,9 @@ class LmsPortalController extends Controller
                 ['value' => 'manual', 'label' => __('lms::ui.instructor_option_completion_manual'), 'help' => __('lms::ui.instructor_option_completion_manual_help')],
             ],
             'types' => [
-                ['value' => 'video', 'label' => __('lms::ui.instructor_option_type_video'), 'icon' => '▣'],
-                ['value' => 'text', 'label' => __('lms::ui.instructor_option_type_text'), 'icon' => '▤'],
-                ['value' => 'pdf', 'label' => __('lms::ui.instructor_option_type_pdf'), 'icon' => '▧'],
+                ['value' => 'video', 'label' => __('lms::ui.instructor_option_type_video'), 'icon' => 'â–£'],
+                ['value' => 'text', 'label' => __('lms::ui.instructor_option_type_text'), 'icon' => 'â–¤'],
+                ['value' => 'pdf', 'label' => __('lms::ui.instructor_option_type_pdf'), 'icon' => 'â–§'],
             ],
         ];
     }
@@ -2178,14 +2186,14 @@ class LmsPortalController extends Controller
     private function transliterateArabic(string $value): string
     {
         return strtr($value, [
-            'ا' => 'a', 'أ' => 'a', 'إ' => 'i', 'آ' => 'a', 'ب' => 'b', 'ت' => 't',
-            'ث' => 'th', 'ج' => 'j', 'ح' => 'h', 'خ' => 'kh', 'د' => 'd', 'ذ' => 'dh',
-            'ر' => 'r', 'ز' => 'z', 'س' => 's', 'ش' => 'sh', 'ص' => 's', 'ض' => 'd',
-            'ط' => 't', 'ظ' => 'z', 'ع' => 'a', 'غ' => 'gh', 'ف' => 'f', 'ق' => 'q',
-            'ك' => 'k', 'ل' => 'l', 'م' => 'm', 'ن' => 'n', 'ه' => 'h', 'ة' => 'h',
-            'و' => 'w', 'ؤ' => 'w', 'ي' => 'y', 'ى' => 'a', 'ئ' => 'y', 'ء' => '',
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            'Ø§' => 'a', 'Ø£' => 'a', 'Ø¥' => 'i', 'Ø¢' => 'a', 'Ø¨' => 'b', 'Øª' => 't',
+            'Ø«' => 'th', 'Ø¬' => 'j', 'Ø­' => 'h', 'Ø®' => 'kh', 'Ø¯' => 'd', 'Ø°' => 'dh',
+            'Ø±' => 'r', 'Ø²' => 'z', 'Ø³' => 's', 'Ø´' => 'sh', 'Øµ' => 's', 'Ø¶' => 'd',
+            'Ø·' => 't', 'Ø¸' => 'z', 'Ø¹' => 'a', 'Øº' => 'gh', 'Ù' => 'f', 'Ù‚' => 'q',
+            'Ùƒ' => 'k', 'Ù„' => 'l', 'Ù…' => 'm', 'Ù†' => 'n', 'Ù‡' => 'h', 'Ø©' => 'h',
+            'Ùˆ' => 'w', 'Ø¤' => 'w', 'ÙŠ' => 'y', 'Ù‰' => 'a', 'Ø¦' => 'y', 'Ø¡' => '',
+            'Ù ' => '0', 'Ù¡' => '1', 'Ù¢' => '2', 'Ù£' => '3', 'Ù¤' => '4',
+            'Ù¥' => '5', 'Ù¦' => '6', 'Ù§' => '7', 'Ù¨' => '8', 'Ù©' => '9',
         ]);
     }
 

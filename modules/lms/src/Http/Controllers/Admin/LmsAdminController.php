@@ -28,6 +28,7 @@ use Modules\Lms\Models\LessonTranslation;
 use Modules\Lms\Models\Student;
 use Modules\Lms\Services\LmsNotificationService;
 use Modules\Lms\Services\LmsPublicationService;
+use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\ResolvesPlatformMedia;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -391,10 +392,12 @@ class LmsAdminController extends Controller
     {
         $validated = $request->validate([
             'units' => ['present', 'array', 'max:250'],
-            'units.*.key' => ['required', 'string', 'max:80'],
+            'units.*.key' => ['required', 'string', 'max:191'],
             'units.*.title' => ['required', 'string', 'max:160'],
             'units.*.previous_title' => ['nullable', 'string', 'max:160'],
             'units.*.order' => ['required', 'integer', 'min:1', 'max:10000'],
+            'units.*.translations' => ['nullable', 'array'],
+            'units.*.translations.*' => ['nullable', 'string', 'max:160'],
             'lessons' => ['sometimes', 'array', 'max:2000'],
             'lessons.*.id' => ['required', 'integer', 'distinct'],
             'lessons.*.module_title' => ['required', 'string', 'max:160'],
@@ -402,11 +405,14 @@ class LmsAdminController extends Controller
             'lessons.*.lesson_order' => ['required', 'integer', 'min:1', 'max:10000'],
         ]);
 
+        $storedUnits = CurriculumSections::index($course->curriculum_units);
+
         $units = collect($validated['units'])
             ->map(fn (array $unit): array => [
                 'key' => trim($unit['key']),
                 'title' => trim($unit['title']),
                 'order' => (int) $unit['order'],
+                'translations' => CurriculumSections::resolveForSave($unit, $storedUnits['byKey'], $storedUnits['byTitle']),
             ])
             ->sortBy('order')
             ->values()
@@ -829,14 +835,14 @@ class LmsAdminController extends Controller
     private function transliterateArabic(string $value): string
     {
         $map = [
-            'ا' => 'a', 'أ' => 'a', 'إ' => 'i', 'آ' => 'a', 'ب' => 'b', 'ت' => 't',
-            'ث' => 'th', 'ج' => 'j', 'ح' => 'h', 'خ' => 'kh', 'د' => 'd', 'ذ' => 'dh',
-            'ر' => 'r', 'ز' => 'z', 'س' => 's', 'ش' => 'sh', 'ص' => 's', 'ض' => 'd',
-            'ط' => 't', 'ظ' => 'z', 'ع' => 'a', 'غ' => 'gh', 'ف' => 'f', 'ق' => 'q',
-            'ك' => 'k', 'ل' => 'l', 'م' => 'm', 'ن' => 'n', 'ه' => 'h', 'ة' => 'h',
-            'و' => 'w', 'ؤ' => 'w', 'ي' => 'y', 'ى' => 'a', 'ئ' => 'y', 'ء' => '',
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            'Ø§' => 'a', 'Ø£' => 'a', 'Ø¥' => 'i', 'Ø¢' => 'a', 'Ø¨' => 'b', 'Øª' => 't',
+            'Ø«' => 'th', 'Ø¬' => 'j', 'Ø­' => 'h', 'Ø®' => 'kh', 'Ø¯' => 'd', 'Ø°' => 'dh',
+            'Ø±' => 'r', 'Ø²' => 'z', 'Ø³' => 's', 'Ø´' => 'sh', 'Øµ' => 's', 'Ø¶' => 'd',
+            'Ø·' => 't', 'Ø¸' => 'z', 'Ø¹' => 'a', 'Øº' => 'gh', 'Ù' => 'f', 'Ù‚' => 'q',
+            'Ùƒ' => 'k', 'Ù„' => 'l', 'Ù…' => 'm', 'Ù†' => 'n', 'Ù‡' => 'h', 'Ø©' => 'h',
+            'Ùˆ' => 'w', 'Ø¤' => 'w', 'ÙŠ' => 'y', 'Ù‰' => 'a', 'Ø¦' => 'y', 'Ø¡' => '',
+            'Ù ' => '0', 'Ù¡' => '1', 'Ù¢' => '2', 'Ù£' => '3', 'Ù¤' => '4',
+            'Ù¥' => '5', 'Ù¦' => '6', 'Ù§' => '7', 'Ù¨' => '8', 'Ù©' => '9',
         ];
 
         return strtr($value, $map);
@@ -1118,7 +1124,7 @@ class LmsAdminController extends Controller
         $user->givePermissionTo('lms.codes.generate');
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return back()->with('status', 'تم منح '.$user->name.' صلاحية إصدار أكواد الخصم.');
+        return back()->with('status', 'ØªÙ… Ù…Ù†Ø­ '.$user->name.' ØµÙ„Ø§Ø­ÙŠØ© Ø¥ØµØ¯Ø§Ø± Ø£ÙƒÙˆØ§Ø¯ Ø§Ù„Ø®ØµÙ….');
     }
 
     public function revokeCodeIssuer(Request $request, User $user): RedirectResponse
@@ -1126,7 +1132,7 @@ class LmsAdminController extends Controller
         $user->revokePermissionTo('lms.codes.generate');
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return back()->with('status', 'تم سحب صلاحية إصدار الأكواد من '.$user->name.'.');
+        return back()->with('status', 'ØªÙ… Ø³Ø­Ø¨ ØµÙ„Ø§Ø­ÙŠØ© Ø¥ØµØ¯Ø§Ø± Ø§Ù„Ø£ÙƒÙˆØ§Ø¯ Ù…Ù† '.$user->name.'.');
     }
 
     public function lessons(Request $request): View
@@ -2313,21 +2319,21 @@ class LmsAdminController extends Controller
         $courses = Course::query()->latest()->limit(3)->get()->map(fn (Course $course): array => [
             'tone' => 'green',
             'title' => __('lms::ui.admin_overview_activity_new_course', ['title' => $course->title]),
-            'meta' => ($course->instructor_name ?: __('lms::ui.admin_overview_system')).' • '.optional($course->created_at)->diffForHumans(),
+            'meta' => ($course->instructor_name ?: __('lms::ui.admin_overview_system')).' â€¢ '.optional($course->created_at)->diffForHumans(),
             'timestamp' => optional($course->created_at)->getTimestamp() ?? 0,
         ]);
 
         $lessons = Lesson::query()->with('course')->latest()->limit(3)->get()->map(fn (Lesson $lesson): array => [
             'tone' => 'blue',
             'title' => __('lms::ui.admin_overview_activity_lesson_added', ['title' => $lesson->title]),
-            'meta' => ($lesson->course?->title ?? 'LMS').' • '.optional($lesson->created_at)->diffForHumans(),
+            'meta' => ($lesson->course?->title ?? 'LMS').' â€¢ '.optional($lesson->created_at)->diffForHumans(),
             'timestamp' => optional($lesson->created_at)->getTimestamp() ?? 0,
         ]);
 
         $students = Student::query()->latest()->limit(3)->get()->map(fn (Student $student): array => [
             'tone' => 'purple',
             'title' => __('lms::ui.admin_overview_activity_student_registered', ['name' => $student->name]),
-            'meta' => __('lms::ui.admin_overview_system').' • '.optional($student->created_at)->diffForHumans(),
+            'meta' => __('lms::ui.admin_overview_system').' â€¢ '.optional($student->created_at)->diffForHumans(),
             'timestamp' => optional($student->created_at)->getTimestamp() ?? 0,
         ]);
 
@@ -2696,6 +2702,7 @@ class LmsAdminController extends Controller
                 'key' => (string) ($unit['key'] ?? 'unit-'.($index + 1)),
                 'title' => trim((string) $unit['title']),
                 'order' => max(1, (int) ($unit['order'] ?? ($index + 1))),
+                'translations' => CurriculumSections::normalize($unit['translations'] ?? [], trim((string) $unit['title'])),
             ]);
 
         $lessonUnits = $lessons
@@ -2707,6 +2714,7 @@ class LmsAdminController extends Controller
                     'key' => 'module-'.Str::slug($title).'-'.((int) ($first?->module_order ?: 1)),
                     'title' => $title,
                     'order' => max(1, (int) ($first?->module_order ?: 1)),
+                    'translations' => [],
                 ];
             });
 
@@ -2858,9 +2866,9 @@ class LmsAdminController extends Controller
                 ['value' => 'manual', 'label' => 'Mark as Complete Manually', 'help' => 'Students must mark the lesson as complete manually.'],
             ],
             'types' => [
-                ['value' => 'video', 'label' => 'Video', 'icon' => '▣'],
-                ['value' => 'text', 'label' => 'Text', 'icon' => '▤'],
-                ['value' => 'pdf', 'label' => 'PDF', 'icon' => '▧'],
+                ['value' => 'video', 'label' => 'Video', 'icon' => 'â–£'],
+                ['value' => 'text', 'label' => 'Text', 'icon' => 'â–¤'],
+                ['value' => 'pdf', 'label' => 'PDF', 'icon' => 'â–§'],
             ],
         ];
     }

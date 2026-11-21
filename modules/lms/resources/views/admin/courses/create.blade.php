@@ -49,6 +49,10 @@
             : route('lms.front.media.file', ['path' => $storedImagePath], false);
     }
     $units = collect($curriculumUnits ?? []);
+    $unitLanguages = collect($platformLanguages ?? [])
+        ->except([app(\App\Platform\Core\Localization\PlatformLocale::class)->defaultCode()])
+        ->all();
+    $unitTranslationsLabel = $t('lms::ui.builder_unit_translations');
     $lessons = collect($courseLessons ?? [])
         ->when($isEditing, fn ($items) => $items->where('course_id', (int) $course->id))
         ->values();
@@ -233,6 +237,17 @@
                                     @php $unitLessons = $lessons->where('module_title', $unit['title'])->sortBy('lesson_order'); @endphp
                                     <article class="lms-unit" data-unit data-key="{{ $unit['key'] }}" data-title="{{ $unit['title'] }}" data-previous-title="{{ $unit['title'] }}" data-order="{{ $unit['order'] }}">
                             <header><span class="lms-unit-grip" title="{{ $t('lms::ui.auto_475df2d1e5') }}" aria-label="{{ $t('lms::ui.auto_475df2d1e5') }}"><i data-lucide="grip-vertical"></i></span><button type="button" class="lms-unit-toggle" data-toggle-unit><i data-lucide="chevron-up"></i></button><input value="{{ $unit['title'] }}" aria-label="{{ $t('lms::ui.auto_25e70db460') }}" data-unit-title><button class="lms-icon-button" type="button" title="{{ $t('lms::ui.auto_8864be0b8a') }}" data-delete-unit><i data-lucide="trash-2"></i></button></header>
+                                        @if ($unitLanguages !== [])
+                                        <div class="lms-unit-translations" data-unit-translations>
+                                            <span class="lms-unit-translations-label">{{ $unitTranslationsLabel }}</span>
+                                            @foreach ($unitLanguages as $unitLocale => $unitLanguage)
+                                                <label class="lms-unit-translation">
+                                                    <span>{{ $unitLanguage }}</span>
+                                                    <input class="lms-input" type="text" maxlength="160" value="{{ data_get($unit, 'translations.'.$unitLocale, '') }}" placeholder="{{ $unit['title'] }}" data-unit-title-i18n data-locale="{{ $unitLocale }}" autocomplete="off">
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                         <div class="lms-unit-lessons" data-unit-lessons>
                                             @foreach ($unitLessons as $lesson)
                                     <div class="lms-curriculum-lesson" data-lesson-id="{{ $lesson['id'] }}"><span class="lms-lesson-grip" title="{{ $t('lms::ui.auto_9739b26543') }}" aria-label="{{ $t('lms::ui.auto_9739b26543') }}"><i data-lucide="grip-vertical"></i></span><span class="lms-duration">{{ sprintf('%02d:%02d', $lesson['duration_hours'], $lesson['duration_minutes']) }}</span><span class="lms-lesson-type"><i data-lucide="{{ $lesson['lesson_type'] === 'video' ? 'video' : ($lesson['lesson_type'] === 'pdf' ? 'file-text' : 'align-left') }}"></i></span><strong><span data-lesson-order-number>{{ $lesson['lesson_order'] }}.</span> <span data-lesson-title-text>{{ $lesson['title'] }}</span></strong><span class="lms-published"><i data-lucide="circle-check"></i></span><button class="lms-icon-button" type="button" title="{{ $t('lms::ui.auto_536a135a75') }}" data-edit-lesson="{{ $lesson['id'] }}"><i data-lucide="pencil"></i></button><button class="lms-icon-button" type="button" title="{{ $t('lms::ui.auto_a40983c1a8') }}" data-delete-lesson="{{ $lesson['id'] }}"><i data-lucide="trash-2"></i></button></div>
@@ -369,6 +384,8 @@
             dragUnavailable: @json($t('lms::ui.builder_drag_unavailable')),
             dragUnit: @json($t('lms::ui.builder_drag_unit')),
             unitTitle: @json($t('lms::ui.builder_unit_title')),
+            unitTranslations: @json($unitTranslationsLabel),
+            unitLanguages: @json($unitLanguages),
             deleteUnit: @json($t('lms::ui.builder_delete_unit')),
             newUnit: @json($t('lms::ui.builder_new_unit')),
             untitledUnit: @json($t('lms::ui.builder_untitled_unit')),
@@ -854,7 +871,8 @@
         };
         const unitList = root.querySelector('[data-unit-list]');
         const curriculumStatus = root.querySelector('[data-curriculum-status]');
-        const curriculumUnits = () => [...unitList.querySelectorAll(':scope > [data-unit]')].map((unit,index) => ({key:unit.dataset.key,title:unit.querySelector('[data-unit-title]').value.trim(),previous_title:unit.dataset.previousTitle || unit.dataset.title,order:index+1}));
+        const unitTitleTranslations = (unit) => Object.fromEntries([...unit.querySelectorAll('[data-unit-title-i18n]')].map((input) => [input.dataset.locale, input.value.trim()]));
+        const curriculumUnits = () => [...unitList.querySelectorAll(':scope > [data-unit]')].map((unit,index) => ({key:unit.dataset.key,title:unit.querySelector('[data-unit-title]').value.trim(),previous_title:unit.dataset.previousTitle || unit.dataset.title,order:index+1,translations:unitTitleTranslations(unit)}));
         const curriculumLessons = () => curriculumUnits().flatMap((unit) => {
             const unitElement = [...unitList.querySelectorAll(':scope > [data-unit]')][unit.order - 1];
             return [...unitElement.querySelectorAll('[data-unit-lessons] > [data-lesson-id]')].map((row,index) => ({id:Number(row.dataset.lessonId),module_title:unit.title,module_order:unit.order,lesson_order:index+1}));
@@ -880,9 +898,10 @@
             unitSortable=window.Sortable.create(unitList,{animation:160,handle:'.lms-unit-grip',draggable:'[data-unit]',ghostClass:'is-sorting',chosenClass:'is-dragging',onEnd:persistCurriculumOrder});
             unitList.querySelectorAll('[data-unit-lessons]').forEach((container)=>lessonSortables.push(window.Sortable.create(container,{group:'lms-course-lessons',animation:160,handle:'.lms-lesson-grip',draggable:'[data-lesson-id]',ghostClass:'is-sorting',chosenClass:'is-dragging',onEnd:persistCurriculumOrder})));
         };
-        const createUnitElement = (title, order) => { const article=document.createElement('article'); article.className='lms-unit'; article.dataset.unit=''; article.dataset.key=`unit-${Date.now()}`; article.dataset.title=title; article.dataset.previousTitle=''; article.dataset.order=String(order); article.innerHTML=`<header><span class="lms-unit-grip" title="${T.dragUnit}" aria-label="${T.dragUnit}"><i data-lucide="grip-vertical"></i></span><button type="button" class="lms-unit-toggle" data-toggle-unit><i data-lucide="chevron-up"></i></button><input value="${title.replace(/"/g,'&quot;')}" aria-label="${T.unitTitle}" data-unit-title><button class="lms-icon-button" type="button" title="${T.deleteUnit}" data-delete-unit><i data-lucide="trash-2"></i></button></header><div class="lms-unit-lessons" data-unit-lessons><button class="lms-add-unit-lesson" type="button" data-add-lesson-to-unit><i data-lucide="plus"></i> ${T.addLesson}</button></div>`; return article; };
+        const unitTranslationsMarkup = (title) => { const langs=T.unitLanguages||{}; const codes=Object.keys(langs); if(!codes.length)return ''; const safeTitle=String(title||'').replace(/"/g,'&quot;'); return `<div class="lms-unit-translations" data-unit-translations><span class="lms-unit-translations-label">${T.unitTranslations}</span>${codes.map((code)=>`<label class="lms-unit-translation"><span>${langs[code]}</span><input class="lms-input" type="text" maxlength="160" placeholder="${safeTitle}" data-unit-title-i18n data-locale="${code}" autocomplete="off"></label>`).join('')}</div>`; };
+        const createUnitElement = (title, order) => { const article=document.createElement('article'); article.className='lms-unit'; article.dataset.unit=''; article.dataset.key=`unit-${Date.now()}`; article.dataset.title=title; article.dataset.previousTitle=''; article.dataset.order=String(order); article.innerHTML=`<header><span class="lms-unit-grip" title="${T.dragUnit}" aria-label="${T.dragUnit}"><i data-lucide="grip-vertical"></i></span><button type="button" class="lms-unit-toggle" data-toggle-unit><i data-lucide="chevron-up"></i></button><input value="${title.replace(/"/g,'&quot;')}" aria-label="${T.unitTitle}" data-unit-title><button class="lms-icon-button" type="button" title="${T.deleteUnit}" data-delete-unit><i data-lucide="trash-2"></i></button></header>${unitTranslationsMarkup(title)}<div class="lms-unit-lessons" data-unit-lessons><button class="lms-add-unit-lesson" type="button" data-add-lesson-to-unit><i data-lucide="plus"></i> ${T.addLesson}</button></div>`; return article; };
         root.querySelector('[data-add-unit]').addEventListener('click', async () => { root.querySelector('[data-curriculum-empty]')?.remove(); const order=unitList.querySelectorAll(':scope > [data-unit]').length+1; const unit=createUnitElement(T.newUnit.replace(':number', String(order)),order); unitList.append(unit); initializeCurriculumSorting(); iconRefresh(); unit.querySelector('[data-unit-title]').select(); try{await saveCurriculum();}catch(error){curriculumStatus.textContent=error.message;} });
-        root.querySelector('[data-unit-list]').addEventListener('change', async (event) => { if (!event.target.matches('[data-unit-title]')) return; if (!event.target.value.trim()) event.target.value=T.untitledUnit; try{await saveCurriculum();}catch(error){root.querySelector('[data-curriculum-status]').textContent=error.message;} });
+        root.querySelector('[data-unit-list]').addEventListener('change', async (event) => { if (!event.target.matches('[data-unit-title], [data-unit-title-i18n]')) return; if (event.target.matches('[data-unit-title]') && !event.target.value.trim()) event.target.value=T.untitledUnit; try{await saveCurriculum();}catch(error){root.querySelector('[data-curriculum-status]').textContent=error.message;} });
         root.querySelector('[data-unit-list]').addEventListener('click', async (event) => { const unit=event.target.closest('[data-unit]'); if (!unit) return; if(event.target.closest('[data-toggle-unit]')) unit.classList.toggle('collapsed'); if(event.target.closest('[data-delete-unit]')){if(unit.querySelector('[data-lesson-id]')){root.querySelector('[data-curriculum-status]').textContent=T.deleteUnitLessonsFirst;return;}unit.remove();try{await saveCurriculum();}catch(error){root.querySelector('[data-curriculum-status]').textContent=error.message;}} if(event.target.closest('[data-add-lesson-to-unit]')) openLessonModal(null,unit.dataset.title); });
 
         const lessonModal = root.querySelector('[data-lesson-modal]'); const lessonForm=root.querySelector('[data-lesson-form]'); const moduleSelect=root.querySelector('[data-module-select]'); const lessonErrors=root.querySelector('[data-lesson-errors]');

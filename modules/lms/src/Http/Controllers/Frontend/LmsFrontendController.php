@@ -26,6 +26,7 @@ use Modules\Lms\Models\Template;
 use Modules\Lms\Services\CourseTemplateRenderer;
 use Modules\Lms\Services\LessonAvailabilityService;
 use Modules\Lms\Services\TemplateSettings;
+use Modules\Lms\Support\CurriculumSections;
 use Modules\Lms\Support\VideoEmbedResolver;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -283,6 +284,8 @@ class LmsFrontendController extends Controller
             })
             ->get();
 
+        CurriculumSections::apply($lessons, $course->curriculum_units);
+
         $previewLesson = $lessons->first(fn (Lesson $lesson): bool => (bool) $lesson->free_preview)
             ?: $lessons->first(fn (Lesson $lesson): bool => (bool) $lesson->video_url)
             ?: $lessons->first();
@@ -419,6 +422,8 @@ class LmsFrontendController extends Controller
 
         $lessons = collect([$lesson]);
 
+        CurriculumSections::apply($lessons, $course->curriculum_units);
+
         return view('lms::frontend.course-player', [
             'course' => $course,
             'lessons' => $lessons,
@@ -457,6 +462,8 @@ class LmsFrontendController extends Controller
             ->whereNull('deleted_at')
             ->where('status', 'published')
             ->get();
+
+        CurriculumSections::apply($lessons, $course->curriculum_units);
 
         if ($lessons->isEmpty()) {
             return redirect()
